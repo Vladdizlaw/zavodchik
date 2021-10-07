@@ -1,28 +1,88 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div class="app">
+    <start-screen v-if="state == 'start'" @animalType="getAnimalType" />
+    <animal-property
+      @animalProperty="getAnimalProperty"
+      :animalType="this.user.animal.animalType"
+      :geoAviable="geoAviable"
+      v-if="state == 'animalProperty'"
+    >
+    </animal-property>
+    <map-screen :location="user.location" v-if="state == 'mapScreen'" />
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
+import StartScreen from "./components/StartScreen.vue";
+import AnimalProperty from "./components/AnimalProperty.vue";
+import MapScreen from "./components/MapScreen.vue";
 export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  }
-}
-</script>
+  name: "App",
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  components: {
+    StartScreen,
+    AnimalProperty,
+    MapScreen,
+  },
+
+  data() {
+    return {
+      user: { animal: {}, location: null },
+      state: "start",
+      location: null,
+      geoAviable:null,
+
+      errorStr: null,
+    };
+  },
+
+  methods: {
+    async getLocation() {
+      return new Promise((resolve, reject) => {
+        if (!("geolocation" in navigator)) {
+          reject(new Error("Геолокация недоступна"));
+          this.geoAviable=false
+        }
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            this.geoAviable=true
+            resolve(pos);
+          },
+          (err) => {
+            reject(err);
+          }
+        );
+      });
+    },
+    async locateMe() {
+      try {
+        this.user.location = await this.getLocation();
+      } catch (e) {
+        this.errorStr = e.message;
+      }
+    },
+    getAnimalType(value) {
+      this.user.animal.animalType = value.animalType;
+      this.state = "animalProperty";
+    },
+    getAnimalProperty(value) {
+      this.user.animal.age = value.animalProperty.age;
+      this.user.animal.male = value.animalProperty.male;
+      this.user.animal.breed = value.animalProperty.breed;
+      this.user.animal.awards = value.animalProperty.awards;
+      this.user.place = value.animalProperty.place;
+      console.log(this.user);
+      this.state = "mapScreen";
+    },
+  },
+  async mounted() {
+    await this.locateMe();
+    console.log(this.user.location);
+  },
+};
+</script>
+<style scoped>
+.app {
+  height: 100vh;
 }
 </style>
