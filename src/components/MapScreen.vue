@@ -6,14 +6,14 @@
   </div>
 </template>
 <script>
-
+// import Geolocation from "ol/Geolocation";
 import Map from "ol/Map";
 import View from "ol/View";
 import OSM from "ol/source/OSM";
 import TileLayer from "ol/layer/Tile";
-//import {toStringHDMS} from 'ol/coordinate';
-import 'ol/ol.css'
-import {fromLonLat} from 'ol/proj'
+
+import "ol/ol.css";
+import { fromLonLat } from "ol/proj";
 export default {
   name: "MapScreen",
   props: {
@@ -23,12 +23,24 @@ export default {
     return {};
   },
   mounted() {
-    let projection=fromLonLat([this.location.coords.longitude, this.location.coords.latitude], 'EPSG:3857')
+//     //const testproj=
+//     const geolocation = new Geolocation({
+//   // take the projection to use from the map's view
+//   projection: view.getProjection()
+// });
+// // listen to changes in position
+// geolocation.on('change', function(evt) {
+//   window.console.log(geolocation.getPosition(),evt);
+// });
+    let projection = fromLonLat(
+      [this.location.coords.longitude, this.location.coords.latitude],
+      "EPSG:3857"
+    );
     const map = new Map({ target: "map" });
     const view = new View({
       center: projection,
-      zoom: 12,
-      constrainResolution: true
+      zoom: 16,
+      constrainResolution: true,
     });
     //view.setCenter(this.location.coords.latitude, this.location.coords.longitude)
     map.setView(view);

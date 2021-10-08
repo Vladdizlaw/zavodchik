@@ -40,23 +40,25 @@
         />
       </div>
       <div class="formale" v-show="!geoAviable">
-        
-        <select v-model="animalProperty.place" placeholder="район" >
-          <option :value="city" v-for="(city, ind) in selected" :key="ind" >{{
-            city
-          }}</option>
+        <select v-model="animalProperty.place" placeholder="район">
+          <p>Введите город</p>
+          <option
+            :value="city"
+            v-for="(city, ind) in selectedCity"
+            :key="ind"
+            >{{ city }}</option
+          >
         </select>
       </div>
       <div class="formale">
         <p>Выберите примерную дату вязки</p>
-        <input type="date" v-model="animalProperty.dateMating"/>
+        <input type="date" v-model="animalProperty.dateMating" />
       </div>
       <button class="btn" @click="submit">Искать пару</button>
     </div>
   </div>
 </template>
 <script>
-//import {cities} from './cities.json'
 export default {
   name: "AnimalProperty",
   //Компонент выбора свойств животного, принимает тип животного (cat,dog),
@@ -64,7 +66,6 @@ export default {
   props: {
     animalType: String,
     geoAviable: Boolean,
-    
   },
   data() {
     return {
@@ -74,52 +75,42 @@ export default {
         age: "1",
         awards: "",
         place: "",
-        dateMating:null,
+        dateMating: null,
       },
       breedList: [],
       cityList: [],
-      citySelected:null
     };
   },
   mounted() {
-   
     const cities = require("../cities.json");
-    //console.log(citiess,typeof(citiess))
+
     this.cityList = cities;
-    
 
     if (this.animalType == "dog") {
-      //console.log(this.animalType);
       const breed_string = require("!raw-loader!../dog_breed.txt");
 
-      this.breedList = breed_string.default.split("\r\n").filter(el=>el!='');
+      this.breedList = breed_string.default
+        .split("\r\n")
+        .filter((el) => el != "");
     }
     if (this.animalType == "cat") {
       const breed_string = require("!raw-loader!../cat_breed.txt");
 
       this.breedList = breed_string.default.split("\r\n");
     }
-    console.log(this.breedList)
   },
-  computed:{
-     selected(){
-      let citySelected=[]
-      this.cityList.forEach(city => {
-         
-        citySelected.push(city['Город'])
-      })
-      console.log([...this.cityList].sort())
-      return citySelected.sort().filter(el=>el!='')
+  computed: {
+    selectedCity() {
+      let citySelected = [];
+      this.cityList.forEach((city) => {
+        citySelected.push(city["Город"]);
+      });
 
-  },
+      return citySelected.sort().filter((el) => el != "");
+    },
   },
 
   methods: {
-   
-     // console.log(Number(city['Широта']).toFixed(1),Number(this.location.coords.latitude).toFixed(1))
-      
-     
-    
     submit() {
       if (
         !this.animalProperty.breed ||
@@ -135,6 +126,13 @@ export default {
 };
 </script>
 <style scoped>
+.animal-property {
+  width: 100vw;
+  height: 100vh;
+  background: no-repeat url("../assets/cover.svg");
+  background-size: cover;
+  overflow: hidden;
+}
 .fortext {
   display: flex;
   justify-content: center;
@@ -161,7 +159,7 @@ export default {
 }
 input,
 select {
-  width: 30vw;
+  width: 20vw;
   height: 2em;
   border: 2px solid;
   border-radius: 8px;
@@ -182,8 +180,8 @@ button {
 }
 button:active {
   box-shadow: 3px 6px;
-  /* transition: all 1.9s cubic-bezier(0.075, 0.82, 0.165, 1) ;  */
-  animation: 0.3s alternate rot_name;
+
+  animation: 0.3s infinite rot_name;
 }
 @keyframes rot_name {
   from {
@@ -191,7 +189,7 @@ button:active {
   }
 
   to {
-    transform: rotate(3deg);
+    transform: rotate(10deg);
   }
 }
 </style>
