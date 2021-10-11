@@ -9,7 +9,7 @@
       v-if="state == 'animalProperty'"
     >
     </animal-property>
-    <map-screen :location="user.location" v-if="state == 'mapScreen'" />
+    <map-screen :location="user.location" :animalType="this.user.animal.animalType" v-if="state == 'mapScreen'" />
     </transition>
   </div>
 </template>

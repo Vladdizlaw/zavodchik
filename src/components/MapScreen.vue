@@ -2,11 +2,43 @@
   <div>
     <div class="formap">
       <div id="map"></div>
+      <div class="logo" v-for="user in users" :key="user.id" >
+        <div :id="user.name" class="forimage">
+          <img
+            :src="require(`../assets/${srcpic}.svg`)"
+            class="catlogo"
+            :alt="user.name"
+            @mouseenter="clack = true"
+            @mouseleave="clack = false"
+            
+            
+          />
+          <div
+            class="logomsg"
+            @mouseenter="clack = true, upElement($event)"
+            @mouseleave="clack = false, downElement($event)"
+           
+            :class="{ active: clack }"
+          >
+            <p>
+              Порода: <span>{{ user.breed }}</span>
+            </p>
+            <p>
+              Возраст: <span>{{ user.age }}</span>
+            </p>
+            <p>
+              Дата вязки: <span>{{ user.dateMating }}</span>
+            </p>
+            <button @click.stop="foo">посмотреть</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 <script>
 // import Geolocation from "ol/Geolocation";
+import Overlay from "ol/Overlay";
 import Map from "ol/Map";
 import View from "ol/View";
 import OSM from "ol/source/OSM";
@@ -18,20 +50,31 @@ export default {
   name: "MapScreen",
   props: {
     location: Object,
+    animalType: String,
   },
   data() {
-    return {};
+    return {
+      users: null,
+     
+      clack: false,
+      
+    };
+  },
+  computed: {
+    srcpic() {
+      if (this.animalType == "dog") {
+        let arrPic = ["dogmap1", "dogmapc","dogmap"];
+        return arrPic[Math.floor(Math.random() * arrPic.length)];
+      } else {
+        let arrPic = ["catmap1", "catmapc","catmap"];
+        return arrPic[Math.floor(Math.random() * arrPic.length)];
+      }
+    },
+  },
+  created() {
+    this.getUsersData();
   },
   mounted() {
-//     //const testproj=
-//     const geolocation = new Geolocation({
-//   // take the projection to use from the map's view
-//   projection: view.getProjection()
-// });
-// // listen to changes in position
-// geolocation.on('change', function(evt) {
-//   window.console.log(geolocation.getPosition(),evt);
-// });
     let projection = fromLonLat(
       [this.location.coords.longitude, this.location.coords.latitude],
       "EPSG:3857"
@@ -42,12 +85,51 @@ export default {
       zoom: 16,
       constrainResolution: true,
     });
-    //view.setCenter(this.location.coords.latitude, this.location.coords.longitude)
+
     map.setView(view);
     const osmSource = new OSM();
     const osmLayer = new TileLayer({ source: osmSource });
     map.addLayer(osmLayer);
-    console.log(this.location);
+    // console.log(this.location);
+    this.users.forEach((user) => {
+      const catlogo = new Overlay({
+        element: document.getElementById(user.name),
+      });
+      catlogo.setPosition(fromLonLat([user.lat, user.long]));
+      map.addOverlay(catlogo);
+    });
+  },
+  methods: {
+    upElement(f){
+      f.path[0].style.backgroundImage='-webkit-linear-gradient(rgba(28, 233, 21), rgb(5, 83, 2))';
+      f.path[0].style.opacity=1
+      
+    },
+     downElement(f){
+      f.path[0].style.backgroundImage='-webkit-linear-gradient(rgba(28, 233, 21,0.5), rgb(5, 83, 2,0.1))';
+      f.path[0].style.opacity=0.1
+    },
+    getUsersData() {
+      this.users = require("../user.json");
+    },
+    foo() {
+      console.log("click");
+    },
+    makeElemLogo(namepic, longitude, latitude, map) {
+      const elem = document.createElement("img");
+      elem.src = require(`../assets/${namepic}`);
+      // elem.id = id;
+      elem.classList.add("catlogo");
+      elem.addEventListener("click", this.foo);
+      // this.$refs.logo.append(elem);
+      // console.log(this.$refs.logo);
+
+      const logo = new Overlay({
+        element: elem,
+      });
+      logo.setPosition(fromLonLat([latitude, longitude]));
+      map.addOverlay(logo);
+    },
   },
 };
 </script>
@@ -63,5 +145,71 @@ export default {
   width: 90%;
   height: 90vh;
   border: 1px solid;
+}
+.forimage{
+  position: relative;
+  z-index: 100;;
+}
+.catlogo {
+  width: 5em;
+  height: 5em;
+  transition: all 1s;
+}
+.catlogo:hover {
+  width: 6em;
+  height: 6em;
+  color: rgb(9, 39, 9);
+}
+.catlogo:active {
+  transform: rotate(180deg);
+}
+
+.logomsg {
+  border: 2px solid;
+  border-radius: 10px;
+  background: linear-gradient(rgba(28, 233, 21, 0.3), rgb(5, 83, 2, 0.1));
+  min-width: 7em;
+  min-height: 6em;
+  color: rgb(41, 3, 3);
+  z-index: -1;
+  display: none;
+  box-shadow: 5px 7px rgb(3, 73, 3);
+  font-weight: bold;
+  font: solid;
+  font-size: 1.2em;
+  position:relative;      
+}
+.active {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  opacity: 1;
+  position:relative;
+  opacity:0.3;
+  /* background: linear-gradient(rgba(28, 233, 21), rgb(5, 83, 2)); */
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.logo {
+  display: none;
+}
+button {
+  border: 1px solid;
+  width: 50%;
+  box-shadow: 2px 3px black;
+  background-color: rgba(31, 236, 117, 0.5);
+  border-radius: 5px;
+  font-size: 0.7em;
+}
+button:hover {
+  box-shadow: 3px 4px black;
+}
+button:active {
+  box-shadow: 4px 3px black;
+}
+span {
+  color: rgb(40, 24, 179);
 }
 </style>

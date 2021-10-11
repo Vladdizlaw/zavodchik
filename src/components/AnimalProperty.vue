@@ -1,5 +1,9 @@
 <template>
-  <div class="animal-property">
+  <div
+    class="animal-property"
+    ref="masterdiv"
+    :class="{ dog: animalType == 'dog', cat: animalType == 'cat' }"
+  >
     <div class="fortext">
       <h4>Выберите свойства животного</h4>
     </div>
@@ -7,7 +11,10 @@
       <div class="formale">
         <p>Выберите пол животного</p>
         <select name="male" v-model="animalProperty.male">
-          <option value="man">мужской</option>
+          <option value="man"
+            >мужской
+            <div class="image-dog-man"></div
+          ></option>
           <option value="women">женский</option>
         </select>
       </div>
@@ -126,12 +133,39 @@ export default {
 };
 </script>
 <style scoped>
+.dog {
+  background-image: url("../assets/dog1w.svg") , url("../assets/dog1w.svg"),
+    -webkit-linear-gradient(rgba(86, 194, 14, 0.5), rgba(238, 241, 15, 0.904));
+    background-position:-65% 45%, 160% 45%;
+ 
+  opacity: 0.9;
+  background-size: 75% ,75% ,cover ;
+  background-repeat: no-repeat, no-repeat;
+  overflow: hidden;
+  text-shadow: 1px 1px 10px rgb(209, 247, 192);
+}
+.cat {
+  background:  url("../assets/cat1w.svg"),url("../assets/cat1w.svg"),
+    -webkit-linear-gradient(rgba(86, 194, 14, 0.5), rgba(238, 241, 15, 0.904));
+  background-position:-23% 5%, 140% 10%;
+  background-size: 65% ,65% ,cover ;
+  background-repeat: no-repeat,no-repeat;
+  overflow: hidden;
+  opacity: 0.9;
+  text-shadow: 1px 1px 10px rgb(236, 218, 218);
+}
 .animal-property {
+  /* background:  transparent linear-gradient(yellow,green); */
+  /* opacity: 0.7; */
   width: 100vw;
   height: 100vh;
-  background: no-repeat url("../assets/cover.svg");
+  /* background: no-repeat url("../assets/cover.svg");
   background-size: cover;
-  overflow: hidden;
+  overflow: hidden; */
+}
+.image-dog-man {
+  width: 1em;
+  height: 1em;
 }
 .fortext {
   display: flex;
@@ -140,7 +174,9 @@ export default {
   text-align: center;
   text-overflow: clip;
   font-size: 2em;
+  font: bold oblique large fantasy;
   text-shadow: 5px 5px 10px rgb(49, 42, 42);
+  opacity: 1;
 }
 .forinput {
   display: flex;
@@ -148,6 +184,10 @@ export default {
   height: 85vh;
   justify-content: space-around;
   align-items: center;
+  font: bold italic large sans-serif;
+  opacity: 1;
+  
+  /* text-shadow: 5px 5px 10px rgb(241, 227, 227); */
 }
 .formale {
   display: flex;
@@ -155,7 +195,6 @@ export default {
   justify-content: center;
   align-items: center;
   font-size: 1.1em;
-  text-shadow: 5px 5px 10px rgb(49, 42, 42);
 }
 input,
 select {
@@ -164,10 +203,12 @@ select {
   border: 2px solid;
   border-radius: 8px;
   text-align: center;
+  text-shadow: 1px 1px 15px rgb(236, 218, 218);
+  color: rgb(2, 19, 4);
 }
 option {
   text-align: center;
-  text-shadow: 5px 5px 10px rgb(49, 42, 42);
+  /* text-shadow: 5px 5px 10px rgb(49, 42, 42); */
   border: 1px solid blue;
 }
 button {

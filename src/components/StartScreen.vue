@@ -43,24 +43,39 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .screen {
-  
   position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
+  /* width: 100vw; */
   height: 100vh;
-  background: no-repeat url("../assets/cover.svg");
+  background: center url("../assets/cover.svg");
+  background-repeat: no-repeat;
   background-size: cover;
   overflow: hidden;
 }
 .text {
   display: flex;
+  width: 100vw;
   justify-content: center;
-  font-size: 2.5em;
-  text-shadow: 5px 5px 10px rgb(49, 42, 42);
+  font-size: 2.3em;
+  text-align: center;
+  /* text-shadow: 5px 5px 10px rgb(219, 241, 92);  */
+}
+h4:hover {
+  font-size: 2.01em;
+  background: -webkit-linear-gradient(rgb(89, 129, 15), rgb(54, 59, 26));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 h4 {
-  text-shadow: 2px 5px blur rgb(49, 42, 42);
+  text-align: center;
+  background: -webkit-linear-gradient(rgb(14, 160, 29), rgb(94, 102, 46));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  transition: 0.5s;
+  font: bold oblique large fantasy;
+  font-size: 1.9em;
 }
 .forimage {
   display: flex;
