@@ -5,11 +5,12 @@
     <animal-property
       @animalProperty="getAnimalProperty"
       :animalType="this.user.animal.animalType"
+      :location="user.location"
       :geoAviable="geoAviable"
       v-if="state == 'animalProperty'"
     >
     </animal-property>
-    <map-screen :location="user.location" :animalType="this.user.animal.animalType" v-if="state == 'mapScreen'" />
+    <map-screen :location="user.location" :animalType="this.user.animal.animalType" @viewDetails="getId" v-if="state == 'mapScreen'" />
     </transition>
   </div>
 </template>
@@ -33,6 +34,8 @@ export default {
       state: "start",
       location: null,
       geoAviable: null,
+      autohorized:false,
+      idSeleced:false,
 
       errorStr: null,
     };
@@ -78,6 +81,10 @@ export default {
        this.state = "mapScreen";
      
     },
+    getId(value){
+      this.idSeleced=value
+      this.state="registrationScreen"
+    }
   },
   async mounted() {
     await this.locateMe();

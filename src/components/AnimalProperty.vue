@@ -46,9 +46,9 @@
           placeholder="награды"
         />
       </div>
-      <div class="formale" v-show="!geoAviable">
-        <select v-model="animalProperty.place" placeholder="район">
-          <p>Введите город</p>
+      <div class="formale">
+        <p>Введите город</p>
+        <select v-model="animalProperty.place" placeholder="город">
           <option
             :value="city"
             v-for="(city, ind) in selectedCity"
@@ -66,6 +66,8 @@
   </div>
 </template>
 <script>
+import axios from "axios";
+import translate from "translate";
 export default {
   name: "AnimalProperty",
   //Компонент выбора свойств животного, принимает тип животного (cat,dog),
@@ -73,6 +75,7 @@ export default {
   props: {
     animalType: String,
     geoAviable: Boolean,
+    location: Object,
   },
   data() {
     return {
@@ -88,10 +91,19 @@ export default {
       cityList: [],
     };
   },
-  mounted() {
+  async mounted() {
     const cities = require("../cities.json");
 
     this.cityList = cities;
+    const city = await this.getAdress(
+      this.location.coords.longitude,
+      this.location.coords.latitude
+    );
+    translate.engine = "google";
+    // const key_google='AIzaSyBlyTEZvNs-uFSUII2xCVT6CkKqdvUNq6A'
+    translate.key = process.env.GOOGLE_KEY;
+    const city_translated = await translate(city, "ru");
+    this.animalProperty.place = city_translated;
 
     if (this.animalType == "dog") {
       const breed_string = require("!raw-loader!../dog_breed.txt");
@@ -129,27 +141,41 @@ export default {
         this.$emit("animalProperty", { animalProperty: this.animalProperty });
       }
     },
+    async getAdress(long, lat) {
+      const data = await axios.get(
+        "https://maps.googleapis.com/maps/api/geocode/json?latlng=" +
+          lat +
+          "," +
+          long +
+          "&key=AIzaSyBR_KhfKe3u_31BhVXgGPApthBjcg2Va90"
+      );
+      console.log(data);
+      let result = data.data.results[5]["address_components"][0][
+        "long_name"
+      ].split(" ");
+      return result[1];
+    },
   },
 };
 </script>
 <style scoped>
 .dog {
-  background-image: url("../assets/dog1w.svg") , url("../assets/dog1w.svg"),
+  background-image: url("../assets/dog1w.svg"), url("../assets/dog1w.svg"),
     -webkit-linear-gradient(rgba(86, 194, 14, 0.5), rgba(238, 241, 15, 0.904));
-    background-position:-65% 45%, 160% 45%;
- 
+  background-position: -65% 45%, 160% 45%;
+
   opacity: 0.9;
-  background-size: 75% ,75% ,cover ;
+  background-size: 75%, 75%, cover;
   background-repeat: no-repeat, no-repeat;
   overflow: hidden;
   text-shadow: 1px 1px 10px rgb(209, 247, 192);
 }
 .cat {
-  background:  url("../assets/cat1w.svg"),url("../assets/cat1w.svg"),
+  background: url("../assets/cat1w.svg"), url("../assets/cat1w.svg"),
     -webkit-linear-gradient(rgba(86, 194, 14, 0.5), rgba(238, 241, 15, 0.904));
-  background-position:-23% 5%, 140% 10%;
-  background-size: 65% ,65% ,cover ;
-  background-repeat: no-repeat,no-repeat;
+  background-position: -23% 5%, 140% 10%;
+  background-size: 65%, 65%, cover;
+  background-repeat: no-repeat, no-repeat;
   overflow: hidden;
   opacity: 0.9;
   text-shadow: 1px 1px 10px rgb(236, 218, 218);
@@ -186,7 +212,7 @@ export default {
   align-items: center;
   font: bold italic large sans-serif;
   opacity: 1;
-  
+
   /* text-shadow: 5px 5px 10px rgb(241, 227, 227); */
 }
 .formale {

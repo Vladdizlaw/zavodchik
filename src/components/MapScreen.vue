@@ -29,7 +29,7 @@
             <p>
               Дата вязки: <span>{{ user.dateMating }}</span>
             </p>
-            <button @click.stop="foo">посмотреть</button>
+            <button @click.stop="viewDetails(user.id)"><p> посмотреть</p> <p>детали</p> </button>
           </div>
         </div>
       </div>
@@ -63,10 +63,10 @@ export default {
   computed: {
     srcpic() {
       if (this.animalType == "dog") {
-        let arrPic = ["dogmap1", "dogmapc","dogmap"];
+        let arrPic = ["dogmap1", "dogmapc","dogmap", "dogmapc1","dogmap2", "dogmapc2","dogmap3", "dogmapc3","dogmap4", "dogmapc4","dogmap5", "dogmapc5","dogmap6", "dogmapc6","dogmap7","dogmap8"];
         return arrPic[Math.floor(Math.random() * arrPic.length)];
       } else {
-        let arrPic = ["catmap1", "catmapc","catmap"];
+        let arrPic = ["catmap1", "catmapc","catmap","catmap2","catmapc2","catmap3","catmapc3","catmap4","catmapc4","catmap5","catmapc5","catmap6","catmapc6","catmap7","catmapc7"];
         return arrPic[Math.floor(Math.random() * arrPic.length)];
       }
     },
@@ -110,10 +110,15 @@ export default {
       f.path[0].style.opacity=0.1
     },
     getUsersData() {
-      this.users = require("../user.json");
+      if (this.animalType=="dog"){
+      this.users = require("../user_dog.json");
+      }else{
+        this.users = require("../user_cat.json")
+      }
     },
-    foo() {
-      console.log("click");
+    viewDetails(data) {
+      this.$emit('viewDetails',{'id':data})
+      console.log(data);
     },
     makeElemLogo(namepic, longitude, latitude, map) {
       const elem = document.createElement("img");
@@ -200,7 +205,7 @@ button {
   width: 50%;
   box-shadow: 2px 3px black;
   background-color: rgba(31, 236, 117, 0.5);
-  border-radius: 5px;
+  border-radius: 7px;
   font-size: 0.7em;
 }
 button:hover {

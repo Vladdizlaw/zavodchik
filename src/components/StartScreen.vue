@@ -74,7 +74,7 @@ h4 {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   transition: 0.5s;
-  font: bold oblique large fantasy;
+  font: bold oblique large ;
   font-size: 1.9em;
 }
 .forimage {

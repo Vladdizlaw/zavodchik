@@ -13,9 +13,11 @@
   },
   "main": "background.js",
   "dependencies": {
+    "axios": "^0.23.0",
     "core-js": "^3.6.5",
     "ol": "^6.8.1",
     "raw-loader": "^4.0.2",
+    "translate": "^1.4.0",
     "vue": "^2.6.11",
     "vuetify": "^2.4.0"
   },
