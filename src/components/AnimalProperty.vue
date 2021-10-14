@@ -11,10 +11,7 @@
       <div class="formale">
         <p>Выберите пол животного</p>
         <select name="male" v-model="animalProperty.male">
-          <option value="man"
-            >мужской
-            <div class="image-dog-man"></div
-          ></option>
+          <option value="man">мужской </option>
           <option value="women">женский</option>
         </select>
       </div>
@@ -68,13 +65,14 @@
 <script>
 import axios from "axios";
 import translate from "translate";
+import { v4 as uuidv4 } from "uuid";
 export default {
   name: "AnimalProperty",
-  //Компонент выбора свойств животного, принимает тип животного (cat,dog),
+  //Компонент выбора свойств животного, принимает тип животного (cat,dog) и геопозицию,
   //отдает событие "animalProperty" с обектом собранных данных animalProperty
   props: {
     animalType: String,
-    geoAviable: Boolean,
+
     location: Object,
   },
   data() {
@@ -86,6 +84,7 @@ export default {
         awards: "",
         place: "",
         dateMating: null,
+        id: null,
       },
       breedList: [],
       cityList: [],
@@ -99,13 +98,14 @@ export default {
       this.location.coords.longitude,
       this.location.coords.latitude
     );
-    translate.engine = "google";
-    // const key_google='AIzaSyBlyTEZvNs-uFSUII2xCVT6CkKqdvUNq6A'
+    translate.engine = "google"; //переводим город  с латиницы на русский
+
     translate.key = process.env.GOOGLE_KEY;
     const city_translated = await translate(city, "ru");
     this.animalProperty.place = city_translated;
 
     if (this.animalType == "dog") {
+      //В зависимости от типа животного подгружаем список пород
       const breed_string = require("!raw-loader!../dog_breed.txt");
 
       this.breedList = breed_string.default
@@ -120,6 +120,7 @@ export default {
   },
   computed: {
     selectedCity() {
+      //Сортируем города по алфавиту
       let citySelected = [];
       this.cityList.forEach((city) => {
         citySelected.push(city["Город"]);
@@ -131,17 +132,23 @@ export default {
 
   methods: {
     submit() {
+      //Отправляем в App
       if (
         !this.animalProperty.breed ||
         !this.animalProperty.male ||
-        !this.animalProperty.dateMating
+        !this.animalProperty.dateMating ||
+        !this.animalProperty.place ||
+        new Date(this.animalProperty.dateMating) < new Date()
       ) {
         return;
       } else {
+        // console.log(new Date(this.animalProperty.dateMating),new Date())
+        this.animalProperty.id = uuidv4();
         this.$emit("animalProperty", { animalProperty: this.animalProperty });
       }
     },
     async getAdress(long, lat) {
+      //Получаем город из геопозиции
       const data = await axios.get(
         "https://maps.googleapis.com/maps/api/geocode/json?latlng=" +
           lat +
@@ -161,21 +168,22 @@ export default {
 <style scoped>
 .dog {
   background-image: url("../assets/dog1w.svg"), url("../assets/dog1w.svg"),
-    -webkit-linear-gradient(rgba(86, 194, 14, 0.5), rgba(238, 241, 15, 0.904));
-  background-position: -65% 45%, 160% 45%;
+    url("../assets/cover_dog.svg");
+  background-position: -10% 0%, 115% 0%, center;
 
   opacity: 0.9;
-  background-size: 75%, 75%, cover;
-  background-repeat: no-repeat, no-repeat;
+  background-size: 45%, 45%, 110%;
+  background-repeat: no-repeat, no-repeat, repeat;
   overflow: hidden;
+  opacity: 0.9;
   text-shadow: 1px 1px 10px rgb(209, 247, 192);
 }
 .cat {
-  background: url("../assets/cat1w.svg"), url("../assets/cat1w.svg"),
-    -webkit-linear-gradient(rgba(86, 194, 14, 0.5), rgba(238, 241, 15, 0.904));
-  background-position: -23% 5%, 140% 10%;
-  background-size: 65%, 65%, cover;
-  background-repeat: no-repeat, no-repeat;
+  background-image: url("../assets/cat1w.svg"), url("../assets/cat1w.svg"),
+    url("../assets/cover_cat.svg");
+  background-position: -10% 5%, 105% 5%, center;
+  background-size: 45%, 45%, 110%;
+  background-repeat: no-repeat, no-repeat, repeat;
   overflow: hidden;
   opacity: 0.9;
   text-shadow: 1px 1px 10px rgb(236, 218, 218);
@@ -245,10 +253,21 @@ button {
   box-shadow: 5px 10px;
   position: relative;
 }
+button:hover {
+  box-shadow: 7px 12px;
+}
 button:active {
   box-shadow: 3px 6px;
 
   animation: 0.3s infinite rot_name;
+}
+.male {
+  width: 5em;
+  height: 5em;
+  background: url("../assets/male.svg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 @keyframes rot_name {
   from {

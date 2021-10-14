@@ -6,11 +6,12 @@
       @animalProperty="getAnimalProperty"
       :animalType="this.user.animal.animalType"
       :location="user.location"
-      :geoAviable="geoAviable"
+     
       v-if="state == 'animalProperty'"
     >
     </animal-property>
     <map-screen :location="user.location" :animalType="this.user.animal.animalType" @viewDetails="getId" v-if="state == 'mapScreen'" />
+    <registration-screen :place="user.place" v-if="state == 'registration'" />
     </transition>
   </div>
 </template>
@@ -19,6 +20,7 @@
 import StartScreen from "./components/StartScreen.vue";
 import AnimalProperty from "./components/AnimalProperty.vue";
 import MapScreen from "./components/MapScreen.vue";
+import RegistrationScreen from "./components/RegistrationScreen.vue"
 export default {
   name: "App",
 
@@ -26,16 +28,18 @@ export default {
     StartScreen,
     AnimalProperty,
     MapScreen,
+    RegistrationScreen,
   },
 
   data() {
     return {
-      user: { animal: {}, location: null },
-      state: "start",
-      location: null,
-      geoAviable: null,
+      user: { animal: {}, location: null,id:null },//Данные о пользователе и животном
+      state: "start",//CСостояние
+     
+     
       autohorized:false,
-      idSeleced:false,
+      idSelected:false,
+      lastEnterTime:null,
 
       errorStr: null,
     };
@@ -77,16 +81,18 @@ export default {
       this.user.animal.awards = value.animalProperty.awards;
       this.user.place = value.animalProperty.place;
       this.user.dateMating= value.animalProperty.dateMating
-      //console.log(this.user);
+      this.user.id=value.animalProperty.id
+      console.log(this.user);
        this.state = "mapScreen";
      
     },
     getId(value){
       this.idSeleced=value
-      this.state="registrationScreen"
+      this.state="registration"
     }
   },
   async mounted() {
+    this.lastEnterTime=new Date()
     await this.locateMe();
     console.log(this.user.location);
   },
