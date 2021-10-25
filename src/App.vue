@@ -50,11 +50,11 @@ export default {
       return new Promise((resolve, reject) => {
         if (!("geolocation" in navigator)) {
           reject(new Error("Геолокация недоступна"));
-          this.geoAviable = false;
+          
         }
         navigator.geolocation.getCurrentPosition(
           (pos) => {
-            this.geoAviable = true;
+           
             resolve(pos);
           },
           (err) => {
@@ -67,7 +67,8 @@ export default {
       try {
         this.user.location = await this.getLocation();
       } catch (e) {
-        this.errorStr = e.message;
+        
+        console.log(e.message)
       }
     },
     getAnimalType(value) {
@@ -80,9 +81,9 @@ export default {
       this.user.animal.breed = value.animalProperty.breed;
       this.user.animal.awards = value.animalProperty.awards;
       this.user.place = value.animalProperty.place;
-      this.user.dateMating= value.animalProperty.dateMating
+      this.user.animal.dateMating= value.animalProperty.dateMating
       this.user.id=value.animalProperty.id
-      console.log(this.user);
+      // console.log(this.user);
        this.state = "mapScreen";
      
     },
@@ -94,7 +95,7 @@ export default {
   async mounted() {
     this.lastEnterTime=new Date()
     await this.locateMe();
-    console.log(this.user.location);
+    // console.log(this.user.location);
   },
 };
 </script>

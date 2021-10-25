@@ -156,7 +156,7 @@ export default {
     },
     viewDetails(data) {
       this.$emit("viewDetails", { id: data });
-      console.log(data);
+      // console.log(data);
     },
   },
 };

@@ -1,26 +1,31 @@
 <template>
   <div class="main">
     <div class="registration" v-if="registration">
-       
       <div class="mail">
         <p>Введите email:</p>
-        <input type="email" v-model="regForm.male" />
+        <input type="email" v-model="regForm.mail" />
+        <div ref="errmail" class="errmsg" :v-show="errs.mail">
+          {{ errs.mail }}
+        </div>
       </div>
       <div class="phone">
         <p>Введите телефон:</p>
-        <input type="tel" required v-model="regForm.tel" v-phone/>
+        <input type="tel" required v-model="regForm.tel" maxlength="16" v-phone />
+        <div class="errmsg" :v-show="errs.tel">{{ errs.tel }}</div>
       </div>
-     
-       <div class="name">
+
+      <div class="name">
         <p>Введите ваше имя:</p>
-      <input type="text" v-model="regForm.name" maxlength="12" />
-       </div>
-       <div class="city">
-        <p>Придумайте пароль </p>
-        <p>не меньше 8 символов:</p>
-      <input type="text" minlength="8" v-model="regForm.pass"/>
+        <input type="text" v-model="regForm.name" maxlength="12" />
+        <div class="errmsg" :v-show="errs.name">{{ errs.name }}</div>
       </div>
-      <button>Зарегистрировать</button>
+      <div class="psw">
+        <p>Придумайте пароль</p>
+        <p>не меньше 6 символов:</p>
+        <input type="text" minlength="6" maxlength="11" required v-model="regForm.pass" />
+        <div class="errmsg" :v-show="errs.pswd">{{ errs.pswd }}</div>
+      </div>
+      <button @click.stop="getRegistration">Зарегистрировать</button>
     </div>
     <div class="regwindow" v-if="start">
       <div class="forinput">
@@ -30,7 +35,7 @@
         <input type="password" v-model="password" />
       </div>
       <div class="forbutton">
-        <button class="registr" @click="regist">РЕГИСТРАЦИЯ</button>
+        <button class="registr" @click="changeStateRegist">РЕГИСТРАЦИЯ</button>
         <button class="signin" @click="sign">ВОЙТИ</button>
       </div>
     </div>
@@ -40,7 +45,7 @@
 export default {
   name: "RegistrationScreen",
   props: {
-      place:String,
+    place: String,
   },
   data() {
     return {
@@ -49,19 +54,71 @@ export default {
       signin: false,
       login: null,
       password: null,
+      errs: {
+        mail: "",
+        tel: '',
+        name: '',
+        pswd: '',
+      },
       regForm: {
         mail: null,
         tel: null,
-        name:null,
-        pass:null,
+        name: null,
+        pass: null,
       },
     };
   },
   methods: {
-    regist() {
+    changeStateRegist() {
       this.start = false;
       this.registration = true;
     },
+    getRegistration() {
+      let valid=true
+      if (!this.regForm.mail?.split("@")[1]?.split(".")[1]) {
+        valid=false
+        this.errs.mail = "Введите корректную почту";
+        setTimeout(() => {
+          this.errs.mail = "";
+        }, 3000);
+        
+      }
+        // const p=document.createElement('p')
+        if (this.regForm.tel?.length<14||!this.regForm.tel||this.regForm.tel?.length>15){
+           valid=false
+          this.errs.tel = "Введите корректный номер";
+        setTimeout(() => {
+          this.errs.tel = "";
+        }, 3000);
+        
+        }
+        if (!this.regForm.name){
+           valid=false
+          this.errs.name = "Введите имя";
+        setTimeout(() => {
+          this.errs.name = "";
+        }, 3000);
+        
+        }
+         if (!this.regForm.pass||this.regForm.pass?.length<6) {
+            valid=false
+         this.errs.pswd = "Введите пароль";
+        setTimeout(() => {
+          this.errs.pswd = "";
+        }, 3000);
+        
+        }
+        if (!valid){
+          return
+        }else{
+          this.$emit('regForm',{regForm:this.regForm})
+           this.start = true;
+      this.registration = false;
+          console.log('correct')
+        }
+      
+    },
+
     sign() {},
   },
 };
@@ -79,6 +136,14 @@ export default {
   position: relative;
   width: 100vw;
   height: 100vh;
+}
+.active {
+  display: flex;
+}
+.errmsg {
+  display: flex;
+  color: red;
+  position: absolute;
 }
 .registration {
   font-size: 2em;

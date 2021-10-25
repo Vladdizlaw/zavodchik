@@ -1,13 +1,13 @@
 <template>
   <div
-    class="animal-property"
+    class="animalproperty"
     ref="masterdiv"
     :class="{ dog: animalType == 'dog', cat: animalType == 'cat' }"
-  >
-    <div class="fortext">
+  > 
+    <div class="animalproperty-fortext">
       <h4>Выберите свойства животного</h4>
     </div>
-    <div class="forinput">
+    <div class="animalproperty-forinput">
       <div class="formale">
         <p>Выберите пол животного</p>
         <select name="male" v-model="animalProperty.male">
@@ -102,6 +102,7 @@ export default {
 
     translate.key = process.env.GOOGLE_KEY;
     const city_translated = await translate(city, "ru");
+    console.log(city_translated)
     this.animalProperty.place = city_translated;
 
     if (this.animalType == "dog") {
@@ -117,6 +118,7 @@ export default {
 
       this.breedList = breed_string.default.split("\r\n");
     }
+    // console.log(this.breedList)
   },
   computed: {
     selectedCity() {
@@ -156,10 +158,9 @@ export default {
           long +
           "&key=AIzaSyBR_KhfKe3u_31BhVXgGPApthBjcg2Va90"
       );
-      console.log(data);
-      let result = data.data.results[5]["address_components"][0][
-        "long_name"
-      ].split(" ");
+      // console.log(data);
+      let result = data.data['plus_code']['compound_code'].split(",")[0].split(' ');
+      // console.log(data.data['plus_code']['compound_code'])
       return result[1];
     },
   },
@@ -188,7 +189,7 @@ export default {
   opacity: 0.9;
   text-shadow: 1px 1px 10px rgb(236, 218, 218);
 }
-.animal-property {
+.animalproperty {
   /* background:  transparent linear-gradient(yellow,green); */
   /* opacity: 0.7; */
   width: 100vw;
@@ -201,7 +202,7 @@ export default {
   width: 1em;
   height: 1em;
 }
-.fortext {
+.animalproperty-fortext {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -212,7 +213,7 @@ export default {
   text-shadow: 5px 5px 10px rgb(49, 42, 42);
   opacity: 1;
 }
-.forinput {
+.animalproperty-forinput {
   display: flex;
   flex-direction: column;
   height: 85vh;

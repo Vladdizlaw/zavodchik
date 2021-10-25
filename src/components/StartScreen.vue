@@ -1,13 +1,13 @@
 <template>
   <div class="screen">
-    <div class="text">
+    <div class="screen-text">
       <h4>ВЫБЕРИТЕ КАКОЕ У ВАС ЖИВОТНОЕ</h4>
     </div>
-    <div class="forimage">
-      <div class="image-dog" @click="chooseTypeAnimal('dog')"></div>
-      <div class="image-cat" @click="chooseTypeAnimal('cat')"></div>
+    <div class="screen-image">
+      <div class="screen-image__dog" @click="chooseTypeAnimal('dog')"></div>
+      <div class="screen-image__cat" @click="chooseTypeAnimal('cat')"></div>
     </div>
-    <div class="forreg"></div>
+    <div class="screen-r"></div>
   </div>
 </template>
 
@@ -23,7 +23,7 @@ export default {
   },
   methods: {
     chooseTypeAnimal(value) {
-      console.log(value);
+      // console.log(value);
       this.$emit("animalType", { animalType: value });
     },
   },
@@ -43,7 +43,7 @@ export default {
   background-size: 110%;
   overflow: hidden;
 }
-.text {
+.screen-text {
   display: flex;
   width: 100vw;
   justify-content: center;
@@ -66,14 +66,14 @@ h4 {
   font: bold oblique large;
   font-size: 1.9em;
 }
-.forimage {
+.screen-image {
   display: flex;
   min-height: 30%;
   justify-content: space-around;
   align-items: flex-start;
   padding: 0;
 }
-.image-dog {
+.screen-image__dog {
   position: relative;
   width: 19em;
   height: 20.5em;
@@ -82,7 +82,7 @@ h4 {
   opacity: 0.8;
   transition: 1.2s;
 }
-.image-cat {
+.screen-image__cat {
   position: relative;
   width: 18em;
   height: 19.5em;
@@ -91,7 +91,7 @@ h4 {
   opacity: 0.8;
   transition: 1.2s;
 }
-.image-cat:hover:after {
+.screen-image__cat:hover:after {
   content: "";
   border-radius: 50%;
   height: 88%;
@@ -102,7 +102,7 @@ h4 {
   left: 1%;
   width: 92%;
 }
-.image-cat:active:after {
+.screen-image__cat:active:after {
   content: "";
   border-radius: 50%;
   height: 88%;
@@ -114,7 +114,7 @@ h4 {
   width: 92%;
 }
 
-.image-dog:hover:after {
+.screen-image__dog:hover:after {
   content: "";
   border-radius: 50%;
   height: 78%;
@@ -125,7 +125,7 @@ h4 {
   left: 7%;
   width: 84%;
 }
-.image-dog:active:after {
+.screen-image__dog:active:after {
   content: "";
   border-radius: 50%;
   height: 78%;
@@ -136,12 +136,12 @@ h4 {
   left: 7%;
   width: 84%;
 }
-.image-cat:hover {
+.screen-image__cat:hover {
   opacity: 1.2;
   width: 22em;
   height: 23.5em;
 }
-.image-dog:hover {
+.screen-image__dog:hover {
   opacity: 1.2;
   width: 22em;
   height: 23.5em;
