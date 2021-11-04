@@ -1,33 +1,108 @@
 <template>
   <div class="main">
-    <div class="registration" v-if="registration">
-      <div class="mail">
-        <p>Введите email:</p>
-        <input type="email" v-model="regForm.mail" />
-        <div ref="errmail" class="errmsg" :v-show="errs.mail">
-          {{ errs.mail }}
+    <div
+      class="registration"
+      v-if="states.registrationUser || states.registrationAnimal"
+    >
+      <div class="registration-user" v-if="states.registrationUser">
+        <div class="user mail">
+          <p>Введите email:</p>
+          <input type="email" v-model="regForm.mail" />
+          <div ref="errmail" class="errmsg" :v-show="errs.mail">
+            {{ errs.mail }}
+          </div>
+        </div>
+        <div class="user phone">
+          <p>Введите телефон:</p>
+          <input
+            type="tel"
+            required
+            v-model="regForm.tel"
+            maxlength="16"
+            v-phone
+          />
+          <div class="errmsg" :v-show="errs.tel">{{ errs.tel }}</div>
+        </div>
+
+        <div class="user name">
+          <p>Введите ваше имя:</p>
+          <input type="text" v-model="regForm.name" maxlength="12" />
+          <div class="errmsg" :v-show="errs.name">{{ errs.name }}</div>
+        </div>
+        <div class="user city">
+          <p>Город</p>
+          <select v-model="regForm.city" placeholder="город">
+            <option
+              :value="city"
+              v-for="(city, ind) in selectedCity"
+              :key="ind"
+              >{{ city }}</option
+            >
+          </select>
+        </div>
+        <div class="user psw">
+          <p>Придумайте пароль (не меньше 6 символов):</p>
+          <input
+            type="text"
+            minlength="6"
+            maxlength="11"
+            required
+            v-model="regForm.pass"
+          />
+          <div class="errmsg" :v-show="errs.pswd">{{ errs.pswd }}</div>
+        </div>
+        <button class="next-btn" @click.stop="getRegistration">
+          <p>Далее</p>
+        </button>
+      </div>
+      <div class="registration-animal" v-if="states.registrationAnimal">
+        <div class="type-animal">
+          <p>Выберите тип животного</p>
+          <div>
+            <input
+              type="radio"
+              value="cat"
+              id="cat"
+              name="animal-type"
+              v-model="animalType"
+            />
+            <label for="cat">Кошка</label>
+          </div>
+          <div>
+            <input
+              type="radio"
+              value="dog"
+              id="dog"
+              name="animal-type"
+              v-model="animalType"
+            />
+            <label for="dog">Собака</label>
+          </div>
+        </div>
+        <div class="age-animal">
+          <p>Выберите возраст животного</p>
+          <input
+            type="range"
+            v-model="animalForm.age"
+            placeholder="в годах"
+            name="n"
+            min="0.5"
+            max="35"
+            step="0.5"
+          />
+          <p>{{ animalForm.age }}</p>
+        </div>
+        <div class="breed-animal">
+          <p>Выберите породу искомого животного</p>
+          <select v-model="animalForm.breed" placeholder="порода">
+            <option :value="bred" v-for="(bred, ind) in breedList" :key="ind">{{
+              bred
+            }}</option>
+          </select>
         </div>
       </div>
-      <div class="phone">
-        <p>Введите телефон:</p>
-        <input type="tel" required v-model="regForm.tel" maxlength="16" v-phone />
-        <div class="errmsg" :v-show="errs.tel">{{ errs.tel }}</div>
-      </div>
-
-      <div class="name">
-        <p>Введите ваше имя:</p>
-        <input type="text" v-model="regForm.name" maxlength="12" />
-        <div class="errmsg" :v-show="errs.name">{{ errs.name }}</div>
-      </div>
-      <div class="psw">
-        <p>Придумайте пароль</p>
-        <p>не меньше 6 символов:</p>
-        <input type="text" minlength="6" maxlength="11" required v-model="regForm.pass" />
-        <div class="errmsg" :v-show="errs.pswd">{{ errs.pswd }}</div>
-      </div>
-      <button @click.stop="getRegistration">Зарегистрировать</button>
     </div>
-    <div class="regwindow" v-if="start">
+    <div class="regwindow" v-if="states.start">
       <div class="forinput">
         <p>ЛОГИН (E-MAIL):</p>
         <input type="text" v-model="login" />
@@ -35,8 +110,10 @@
         <input type="password" v-model="password" />
       </div>
       <div class="forbutton">
-        <button class="registr" @click="changeStateRegist">РЕГИСТРАЦИЯ</button>
-        <button class="signin" @click="sign">ВОЙТИ</button>
+        <button class="registr" @click="changeStateRegist">
+          <p>РЕГИСТРАЦИЯ</p>
+        </button>
+        <button class="signin" @click="sign"><p>ВОЙТИ</p></button>
       </div>
     </div>
   </div>
@@ -49,74 +126,117 @@ export default {
   },
   data() {
     return {
-      start: true,
-      registration: false,
+      states: {
+        start: true,
+        registrationUser: false,
+        registrationAnimal: false,
+      },
       signin: false,
       login: null,
       password: null,
+      breedList: [],
       errs: {
         mail: "",
-        tel: '',
-        name: '',
-        pswd: '',
+        tel: "",
+        name: "",
+        pswd: "",
       },
       regForm: {
         mail: null,
         tel: null,
         name: null,
         pass: null,
+        city: null,
+      },
+      animalType: null,
+      animalForm: {
+        type: null,
+        age: 1,
+        breed: null,
       },
     };
   },
+  mounted() {
+    this.regForm.city = this.place;
+  },
+  watch: {
+    animalType: function() {
+      console.log("changed");
+      if (this.animalType == "dog") {
+        //В зависимости от типа животного подгружаем список пород
+        const breed_string = require("!raw-loader!../dog_breed.txt");
+
+        this.breedList = breed_string.default
+          .split("\r\n")
+          .filter((el) => el != "");
+      }
+      if (this.animalType == "cat") {
+        const breed_string = require("!raw-loader!../cat_breed.txt");
+
+        this.breedList = breed_string.default.split("\r\n");
+      }
+    },
+  },
+  computed: {
+    selectedCity() {
+      const cityList = require("../cities.json");
+      let citySelected = [];
+      cityList.forEach((city) => {
+        citySelected.push(city["Город"]);
+      });
+
+      return citySelected.sort().filter((el) => el != "");
+    },
+  },
   methods: {
     changeStateRegist() {
-      this.start = false;
-      this.registration = true;
+      this.states.start = false;
+      this.states.registrationUser = true;
     },
     getRegistration() {
-      let valid=true
+      let valid = true;
       if (!this.regForm.mail?.split("@")[1]?.split(".")[1]) {
-        valid=false
+        valid = false;
         this.errs.mail = "Введите корректную почту";
         setTimeout(() => {
           this.errs.mail = "";
         }, 3000);
-        
       }
-        // const p=document.createElement('p')
-        if (this.regForm.tel?.length<14||!this.regForm.tel||this.regForm.tel?.length>15){
-           valid=false
-          this.errs.tel = "Введите корректный номер";
+      // const p=document.createElement('p')
+      if (
+        this.regForm.tel?.length < 14 ||
+        !this.regForm.tel ||
+        this.regForm.tel?.length > 15
+      ) {
+        valid = false;
+        this.errs.tel = "Введите корректный номер";
         setTimeout(() => {
           this.errs.tel = "";
         }, 3000);
-        
-        }
-        if (!this.regForm.name){
-           valid=false
-          this.errs.name = "Введите имя";
+      }
+      if (!this.regForm.name) {
+        valid = false;
+        this.errs.name = "Введите имя";
         setTimeout(() => {
           this.errs.name = "";
         }, 3000);
-        
-        }
-         if (!this.regForm.pass||this.regForm.pass?.length<6) {
-            valid=false
-         this.errs.pswd = "Введите пароль";
+      }
+      if (!this.regForm.pass || this.regForm.pass?.length < 6) {
+        valid = false;
+        this.errs.pswd = "Введите пароль";
         setTimeout(() => {
           this.errs.pswd = "";
         }, 3000);
-        
-        }
-        if (!valid){
-          return
-        }else{
-          this.$emit('regForm',{regForm:this.regForm})
-           this.start = true;
-      this.registration = false;
-          console.log('correct')
-        }
-      
+      }
+      if (!valid) {
+        return;
+      } else {
+        this.$emit("regForm", { regForm: this.regForm });
+        //  this.start = true;
+        this.states.registrationUser = false;
+        this.states.registrationAnimal = true;
+        console.log("correct");
+      }
     },
 
     sign() {},
@@ -128,8 +248,8 @@ export default {
   background: url("../assets/catreg.svg"), url("../assets/dogreg.svg"),
     url("../assets/cover.svg");
   background-repeat: no-repeat, no-repeat, no-repeat;
-  background-size: 40%, 36%, 110%;
-  background-position: -12% 3em, 110%, center;
+  background-size: 26.5%, 25%, 110%;
+  background-position: 2% 1.1em, 100% 0.8em, center;
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -137,33 +257,113 @@ export default {
   width: 100vw;
   height: 100vh;
 }
+.main p {
+  font-family: "Amatic SC";
+  font-size: 36px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 45px;
+  letter-spacing: 0em;
+  text-align: left;
+
+  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
+    0px 4px 4px rgba(0, 0, 0, 0.25);
+  transform: matrix(1, 0, 0, 1, 0, 0);
+}
+.user {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  align-items: center;
+}
+.user p {
+  margin-bottom: 20px;
+}
+.type-animal {
+  display: flex;
+  justify-content: center;
+  align-self: center;
+  flex-direction: column;
+  width: 100%;
+  height: 10%;
+}
+.age-animal {
+  display: flex;
+  justify-content: center;
+  align-self: center;
+  flex-direction: column;
+  max-width: 20%;
+  height: 10%;
+}
 .active {
   display: flex;
 }
 .errmsg {
   display: flex;
-  color: red;
+  font-family: Amatic SC;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 24px;
+  line-height: 30px;
+
+  color: #ff0000;
+
+  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  transform: matrix(1, 0, 0, 1, 0, 0);
+  top: 35px;
   position: absolute;
 }
 .registration {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  /* border: 2px solid; */
+  width: 33%;
+  height: 80%;
+  /* box-shadow: 5px 7px rgb(100, 100, 22); */
+  /* border-radius: 3em 8em 3em 8em; */
+  background: url("../assets/cover1.svg");
+  background-position: center;
+  background-size: 250%;
+  background-repeat: no-repeat;
+  text-align: center;
+  overflow: hidden;
+  position: relative;
+  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25)) drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25)) drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25)) drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25)) drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25)) drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25)) drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+border-radius: 0px 100px;
+}
+.registration-user {
+   background: url("../assets/cover1.svg");
+  background-position: center;
+  background-size: 250%;
+  background-repeat: no-repeat;
+  position: absolute;
+  top: 0;
+  left: 0;
   font-size: 2em;
-  font: bold oblique large fantasy;
-  text-shadow: 5px 5px 10px rgb(49, 42, 42);
+  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+  border-radius: 0px 100px;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
   border: 2px solid;
-  width: 40%;
-  height: 80%;
-  box-shadow: 5px 7px rgb(100, 100, 22);
-  border-radius: 3em 8em 3em 8em;
-  background: url("../assets/cover1.svg");
-  background-position: center;
-  background-size: 200%;
-  background-repeat: no-repeat;
+  width: 100%;
+  height: 100%;
+
   text-align: center;
-  overflow-y: auto;
+  overflow: hidden;
+}
+.registration-animal {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+  height: 100%;
 }
 .regwindow {
   background: url("../assets/cover1.svg");
@@ -200,30 +400,66 @@ export default {
   font: bold oblique large fantasy;
   text-shadow: 5px 5px 10px rgb(49, 42, 42);
 }
-input {
-  border: 1px solid;
-  height: 2em;
+input,
+select,
+textarea {
+  width: 360px;
+  height: 27px;
+  background: #ffffff;
+  opacity: 0.7;
+  border: 1px solid #000000;
+  box-sizing: border-box;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 10px;
   text-align: center;
-  border-radius: 1em;
+  font-family: Amatic SC;
+  font-style: normal;
+  font-weight: 900;
+  font-size: 23px;
+  line-height: 28px;
+  /* identical to box height */
+
+  color: rgba(0, 0, 0, 1);
 }
 button {
-  border: 1px solid;
-  /* border-radius: 1em; */
-  width: 10em;
-  height: 4em;
-  /* box-shadow: 3px 5px rgb(100, 100, 22); */
-  font-size: 2em;
-  font: bold oblique large fantasy;
-  box-shadow: 5px 7px rgb(100, 100, 22);
-  border-radius: 3em 8em 3em 8em;
-  /* text-shadow: 5px 5px 10px rgb(49, 42, 42); */
+  display: flex;
+  justify-content: center;
+  width: 180px;
+  height: 58px;
+  border: 1px solid #000000;
+  box-sizing: border-box;
+  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+  border-radius: 25px 0px;
+   font-family: Amatic SC;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 48px;
+  line-height: 61px;
+
+  color: #000000;
 }
+/* button > p {
+  font-family: Amatic SC;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 48px;
+  line-height: 61px;
+
+  color: #000000;
+
+  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
+  0px 4px 4px rgba(0, 0, 0, 0.25);
+*/
 .regwindow:hover {
   opacity: 1;
   box-shadow: 7px 9px rgb(100, 100, 22);
 }
 button:hover {
-  box-shadow: 4px 6px rgb(100, 100, 22);
+  border: 1px solid #000000;
+  box-sizing: border-box;
+  filter: drop-shadow(0px 4px 4px #00e04c) drop-shadow(0px 4px 4px #09461a)
+    drop-shadow(0px 4px 4px #074110);
+  border-radius: 25px 0px;
 }
 button:active {
   box-shadow: 4px 8px rgb(100, 100, 22);

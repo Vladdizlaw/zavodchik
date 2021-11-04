@@ -1,5 +1,5 @@
 <template>
-  <div :class="{ dog: animalType == 'dog', cat: animalType == 'cat' }">
+  <div :class="{ dog: searchParams.animalType == 'dog', cat: searchParams.animalType == 'cat' }">
     <div class="formap">
       <div id="map"></div>
       <div class="logo" v-for="user in users" :key="user.id">
@@ -50,7 +50,7 @@ export default {
   name: "MapScreen",
   props: {
     location: Object,
-    animalType: String,
+    searchParams: Object,
   },
   data() {
     return {
@@ -62,7 +62,7 @@ export default {
   computed: {
     srcpic() {
       //Random иконок на карте
-      if (this.animalType == "dog") {
+      if (this.searchParams.animalType == "dog") {
         let arrPic = [
           "dogmap1",
           "dogmapc",
@@ -148,7 +148,7 @@ export default {
     },
     getUsersData() {
       //Получаем данные о юзерах из файла (заглушка)
-      if (this.animalType == "dog") {
+      if (this.searchParams.animalType == "dog") {
         this.users = require("../user_dog.json");
       } else {
         this.users = require("../user_cat.json");

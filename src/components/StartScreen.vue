@@ -1,13 +1,19 @@
 <template>
   <div class="screen">
     <div class="screen-text">
-      <h4>ВЫБЕРИТЕ КАКОЕ У ВАС ЖИВОТНОЕ</h4>
+      <p>Выбор животного</p>
     </div>
     <div class="screen-image">
       <div class="screen-image__dog" @click="chooseTypeAnimal('dog')"></div>
       <div class="screen-image__cat" @click="chooseTypeAnimal('cat')"></div>
     </div>
-    <div class="screen-r"></div>
+    <div class="screen-r">
+      <hr class="hr1"/>
+      <a class="reg">Регистрация</a>
+      <p>|</p>
+      <a class="sign">Вход</a>
+      <hr class="hr2"/>
+    </div>
   </div>
 </template>
 
@@ -36,47 +42,50 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: space-around;
-
+  width: 100vw;
   height: 100vh;
-  background: center url("../assets/cover.svg");
+  background: url("../assets/cover.png");
   background-repeat: no-repeat;
-  background-size: 110%;
+  background-size: cover;
   overflow: hidden;
+  /* background-color: rgb(102, 60, 60); */
 }
 .screen-text {
+  position: absolute;
+
+  top: 0;
+
   display: flex;
   width: 100vw;
+  height: 20%;
   justify-content: center;
-  font-size: 2.3em;
-  text-align: center;
-  /* text-shadow: 5px 5px 10px rgb(219, 241, 92);  */
+  align-items: start;
+  font-family: Amatic SC;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 70px;
+  line-height: 363px;
+
+  color: #000000;
+
+  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 }
-h4:hover {
-  font-size: 2.01em;
-  background: -webkit-linear-gradient(rgb(89, 129, 15), rgb(54, 59, 26));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-h4 {
-  text-align: center;
-  background: -webkit-linear-gradient(rgb(14, 160, 29), rgb(94, 102, 46));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  transition: 0.5s;
-  font: bold oblique large;
-  font-size: 1.9em;
-}
+
 .screen-image {
+  position: relative;
+  top: 20%;
+  left: 10%;
   display: flex;
   min-height: 30%;
-  justify-content: space-around;
-  align-items: flex-start;
+  width: 80%;
+  justify-content: space-between;
+  align-items: center;
   padding: 0;
 }
 .screen-image__dog {
   position: relative;
-  width: 19em;
-  height: 20.5em;
+  width: 24em;
+  height: 23.5em;
   background: no-repeat url("../assets/dog.svg");
   background-size: cover;
   opacity: 0.8;
@@ -84,8 +93,8 @@ h4 {
 }
 .screen-image__cat {
   position: relative;
-  width: 18em;
-  height: 19.5em;
+  width: 22em;
+  height: 23.5em;
   background: no-repeat url("../assets/cat.svg");
   background-size: cover;
   opacity: 0.8;
@@ -117,33 +126,67 @@ h4 {
 .screen-image__dog:hover:after {
   content: "";
   border-radius: 50%;
-  height: 78%;
+  height: 85%;
   border: 2px solid green;
   box-shadow: 5px 5px rgb(2, 95, 2);
   position: absolute;
-  top: 9.5%;
-  left: 7%;
+  top: 10.5%;
+  left: 8%;
   width: 84%;
 }
 .screen-image__dog:active:after {
   content: "";
   border-radius: 50%;
-  height: 78%;
+  height: 85%;
   border: 2px solid green;
   box-shadow: 7px 7px black;
   position: absolute;
-  top: 9.5%;
-  left: 7%;
+  top: 10.5%;
+  left: 8%;
   width: 84%;
 }
 .screen-image__cat:hover {
   opacity: 1.2;
-  width: 22em;
-  height: 23.5em;
+  width: 25em;
+  height: 26.5em;
 }
 .screen-image__dog:hover {
   opacity: 1.2;
-  width: 22em;
-  height: 23.5em;
+  width: 27em;
+  height: 26.5em;
+}
+.screen-r {
+  position: relative;
+  margin-top: 1em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: Amatic SC;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 2em;
+  line-height: 91px;
+
+  color: #000000;
+
+  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+.hr1 {
+  position: relative;
+  left: 0%;
+  width: 78%;
+  border: 2px solid #000000;
+}
+.hr2 {
+  position: relative;
+  left: 0%;
+  width: 5%;
+  border: 2px solid #000000;
+}
+.reg:hover{
+  text-shadow: 5px 5px 4px #003902;
+}
+.sign:hover{
+  text-shadow: 5px 5px 4px #003902;
 }
 </style>

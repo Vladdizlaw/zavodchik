@@ -1,17 +1,21 @@
 <template>
   <div class="app">
-     <transition name="no-mode-translate-fade" mode="in-out" >
-    <start-screen v-if="state == 'start'" @animalType="getAnimalType" />
-    <animal-property
-      @animalProperty="getAnimalProperty"
-      :animalType="this.user.animal.animalType"
-      :location="user.location"
-     
-      v-if="state == 'animalProperty'"
-    >
-    </animal-property>
-    <map-screen :location="user.location" :animalType="this.user.animal.animalType" @viewDetails="getId" v-if="state == 'mapScreen'" />
-    <registration-screen :place="user.place" v-if="state == 'registration'" />
+    <transition name="no-mode-translate-fade" mode="in-out">
+      <start-screen v-if="state == 'start'" @animalType="getAnimalType" />
+      <animal-property
+        @animalProperty="getAnimalProperty"
+        :animalType="this.user.animal.animalType"
+        :location="user.location"
+        v-if="state == 'animalProperty'"
+      >
+      </animal-property>
+      <map-screen
+        :location="user.location"
+        :searchParams="this.searchParams"
+        @viewDetails="getId"
+        v-if="state == 'mapScreen'"
+      />
+      <registration-screen :place="searchParams.place" v-if="state == 'registration'" />
     </transition>
   </div>
 </template>
@@ -20,7 +24,7 @@
 import StartScreen from "./components/StartScreen.vue";
 import AnimalProperty from "./components/AnimalProperty.vue";
 import MapScreen from "./components/MapScreen.vue";
-import RegistrationScreen from "./components/RegistrationScreen.vue"
+import RegistrationScreen from "./components/RegistrationScreen.vue";
 export default {
   name: "App",
 
@@ -33,13 +37,12 @@ export default {
 
   data() {
     return {
-      user: { animal: {}, location: null,id:null },//Данные о пользователе и животном
-      state: "start",//CСостояние
-     
-     
-      autohorized:false,
-      idSelected:false,
-      lastEnterTime:null,
+      user: { animal: {}, location: null, id: null }, //Данные о пользователе и животном
+      state: "start", //CСостояние
+      searchParams:{},
+      autohorized: false,
+      idSelected: false,
+      lastEnterTime: null,
 
       errorStr: null,
     };
@@ -50,11 +53,9 @@ export default {
       return new Promise((resolve, reject) => {
         if (!("geolocation" in navigator)) {
           reject(new Error("Геолокация недоступна"));
-          
         }
         navigator.geolocation.getCurrentPosition(
           (pos) => {
-           
             resolve(pos);
           },
           (err) => {
@@ -67,8 +68,7 @@ export default {
       try {
         this.user.location = await this.getLocation();
       } catch (e) {
-        
-        console.log(e.message)
+        console.log(e.message);
       }
     },
     getAnimalType(value) {
@@ -76,42 +76,45 @@ export default {
       this.state = "animalProperty";
     },
     getAnimalProperty(value) {
-      this.user.animal.age = value.animalProperty.age;
-      this.user.animal.male = value.animalProperty.male;
-      this.user.animal.breed = value.animalProperty.breed;
-      this.user.animal.awards = value.animalProperty.awards;
-      this.user.place = value.animalProperty.place;
-      this.user.animal.dateMating= value.animalProperty.dateMating
-      this.user.id=value.animalProperty.id
+      this.searchParams.animalType=this.user.animal.animalType
+      this.searchParams.age = value.animalProperty.age;
+      this.searchParams.male = value.animalProperty.male;
+      this.searchParams.breed = value.animalProperty.breed;
+      this.searchParams.awards = value.animalProperty.awards;
+      this.searchParams.place = value.animalProperty.place;
+      this.searchParams.dateMating = value.animalProperty.dateMating;
+      this.searchParams.id = value.animalProperty.id;
       // console.log(this.user);
-       this.state = "mapScreen";
-     
+      this.state = "mapScreen";
     },
-    getId(value){
-      this.idSeleced=value
-      this.state="registration"
-    }
+    getId(value) {
+      this.idSeleced = value;
+      this.state = "registration";
+    },
   },
   async mounted() {
-    this.lastEnterTime=new Date()
+    this.lastEnterTime = new Date();
     await this.locateMe();
     // console.log(this.user.location);
   },
 };
 </script>
 <style scoped>
-body{
-  margin:0;
-  padding:0;
+@import url("https://fonts.googleapis.com/css2?family=Amatic+SC:wght@700&display=swap");
+body {
+  margin: 0;
+  padding: 0;
 }
 .app {
   height: 100vh;
-  overflow:hidden;
+  overflow: hidden;
 }
-.no-mode-translate-fade-enter-active, .no-mode-translate-fade-leave-active {
-    transition: all 0.4s;
-  }
-  .no-mode-translate-fade-enter, .no-mode-translate-fade-leave-active {
-    opacity: 0;
-  }
+.no-mode-translate-fade-enter-active,
+.no-mode-translate-fade-leave-active {
+  transition: all 0.4s;
+}
+.no-mode-translate-fade-enter,
+.no-mode-translate-fade-leave-active {
+  opacity: 0;
+}
 </style>

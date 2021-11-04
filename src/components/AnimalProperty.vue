@@ -5,18 +5,19 @@
     :class="{ dog: animalType == 'dog', cat: animalType == 'cat' }"
   > 
     <div class="animalproperty-fortext">
-      <h4>Выберите свойства животного</h4>
+      {{width}}x{{height}}
+      <p>Параметры поиска</p>
     </div>
     <div class="animalproperty-forinput">
       <div class="formale">
-        <p>Выберите пол животного</p>
+        <p>Пол искомого животного</p>
         <select name="male" v-model="animalProperty.male">
           <option value="man">мужской </option>
           <option value="women">женский</option>
         </select>
       </div>
       <div class="formale">
-        <p>Выберите породу животного</p>
+        <p>Выберите породу искомого животного</p>
         <select v-model="animalProperty.breed" placeholder="порода">
           <option :value="bred" v-for="(bred, ind) in breedList" :key="ind">{{
             bred
@@ -24,7 +25,7 @@
         </select>
       </div>
       <div class="formale">
-        <p>Выберите возраст животного</p>
+        <p>Выберите возраст искомого животного</p>
         <input
           type="range"
           v-model="animalProperty.age"
@@ -44,7 +45,7 @@
         />
       </div>
       <div class="formale">
-        <p>Введите город</p>
+        <p>Введите город для поиска   </p>
         <select v-model="animalProperty.place" placeholder="город">
           <option
             :value="city"
@@ -77,6 +78,8 @@ export default {
   },
   data() {
     return {
+      width:null,
+      height:null,
       animalProperty: {
         male: "",
         breed: "",
@@ -91,6 +94,8 @@ export default {
     };
   },
   async mounted() {
+    this.width=window.screen.width 
+    this.height=window.screen.height
     const cities = require("../cities.json");
 
     this.cityList = cities;
@@ -158,7 +163,7 @@ export default {
           long +
           "&key=AIzaSyBR_KhfKe3u_31BhVXgGPApthBjcg2Va90"
       );
-      // console.log(data);
+      console.log(data);
       let result = data.data['plus_code']['compound_code'].split(",")[0].split(' ');
       // console.log(data.data['plus_code']['compound_code'])
       return result[1];
@@ -181,10 +186,10 @@ export default {
 }
 .cat {
   background-image: url("../assets/cat1w.svg"), url("../assets/cat1w.svg"),
-    url("../assets/cover_cat.svg");
+    url("../assets/cover_cat.png");
   background-position: -10% 5%, 105% 5%, center;
-  background-size: 45%, 45%, 110%;
-  background-repeat: no-repeat, no-repeat, repeat;
+  background-size: 45%, 45%, cover;
+  background-repeat: no-repeat, no-repeat,no-repeat;
   overflow: hidden;
   opacity: 0.9;
   text-shadow: 1px 1px 10px rgb(236, 218, 218);
@@ -206,13 +211,17 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  text-align: center;
-  text-overflow: clip;
-  font-size: 2em;
-  font: bold oblique large fantasy;
-  text-shadow: 5px 5px 10px rgb(49, 42, 42);
-  opacity: 1;
+  font-family: Amatic SC;
+font-style: normal;
+font-weight: bold;
+font-size: 5.0em;
+line-height: 182px;
+
+color: #000000;
+
+text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25);
 }
+
 .animalproperty-forinput {
   display: flex;
   flex-direction: column;
@@ -229,17 +238,19 @@ export default {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  font-size: 1.1em;
+    
+}
+.formale>p{
+
 }
 input,
 select {
-  width: 20vw;
-  height: 2em;
-  border: 2px solid;
-  border-radius: 8px;
-  text-align: center;
-  text-shadow: 1px 1px 15px rgb(236, 218, 218);
-  color: rgb(2, 19, 4);
+  background: #FFFFFF;
+opacity: 0.5;
+border: 1px solid #000000;
+box-sizing: border-box;
+box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25);
+border-radius: 20px;
 }
 option {
   text-align: center;
