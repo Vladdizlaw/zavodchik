@@ -246,9 +246,9 @@ export default {
 <style scoped>
 .main {
   background: url("../assets/catreg.svg"), url("../assets/dogreg.svg"),
-    url("../assets/cover.svg");
+    url("../assets/cover.png");
   background-repeat: no-repeat, no-repeat, no-repeat;
-  background-size: 26.5%, 25%, 110%;
+  background-size: 26.5%, 29%, cover;
   background-position: 2% 1.1em, 100% 0.8em, center;
   display: flex;
   justify-content: space-around;

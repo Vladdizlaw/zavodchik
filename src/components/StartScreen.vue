@@ -9,7 +9,7 @@
     </div>
     <div class="screen-r">
       <hr class="hr1"/>
-      <a class="reg">Регистрация</a>
+      <a class="reg" @click="registration">Регистрация</a>
       <p>|</p>
       <a class="sign">Вход</a>
       <hr class="hr2"/>
@@ -32,6 +32,9 @@ export default {
       // console.log(value);
       this.$emit("animalType", { animalType: value });
     },
+    registration() {
+      this.$emit('registration',null)
+    }
   },
 };
 </script>

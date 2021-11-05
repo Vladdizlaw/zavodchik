@@ -3,49 +3,45 @@
     class="animalproperty"
     ref="masterdiv"
     :class="{ dog: animalType == 'dog', cat: animalType == 'cat' }"
-  > 
+  >
     <div class="animalproperty-fortext">
-      {{width}}x{{height}}
       <p>Параметры поиска</p>
     </div>
     <div class="animalproperty-forinput">
-      <div class="formale">
+      <div class="input male">
         <p>Пол искомого животного</p>
-        <select name="male" v-model="animalProperty.male">
+        <select v-model="animalProperty.male">
           <option value="man">мужской </option>
           <option value="women">женский</option>
         </select>
       </div>
-      <div class="formale">
-        <p>Выберите породу искомого животного</p>
+      <div class="input breed">
+        <p>Порода</p>
         <select v-model="animalProperty.breed" placeholder="порода">
           <option :value="bred" v-for="(bred, ind) in breedList" :key="ind">{{
             bred
           }}</option>
         </select>
       </div>
-      <div class="formale">
-        <p>Выберите возраст искомого животного</p>
-        <input
-          type="range"
-          v-model="animalProperty.age"
-          placeholder="в годах"
-          name="n"
-          min="0.5"
-          max="35"
-          step="0.5"
-        />{{ animalProperty.age }} лет
+      <div class="input age">
+        <p>Возраст</p>
+        <div class="ageinput">
+          <div class="range">
+            <p>OT</p>
+            <input type="number" v-model="animalProperty.startAge" />
+          </div>
+          <div class="range">
+            <p>ДО</p>
+            <input type="number" v-model="animalProperty.stopAge" />
+          </div>
+        </div>
       </div>
-      <div class="formale">
-        <p>Введите награды животного</p>
-        <input
-          type="text"
-          v-model="animalProperty.awards"
-          placeholder="награды"
-        />
+      <div class="input awards">
+        <p>Награды</p>
+        <input type="text" v-model="animalProperty.awards" />
       </div>
-      <div class="formale">
-        <p>Введите город для поиска   </p>
+      <div class="input city">
+        <p>Город</p>
         <select v-model="animalProperty.place" placeholder="город">
           <option
             :value="city"
@@ -55,11 +51,11 @@
           >
         </select>
       </div>
-      <div class="formale">
-        <p>Выберите примерную дату вязки</p>
+      <div class="input mating">
+        <p>Предположительная дата вязки</p>
         <input type="date" v-model="animalProperty.dateMating" />
       </div>
-      <button class="btn" @click="submit">Искать пару</button>
+      <button class="btn" @click="submit">Поиск</button>
     </div>
   </div>
 </template>
@@ -78,12 +74,11 @@ export default {
   },
   data() {
     return {
-      width:null,
-      height:null,
       animalProperty: {
         male: "",
         breed: "",
-        age: "1",
+        startAge: null,
+        stopAge: null,
         awards: "",
         place: "",
         dateMating: null,
@@ -94,11 +89,7 @@ export default {
     };
   },
   async mounted() {
-    this.width=window.screen.width 
-    this.height=window.screen.height
-    const cities = require("../cities.json");
-
-    this.cityList = cities;
+    this.cityList = require("../cities.json");
     const city = await this.getAdress(
       this.location.coords.longitude,
       this.location.coords.latitude
@@ -107,7 +98,7 @@ export default {
 
     translate.key = process.env.GOOGLE_KEY;
     const city_translated = await translate(city, "ru");
-    console.log(city_translated)
+    console.log(city_translated);
     this.animalProperty.place = city_translated;
 
     if (this.animalType == "dog") {
@@ -145,8 +136,10 @@ export default {
         !this.animalProperty.male ||
         !this.animalProperty.dateMating ||
         !this.animalProperty.place ||
-        new Date(this.animalProperty.dateMating) < new Date()
+        new Date(this.animalProperty.dateMating) < new Date() ||
+        Number(this.animalProperty.startAge) > Number(this.animalProperty.stopAge)
       ) {
+        console.log(this.animalProperty)
         return;
       } else {
         // console.log(new Date(this.animalProperty.dateMating),new Date())
@@ -163,9 +156,11 @@ export default {
           long +
           "&key=AIzaSyBR_KhfKe3u_31BhVXgGPApthBjcg2Va90"
       );
-      console.log(data);
-      let result = data.data['plus_code']['compound_code'].split(",")[0].split(' ');
-      // console.log(data.data['plus_code']['compound_code'])
+      // console.log(data.data.results[1]["address_components"]);
+      let result = data.data.results[1]["address_components"][2]['long_name']
+        .split(" ")
+        
+      
       return result[1];
     },
   },
@@ -181,89 +176,176 @@ export default {
   background-size: 45%, 45%, 110%;
   background-repeat: no-repeat, no-repeat, repeat;
   overflow: hidden;
-  opacity: 0.9;
-  text-shadow: 1px 1px 10px rgb(209, 247, 192);
 }
 .cat {
   background-image: url("../assets/cat1w.svg"), url("../assets/cat1w.svg"),
     url("../assets/cover_cat.png");
-  background-position: -10% 5%, 105% 5%, center;
-  background-size: 45%, 45%, cover;
-  background-repeat: no-repeat, no-repeat,no-repeat;
+  background-position: -85px -15px, 105% -15px, center;
+  background-size: 40%, 40%, cover;
+  background-repeat: no-repeat, no-repeat, no-repeat;
   overflow: hidden;
-  opacity: 0.9;
-  text-shadow: 1px 1px 10px rgb(236, 218, 218);
 }
 .animalproperty {
-  /* background:  transparent linear-gradient(yellow,green); */
-  /* opacity: 0.7; */
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
   width: 100vw;
   height: 100vh;
-  /* background: no-repeat url("../assets/cover.svg");
-  background-size: cover;
-  overflow: hidden; */
+  position: relative;
 }
-.image-dog-man {
-  width: 1em;
-  height: 1em;
-}
+
 .animalproperty-fortext {
   display: flex;
+  position: relative;
   justify-content: center;
   align-items: center;
   font-family: Amatic SC;
-font-style: normal;
-font-weight: bold;
-font-size: 5.0em;
-line-height: 182px;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 57px;
+  line-height: 182px;
+  top: -50px;
+  margin-bottom: -30px;
+  color: #000000;
 
-color: #000000;
-
-text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25);
+  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
+    0px 4px 4px rgba(0, 0, 0, 0.25);
 }
 
 .animalproperty-forinput {
   display: flex;
   flex-direction: column;
-  height: 85vh;
+  width: auto;
   justify-content: space-around;
   align-items: center;
-  font: bold italic large sans-serif;
-  opacity: 1;
-
-  /* text-shadow: 5px 5px 10px rgb(241, 227, 227); */
+  margin-top: -55px;
 }
-.formale {
+.input {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-    
-}
-.formale>p{
+  font-family: Amatic SC;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 35px;
+  line-height: 121px;
+  color: #000000;
+  margin-top: -30px;
 
+  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
+    0px 4px 4px rgba(0, 0, 0, 0.25);
 }
-input,
-select {
-  background: #FFFFFF;
-opacity: 0.5;
-border: 1px solid #000000;
-box-sizing: border-box;
-box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25);
-border-radius: 20px;
-}
-option {
-  text-align: center;
-  /* text-shadow: 5px 5px 10px rgb(49, 42, 42); */
-  border: 1px solid blue;
-}
-button {
-  border: 2px solid;
-  border-radius: 5px;
-  width: 10em;
-  height: 3em;
-  box-shadow: 5px 10px;
+.age {
+  margin-top: 0px;
+  margin-bottom:10px;
+  padding-top:0px;
+  height: 82px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   position: relative;
+}
+.age>p{
+  padding-bottom:10px;
+ height:97px;
+}
+.ageinput {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+}
+select,
+input {
+  margin-top: -25px;
+  appearance: auto;
+  background: #ffffff;
+  opacity: 0.5;
+  border: 1px solid #000000;
+  box-sizing: border-box;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
+    0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 8px;
+  width: 478px;
+  height: 28px;
+  font-family: Amatic SC;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 24px;
+  line-height: 91px;
+  color: #000000;
+  text-align: center;
+  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
+    0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+.range {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: -70px;
+  margin-bottom: -40px;
+  text-align: center;
+}
+.range > input {
+  margin-top: 0;
+  margin-left: 10px;
+  background: #ffffff;
+  opacity: 0.5;
+  border: 1px solid #000000;
+  box-sizing: border-box;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
+    0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 8px;
+  width: 96px;
+  height: 28px;
+  font-family: Amatic SC;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 24px;
+  line-height: 91px;
+  color: #000000;
+  text-align: center;
+  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
+    0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+option {
+  font-family: Amatic SC;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 28px;
+  line-height: 91px;
+
+  color: #000000;
+
+  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
+    0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+button {
+  margin-top: 30px;
+  width: 131px;
+  height: 68px;
+  border: 1px solid #000000;
+  box-sizing: border-box;
+  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))
+    drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))
+    drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+  border-radius: 25px 0px;
+  transform: matrix(1, 0, 0, 1, 0, 0);
+  font-family: Amatic SC;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 48px;
+  line-height: 61px;
+
+  color: #000000;
+
+  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 }
 button:hover {
   box-shadow: 7px 12px;
@@ -273,14 +355,7 @@ button:active {
 
   animation: 0.3s infinite rot_name;
 }
-.male {
-  width: 5em;
-  height: 5em;
-  background: url("../assets/male.svg");
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
-}
+
 @keyframes rot_name {
   from {
     transform: rotate(0deg);

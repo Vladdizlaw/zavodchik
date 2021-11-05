@@ -1,9 +1,10 @@
 <template>
   <div class="app">
     <transition name="no-mode-translate-fade" mode="in-out">
-      <start-screen v-if="state == 'start'" @animalType="getAnimalType" />
+      <start-screen v-if="state == 'start'" @animalType="getAnimalType"  @registration="getRegistration" />
       <animal-property
         @animalProperty="getAnimalProperty"
+       
         :animalType="this.user.animal.animalType"
         :location="user.location"
         v-if="state == 'animalProperty'"
@@ -86,6 +87,9 @@ export default {
       this.searchParams.id = value.animalProperty.id;
       // console.log(this.user);
       this.state = "mapScreen";
+    },
+    getRegistration(){
+      this.state="registration"
     },
     getId(value) {
       this.idSeleced = value;
