@@ -2,7 +2,7 @@
   <div class="main">
     <div
       class="registration"
-      v-if="states.registrationUser || states.registrationAnimal"
+      v-if="states.registrationUser || states.registrationAnimal1 || states.registrationAnimal2 || states.registrationAnimal3 "
     >
       <div class="registration-user" v-if="states.registrationUser">
         <div class="user mail">
@@ -55,52 +55,44 @@
           <p>Далее</p>
         </button>
       </div>
-      <div class="registration-animal" v-if="states.registrationAnimal">
-        <div class="type-animal">
-          <p>Выберите тип животного</p>
-          <div>
-            <input
-              type="radio"
-              value="cat"
-              id="cat"
-              name="animal-type"
-              v-model="animalType"
-            />
-            <label for="cat">Кошка</label>
-          </div>
-          <div>
-            <input
-              type="radio"
-              value="dog"
-              id="dog"
-              name="animal-type"
-              v-model="animalType"
-            />
-            <label for="dog">Собака</label>
-          </div>
+      <div class="registration-animal" v-if="states.registrationAnimal1">
+        <div class="animal type">
+          <p>Вид животного</p>
+          <select v-model="animalType">
+            <option value="cat">Кошка </option>
+            <option value="dog">Собака</option>
+          </select>
         </div>
-        <div class="age-animal">
-          <p>Выберите возраст животного</p>
-          <input
-            type="range"
-            v-model="animalForm.age"
-            placeholder="в годах"
-            name="n"
-            min="0.5"
-            max="35"
-            step="0.5"
-          />
-          <p>{{ animalForm.age }}</p>
+        <div class="animal male">
+          <p>Пол</p>
+          <select v-model="animalForm.male">
+            <option value="мужской">мужской </option>
+            <option value="Женский">Женский</option>
+          </select>
         </div>
-        <div class="breed-animal">
-          <p>Выберите породу искомого животного</p>
+
+        <div class="animal age">
+          <p>Возраст</p>
+          <input type="number" v-model="animalForm.age" />
+        </div>
+        <div class="animal breed">
+          <p>Порода</p>
           <select v-model="animalForm.breed" placeholder="порода">
             <option :value="bred" v-for="(bred, ind) in breedList" :key="ind">{{
               bred
             }}</option>
           </select>
         </div>
+        <div class="animal name">
+          <p>Имя животного</p>
+          <input type="text" v-model="animalForm.name" />
+        </div>
+        <button class="next-btn" @click.stop="getRegistrationAnimal1">
+          <p>Далее</p>
+        </button>
       </div>
+       <div class="registration-animal2" v-if="states.registrationAnimal2">
+         </div>
     </div>
     <div class="regwindow" v-if="states.start">
       <div class="forinput">
@@ -129,7 +121,9 @@ export default {
       states: {
         start: true,
         registrationUser: false,
-        registrationAnimal: false,
+        registrationAnimal1: false,
+        registrationAnimal2: false,
+        registrationAnimal3: false,
       },
       signin: false,
       login: null,
@@ -151,8 +145,10 @@ export default {
       animalType: null,
       animalForm: {
         type: null,
+        male: null,
         age: 1,
         breed: null,
+        name: null,
       },
     };
   },
@@ -161,7 +157,7 @@ export default {
   },
   watch: {
     animalType: function() {
-      console.log("changed");
+      this.animalForm.type=this.animalType;
       if (this.animalType == "dog") {
         //В зависимости от типа животного подгружаем список пород
         const breed_string = require("!raw-loader!../dog_breed.txt");
@@ -204,7 +200,7 @@ export default {
       }
       // const p=document.createElement('p')
       if (
-        this.regForm.tel?.length < 14 ||
+        this.regForm.tel?.length < 11 ||
         !this.regForm.tel ||
         this.regForm.tel?.length > 15
       ) {
@@ -234,9 +230,13 @@ export default {
         this.$emit("regForm", { regForm: this.regForm });
         //  this.start = true;
         this.states.registrationUser = false;
-        this.states.registrationAnimal = true;
-        console.log("correct");
+        this.states.registrationAnimal1 = true;
+        console.log("correct",this.states);
       }
+    },
+    getRegistrationAnimal1(){
+      this.states.registrationAnimal1 = false;
+      this.states.registrationAnimal2 = true;
     },
 
     sign() {},
@@ -270,7 +270,8 @@ export default {
     0px 4px 4px rgba(0, 0, 0, 0.25);
   transform: matrix(1, 0, 0, 1, 0, 0);
 }
-.user {
+.user,
+.animal {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -321,36 +322,36 @@ export default {
   justify-content: space-around;
   align-items: center;
   /* border: 2px solid; */
-  width: 33%;
+  width: 100%;
   height: 80%;
   /* box-shadow: 5px 7px rgb(100, 100, 22); */
   /* border-radius: 3em 8em 3em 8em; */
-  background: url("../assets/cover1.svg");
+  /* background: url("../assets/cover1.svg");
   background-position: center;
   background-size: 250%;
-  background-repeat: no-repeat;
+  background-repeat: no-repeat; */
   text-align: center;
   overflow: hidden;
   position: relative;
-  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25)) drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25)) drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25)) drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25)) drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25)) drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25)) drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
-border-radius: 0px 100px;
+  /* filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25)) drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25)) drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25)) drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25)) drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25)) drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25)) drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25)); */
+  /* border-radius: 0px 100px; */
 }
 .registration-user {
-   background: url("../assets/cover1.svg");
+  /* background: url("../assets/cover1.svg");
   background-position: center;
   background-size: 250%;
-  background-repeat: no-repeat;
+  background-repeat: no-repeat; */
   position: absolute;
   top: 0;
   left: 0;
   font-size: 2em;
-  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
-  border-radius: 0px 100px;
+  /* filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25)); */
+  /* border-radius: 0px 100px; */
   display: flex;
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
-  border: 2px solid;
+  /* border: 2px solid; */
   width: 100%;
   height: 100%;
 
@@ -400,10 +401,14 @@ border-radius: 0px 100px;
   font: bold oblique large fantasy;
   text-shadow: 5px 5px 10px rgb(49, 42, 42);
 }
+.user,
+.animal {
+  min-width: 30%;
+}
 input,
 select,
 textarea {
-  width: 360px;
+  width: 100%;
   height: 27px;
   background: #ffffff;
   opacity: 0.7;
@@ -430,7 +435,7 @@ button {
   box-sizing: border-box;
   filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
   border-radius: 25px 0px;
-   font-family: Amatic SC;
+  font-family: Amatic SC;
   font-style: normal;
   font-weight: bold;
   font-size: 48px;

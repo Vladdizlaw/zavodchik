@@ -156,12 +156,12 @@ export default {
           long +
           "&key=AIzaSyBR_KhfKe3u_31BhVXgGPApthBjcg2Va90"
       );
-      // console.log(data.data.results[1]["address_components"]);
+      console.log(data.data.results[1]["address_components"][2]);
       let result = data.data.results[1]["address_components"][2]['long_name']
-        .split(" ")
+       
         
       
-      return result[1];
+      return result.split(' ')[0]=='Gorod'?result.split(' ')[1]:result;
     },
   },
 };
@@ -236,6 +236,9 @@ export default {
 
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
     0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+.breed{
+  z-index:1;
 }
 .age {
   margin-top: 0px;
