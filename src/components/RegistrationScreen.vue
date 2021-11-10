@@ -2,8 +2,14 @@
   <div class="main">
     <div
       class="registration"
-      v-if="states.registrationUser || states.registrationAnimal1 || states.registrationAnimal2 || states.registrationAnimal3 "
+      v-if="
+        states.registrationUser ||
+          states.registrationAnimal1 ||
+          states.registrationAnimal2 ||
+          states.registrationAnimal3
+      "
     >
+      <div class="registration-title"><p>Регистрация</p></div>
       <div class="registration-user" v-if="states.registrationUser">
         <div class="user mail">
           <p>Введите email:</p>
@@ -55,7 +61,7 @@
           <p>Далее</p>
         </button>
       </div>
-      <div class="registration-animal" v-if="states.registrationAnimal1">
+      <div class="registration-animal1" v-if="states.registrationAnimal1">
         <div class="animal type">
           <p>Вид животного</p>
           <select v-model="animalType">
@@ -91,8 +97,31 @@
           <p>Далее</p>
         </button>
       </div>
-       <div class="registration-animal2" v-if="states.registrationAnimal2">
-         </div>
+      <div class="registration-animal2" v-if="states.registrationAnimal2">
+        <div class="animal mating">
+          <p>Предположительная дата вязки</p>
+          <input type="date" v-model="animalForm.dateMating" />
+        </div>
+        <div class="animal awards">
+          <p>Награды, титулы, медали</p>
+          <input type="text" v-model="animalForm.awards" />
+        </div>
+        <div class="animal vaccine">
+          <p>Прививки</p>
+          <input type="text" v-model="animalForm.vaccination" />
+        </div>
+        <div class="animal color">
+          <p>Окрас</p>
+          <input type="text" v-model="animalForm.color" />
+        </div>
+        <div class="animal circumstances">
+          <p>Условия вязки</p>
+          <input type="text" v-model="animalForm.matingConditions" />
+        </div>
+        <button class="next-btn" @click.stop="getRegistrationAnimal2">
+          <p>Далее</p>
+        </button>
+      </div>
     </div>
     <div class="regwindow" v-if="states.start">
       <div class="forinput">
@@ -115,6 +144,7 @@ export default {
   name: "RegistrationScreen",
   props: {
     place: String,
+    substate: String,
   },
   data() {
     return {
@@ -149,15 +179,24 @@ export default {
         age: 1,
         breed: null,
         name: null,
+        dateMating: null,
+        awards: null,
+        vaccination: null,
+        color: null,
+        matingConditions: null,
       },
     };
   },
   mounted() {
     this.regForm.city = this.place;
+    if (this.substate == "registrationUser") {
+      this.states.start = false;
+      this.states.registrationUser = true;
+    }
   },
   watch: {
     animalType: function() {
-      this.animalForm.type=this.animalType;
+      this.animalForm.type = this.animalType;
       if (this.animalType == "dog") {
         //В зависимости от типа животного подгружаем список пород
         const breed_string = require("!raw-loader!../dog_breed.txt");
@@ -231,12 +270,16 @@ export default {
         //  this.start = true;
         this.states.registrationUser = false;
         this.states.registrationAnimal1 = true;
-        console.log("correct",this.states);
+        console.log("correct", this.states);
       }
     },
-    getRegistrationAnimal1(){
+    getRegistrationAnimal1() {
       this.states.registrationAnimal1 = false;
       this.states.registrationAnimal2 = true;
+    },
+    getRegistrationAnimal2() {
+      this.states.registrationAnimal2 = false;
+      this.states.registrationAnimal3 = true;
     },
 
     sign() {},
@@ -276,11 +319,11 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-
+  
   align-items: center;
 }
-.user p {
-  margin-bottom: 20px;
+.user >p , .animal>p{
+  margin-bottom: 0.5em;
 }
 .type-animal {
   display: flex;
@@ -323,30 +366,19 @@ export default {
   align-items: center;
   /* border: 2px solid; */
   width: 100%;
-  height: 80%;
-  /* box-shadow: 5px 7px rgb(100, 100, 22); */
-  /* border-radius: 3em 8em 3em 8em; */
-  /* background: url("../assets/cover1.svg");
-  background-position: center;
-  background-size: 250%;
-  background-repeat: no-repeat; */
+  height: 100%;
+
   text-align: center;
   overflow: hidden;
   position: relative;
-  /* filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25)) drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25)) drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25)) drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25)) drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25)) drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25)) drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25)); */
-  /* border-radius: 0px 100px; */
 }
-.registration-user {
-  /* background: url("../assets/cover1.svg");
-  background-position: center;
-  background-size: 250%;
-  background-repeat: no-repeat; */
-  position: absolute;
-  top: 0;
-  left: 0;
+
+.registration-user,
+.registration-animal1,
+.registration-animal2,
+.registration-animal3 {
   font-size: 2em;
-  /* filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25)); */
-  /* border-radius: 0px 100px; */
+
   display: flex;
   flex-direction: column;
   justify-content: space-around;
@@ -358,18 +390,11 @@ export default {
   text-align: center;
   overflow: hidden;
 }
-.registration-animal {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-}
+
 .regwindow {
-  background: url("../assets/cover1.svg");
+  background: url("../assets/cover1.png");
   background-position: center;
-  background-size: 110%;
+  background-size: cover;
   overflow: hidden;
   width: 35%;
   height: 40%;
@@ -405,6 +430,13 @@ export default {
 .animal {
   min-width: 30%;
 }
+.registration-title > p {
+  font-size: 3em;
+  height: 1fr;
+  /* box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); */
+
+  /* flex: auto 0 50%; */
+}
 input,
 select,
 textarea {
@@ -426,6 +458,11 @@ textarea {
 
   color: rgba(0, 0, 0, 1);
 }
+option {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+}
 button {
   display: flex;
   justify-content: center;
@@ -443,18 +480,7 @@ button {
 
   color: #000000;
 }
-/* button > p {
-  font-family: Amatic SC;
-  font-style: normal;
-  font-weight: bold;
-  font-size: 48px;
-  line-height: 61px;
 
-  color: #000000;
-
-  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
-  0px 4px 4px rgba(0, 0, 0, 0.25);
-*/
 .regwindow:hover {
   opacity: 1;
   box-shadow: 7px 9px rgb(100, 100, 22);

@@ -1,5 +1,10 @@
 <template>
-  <div :class="{ dog: searchParams.animalType == 'dog', cat: searchParams.animalType == 'cat' }">
+  <div
+    :class="{
+      dog: searchParams.animalType == 'dog',
+      cat: searchParams.animalType == 'cat',
+    }"
+  >
     <div class="formap">
       <div id="map"></div>
       <div class="logo" v-for="user in users" :key="user.id">
@@ -27,8 +32,8 @@
               Дата вязки: <span>{{ user.dateMating }}</span>
             </p>
             <button @click.stop="viewDetails(user.id)">
-              <p>посмотреть</p>
-              <p>детали</p>
+              
+              <p>Детали</p>
             </button>
           </div>
         </div>
@@ -137,13 +142,11 @@ export default {
   methods: {
     upElement(f) {
       //отображение деталей на карте без opacity
-      f.path[0].style.backgroundImage =
-        "-webkit-linear-gradient(rgba(28, 233, 21), rgb(5, 83, 2))";
+     
       f.path[0].style.opacity = 1;
     },
     downElement(f) {
-      f.path[0].style.backgroundImage =
-        "-webkit-linear-gradient(rgba(28, 233, 21,0.5), rgb(5, 83, 2,0.1))";
+     
       f.path[0].style.opacity = 0.1;
     },
     getUsersData() {
@@ -182,15 +185,15 @@ export default {
 }
 .dog {
   height: 100vh;
-  background: url("../assets/cover_dog.svg");
+  background: url("../assets/cover_dog.png");
   background-position: center;
-  background-size: 110%;
+  background-size: cover;
 }
 .cat {
   height: 100vh;
-  background: url("../assets/cover_cat.svg");
+  background: url("../assets/cover_cat.png");
   background-position: center;
-  background-size: 110%;
+  background-size: cover;
 }
 .forimage {
   position: relative;
@@ -204,36 +207,48 @@ export default {
 .catlogo:hover {
   width: 6em;
   height: 6em;
-  color: rgb(9, 39, 9);
+  /* color: rgb(9, 39, 9); */
 }
 .catlogo:active {
   transform: rotate(180deg);
 }
 
 .logomsg {
-  border: 2px solid;
-  border-radius: 10px;
-  background: linear-gradient(rgba(28, 233, 21, 0.3), rgb(5, 83, 2, 0.1));
-  min-width: 7em;
-  min-height: 6em;
-  color: rgb(41, 3, 3);
+  /* border: 2px solid; */
+  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))
+    drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))
+    drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+  border-radius: 50px 0px;
+
+  background: url("../assets/cover1.png");
+  background-position: center;
+  background-size: cover;
+  min-width: 10em;
+  min-height: 7em;
+  /* color: rgb(41, 3, 3); */
   z-index: -1;
   display: none;
   box-shadow: 5px 7px rgb(3, 73, 3);
+  font-family: Amatic SC;
+  font-style: normal;
   font-weight: bold;
-  font: solid;
-  font-size: 1.2em;
+  font-size: 18px;
+  line-height: 23px;
   position: relative;
+  opacity:1;
 }
 .active {
+  background: url("../assets/cover1.png");
+  background-position: center;
+  background-size: cover;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
-  opacity: 1;
+  /* opacity: 1; */
   position: relative;
-  opacity: 0.3;
-  /* background: linear-gradient(rgba(28, 233, 21), rgb(5, 83, 2)); */
+   opacity: 0.3; 
+ 
   z-index: 1000;
   overflow: hidden;
 }
@@ -244,10 +259,10 @@ export default {
 button {
   border: 1px solid;
   width: 50%;
-  box-shadow: 4px 5px black;
-  border-radius: 3em 8em 3em 8em;
-  background-color: rgba(31, 236, 117, 0.5);
-
+  
+  border-radius: 0 50px;
+  /* background-color: rgba(31, 236, 117, 0.5); */
+  /* box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25); */
   font-size: 0.7em;
 }
 button:hover {
@@ -257,6 +272,6 @@ button:active {
   box-shadow: 4px 3px black;
 }
 span {
-  color: rgb(40, 24, 179);
+  text-shadow: 0px 4px 4px #013309, 0px 4px 4px #025e00, 0px 4px 4px #00ff38;
 }
 </style>

@@ -156,8 +156,8 @@ export default {
           long +
           "&key=AIzaSyBR_KhfKe3u_31BhVXgGPApthBjcg2Va90"
       );
-      console.log(data.data.results[1]["address_components"][2]);
-      let result = data.data.results[1]["address_components"][2]['long_name']
+      console.log(data.data.results);
+      let result = data.data.results[0]["address_components"][3]['long_name']
        
         
       
@@ -169,12 +169,12 @@ export default {
 <style scoped>
 .dog {
   background-image: url("../assets/dog1w.svg"), url("../assets/dog1w.svg"),
-    url("../assets/cover_dog.svg");
+    url("../assets/cover_dog.png");
   background-position: -10% 0%, 115% 0%, center;
 
   opacity: 0.9;
-  background-size: 45%, 45%, 110%;
-  background-repeat: no-repeat, no-repeat, repeat;
+  background-size: 45%, 45%, cover;
+  background-repeat: no-repeat, no-repeat, no-repeat;
   overflow: hidden;
 }
 .cat {
@@ -188,7 +188,7 @@ export default {
 .animalproperty {
   display: flex;
   flex-direction: column;
-  justify-content: start;
+  justify-content: space-around;
   align-items: center;
   width: 100vw;
   height: 100vh;
@@ -196,6 +196,7 @@ export default {
 }
 
 .animalproperty-fortext {
+  
   display: flex;
   position: relative;
   justify-content: center;
@@ -205,8 +206,8 @@ export default {
   font-weight: bold;
   font-size: 57px;
   line-height: 182px;
-  top: -50px;
-  margin-bottom: -30px;
+  /* top: 0em; */
+  margin-bottom: 0.5em;
   color: #000000;
 
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
@@ -229,7 +230,7 @@ export default {
   font-family: Amatic SC;
   font-style: normal;
   font-weight: bold;
-  font-size: 35px;
+  font-size: 2em;
   line-height: 121px;
   color: #000000;
   margin-top: -30px;
@@ -237,9 +238,7 @@ export default {
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
     0px 4px 4px rgba(0, 0, 0, 0.25);
 }
-.breed{
-  z-index:1;
-}
+
 .age {
   margin-top: 0px;
   margin-bottom:10px;
@@ -273,7 +272,7 @@ input {
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
     0px 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 8px;
-  width: 478px;
+  width: 17em;
   height: 28px;
   font-family: Amatic SC;
   font-style: normal;
@@ -331,6 +330,7 @@ option {
 
 button {
   margin-top: 30px;
+  margin-bottom: 2em;
   width: 131px;
   height: 68px;
   border: 1px solid #000000;

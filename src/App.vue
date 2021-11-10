@@ -1,7 +1,7 @@
 <template>
   <div class="app">
     <transition name="no-mode-translate-fade" mode="in-out">
-      <start-screen v-if="state == 'start'" @animalType="getAnimalType"  @registration="getRegistration" />
+      <start-screen v-if="state == 'start'" @animalType="getAnimalType" @sign="getSign" @registration="getRegistration" />
       <animal-property
         @animalProperty="getAnimalProperty"
        
@@ -16,7 +16,7 @@
         @viewDetails="getId"
         v-if="state == 'mapScreen'"
       />
-      <registration-screen :place="searchParams.place" v-if="state == 'registration'" />
+      <registration-screen :place="searchParams.place" :substate="substate" v-if="state == 'registration'" />
     </transition>
   </div>
 </template>
@@ -44,7 +44,7 @@ export default {
       autohorized: false,
       idSelected: false,
       lastEnterTime: null,
-
+      substate:null,
       errorStr: null,
     };
   },
@@ -88,9 +88,15 @@ export default {
       // console.log(this.user);
       this.state = "mapScreen";
     },
-    getRegistration(){
+    getSign(){
+      this.substate='start'
       this.state="registration"
     },
+    getRegistration(){
+      this.substate='registrationUser'
+      this.state="registration"
+    },
+
     getId(value) {
       this.idSeleced = value;
       this.state = "registration";

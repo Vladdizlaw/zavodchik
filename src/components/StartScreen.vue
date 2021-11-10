@@ -11,7 +11,7 @@
       <hr class="hr1"/>
       <a class="reg" @click="registration">Регистрация</a>
       <p>|</p>
-      <a class="sign">Вход</a>
+      <a class="sign"  @click="sign">Вход</a>
       <hr class="hr2"/>
     </div>
   </div>
@@ -34,6 +34,9 @@ export default {
     },
     registration() {
       this.$emit('registration',null)
+    },
+    sign(){
+      this.$emit('sign',null)
     }
   },
 };
