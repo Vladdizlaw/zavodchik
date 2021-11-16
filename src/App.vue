@@ -112,12 +112,16 @@ export default {
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Amatic+SC:wght@700&display=swap");
 body {
+   max-height: 100vh;
   margin: 0;
   padding: 0;
+  overflow: hidden;
+  overflow-y: hidden;
 }
 .app {
-  height: 100vh;
+  max-height: 100vh;
   overflow: hidden;
+  max-width: 100vw;
 }
 .no-mode-translate-fade-enter-active,
 .no-mode-translate-fade-leave-active {

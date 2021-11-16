@@ -157,7 +157,7 @@ export default {
           "&key=AIzaSyBR_KhfKe3u_31BhVXgGPApthBjcg2Va90"
       );
       console.log(data.data.results);
-      let result = data.data.results[0]["address_components"][3]['long_name']
+      let result = data.data.results[0]["address_components"][2]['long_name']
        
         
       

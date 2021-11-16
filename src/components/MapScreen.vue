@@ -147,7 +147,7 @@ export default {
     },
     downElement(f) {
      
-      f.path[0].style.opacity = 0.1;
+      f.path[0].style.opacity = 0.2;
     },
     getUsersData() {
       //Получаем данные о юзерах из файла (заглушка)
@@ -247,7 +247,7 @@ export default {
   align-items: center;
   /* opacity: 1; */
   position: relative;
-   opacity: 0.3; 
+   opacity: 0.2; 
  
   z-index: 1000;
   overflow: hidden;

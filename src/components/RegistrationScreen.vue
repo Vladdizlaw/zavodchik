@@ -47,7 +47,7 @@
           </select>
         </div>
         <div class="user psw">
-          <p>Придумайте пароль (не меньше 6 символов):</p>
+          <p>Пароль (не меньше 6 символов):</p>
           <input
             type="text"
             minlength="6"
@@ -114,12 +114,109 @@
           <p>Окрас</p>
           <input type="text" v-model="animalForm.color" />
         </div>
-        <div class="animal circumstances">
+        <div class="animal circumstances-mating">
           <p>Условия вязки</p>
           <input type="text" v-model="animalForm.matingConditions" />
         </div>
         <button class="next-btn" @click.stop="getRegistrationAnimal2">
           <p>Далее</p>
+        </button>
+      </div>
+      <div class="registration-animal3" v-if="states.registrationAnimal3">
+        <div class="animal photo">
+          <div><p>фото животного</p></div>
+          <div class="forphoto">
+            <img src="../assets/ArrowL.svg" alt="" />
+            <input
+              type="file"
+              class="square"
+              @change="onFileChangeAnimal"
+              v-if="animalForm.photoAnimal.length < 1"
+            />
+            <input
+              type="file"
+              class="square"
+              @change="onFileChangeAnimal"
+              v-if="animalForm.photoAnimal.length < 2"
+            />
+            <input
+              type="file"
+              class="square"
+              @change="onFileChangeAnimal"
+              v-if="animalForm.photoAnimal.length < 3"
+            />
+            <img
+              class="square"
+              :src="imageurlAnimal[0]"
+              v-if="animalForm.photoAnimal.length > 0"
+            />
+            <img
+              class="square"
+              :src="imageurlAnimal[1]"
+              v-if="animalForm.photoAnimal.length > 1"
+            />
+            <img
+              class="square"
+              :src="imageurlAnimal[2]"
+              v-if="animalForm.photoAnimal.length > 2"
+            />
+            <img src="../assets/ArrowR.svg" alt="" />
+          </div>
+        </div>
+        <div class="animal photo">
+          <div><p>фото помета</p></div>
+          <div class="forphoto">
+            <img src="../assets/ArrowL.svg" alt="" />
+            <input
+              type="file"
+              class="square"
+              @change="onFileChangeLitter"
+              v-if="animalForm.photoLitter.length < 1"
+            />
+            <input
+              type="file"
+              class="square"
+              @change="onFileChangeLitter"
+              v-if="animalForm.photoLitter.length < 2"
+            />
+            <input
+              type="file"
+              class="square"
+              @change="onFileChangeLitter"
+              v-if="animalForm.photoLitter.length < 3"
+            />
+            <img
+              class="square"
+              :src="imageurlLitter[0]"
+              v-if="animalForm.photoLitter.length > 0"
+            />
+            <img
+              class="square"
+              :src="imageurlLitter[1]"
+              v-if="animalForm.photoLitter.length > 1"
+            />
+            <img
+              class="square"
+              :src="imageurlLitter[2]"
+              v-if="animalForm.photoLitter.length > 2"
+            />
+            <img src="../assets/ArrowR.svg" alt="" />
+          </div>
+        </div>
+        <div class="animal personal_data">
+          <div class="personal_data_checkbox"></div>
+          <div class="personal_data_text">
+            <p>Я принимаю Соглашение на обработку персональных данных</p>
+          </div>
+        </div>
+        <div class="animal personal_data">
+          <div class="personal_data_checkbox"></div>
+          <div class="personal_data_text">
+            <p>Попробовать бесплатно</p>
+          </div>
+        </div>
+        <button class="next-btn" @click.stop="getRegistrationAnimal3">
+          <p>Зарегестрировать</p>
         </button>
       </div>
     </div>
@@ -184,7 +281,11 @@ export default {
         vaccination: null,
         color: null,
         matingConditions: null,
+        photoAnimal: [],
+        photoLitter: [],
       },
+      imageurlAnimal: [],
+      imageurlLitter: [],
     };
   },
   mounted() {
@@ -193,6 +294,7 @@ export default {
       this.states.start = false;
       this.states.registrationUser = true;
     }
+    this.getSelfState();
   },
   watch: {
     animalType: function() {
@@ -224,6 +326,14 @@ export default {
     },
   },
   methods: {
+    getSelfState() {
+      Object.keys(this.states).forEach((key) => {
+        if (this.states[key] == true) {
+          console.log(key);
+          return key;
+        }
+      });
+    },
     changeStateRegist() {
       this.states.start = false;
       this.states.registrationUser = true;
@@ -281,7 +391,15 @@ export default {
       this.states.registrationAnimal2 = false;
       this.states.registrationAnimal3 = true;
     },
-
+    getRegistrationAnimal3() {},
+    onFileChangeAnimal(f) {
+      this.animalForm.photoAnimal.push(f.target.files[0]);
+      this.imageurlAnimal.push(URL.createObjectURL(f.target.files[0]));
+    },
+    onFileChangeLitter(f) {
+      this.animalForm.photoLitter.push(f.target.files[0]);
+      this.imageurlLitter.push(URL.createObjectURL(f.target.files[0]));
+    },
     sign() {},
   },
 };
@@ -319,10 +437,11 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  
+
   align-items: center;
 }
-.user >p , .animal>p{
+.user > p,
+.animal > p {
   margin-bottom: 0.5em;
 }
 .type-animal {
@@ -390,7 +509,67 @@ export default {
   text-align: center;
   overflow: hidden;
 }
-
+.photo {
+  gap: 0.3em;
+}
+.forphoto {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  gap: 1em;
+}
+.square {
+  width: 4em;
+  height: 4em;
+  border: 1px solid;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
+    0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 10px;
+  position: relative;
+  background: #ffffff;
+  opacity: 0.5;
+  
+}
+.square:after {
+  content: "";
+  position: absolute;
+  /* width:1px; */
+  height: 80%;
+  border: 1px solid;
+  top: 10%;
+}
+.square:before {
+  content: "";
+  position: absolute;
+  /* width:1px; */
+  width: 80%;
+  border: 1px solid;
+  top: 50%;
+  left: 10%;
+}
+.personal_data {
+  flex-direction: row;
+  align-items: start;
+  justify-content: center;
+  gap: 1em;
+}
+.personal_data_checkbox {
+  margin-top: 0.2em;
+  width: 1em;
+  height: 1em;
+  background: #ffffff;
+  opacity: 0.5;
+  border: 1px solid #000000;
+  box-sizing: border-box;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
+    0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 10px;
+  transform: matrix(1, 0, 0, 1, 0, 0);
+}
+.personal_data_text {
+  flex: 1;
+  max-width: 9em;
+}
 .regwindow {
   background: url("../assets/cover1.png");
   background-position: center;
@@ -440,7 +619,7 @@ export default {
 input,
 select,
 textarea {
-  width: 100%;
+  width: 12em;
   height: 27px;
   background: #ffffff;
   opacity: 0.7;
