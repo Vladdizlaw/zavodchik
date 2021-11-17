@@ -3,14 +3,20 @@
     <div
       class="registration"
       v-if="
-        states.registrationUser ||
-          states.registrationAnimal1 ||
-          states.registrationAnimal2 ||
-          states.registrationAnimal3
+        states.registrationUser.value ||
+          states.registrationAnimal1.value ||
+          states.registrationAnimal2.value ||
+          states.registrationAnimal3.value
       "
     >
-      <div class="registration-title"><p>Регистрация</p></div>
-      <div class="registration-user" v-if="states.registrationUser">
+      <div class="registration-title">
+        <div class="registration-title__back" @click="back">
+          <img src="../assets/back.svg" />
+          <p>Назад</p>
+        </div>
+        <div class="registration-title__text"><p>Регистрация</p></div>
+      </div>
+      <div class="registration-user" v-if="states.registrationUser.value">
         <div class="user mail">
           <p>Введите email:</p>
           <input type="email" v-model="regForm.mail" />
@@ -61,7 +67,7 @@
           <p>Далее</p>
         </button>
       </div>
-      <div class="registration-animal1" v-if="states.registrationAnimal1">
+      <div class="registration-animal1" v-if="states.registrationAnimal1.value">
         <div class="animal type">
           <p>Вид животного</p>
           <select v-model="animalType">
@@ -97,7 +103,7 @@
           <p>Далее</p>
         </button>
       </div>
-      <div class="registration-animal2" v-if="states.registrationAnimal2">
+      <div class="registration-animal2" v-if="states.registrationAnimal2.value">
         <div class="animal mating">
           <p>Предположительная дата вязки</p>
           <input type="date" v-model="animalForm.dateMating" />
@@ -122,95 +128,25 @@
           <p>Далее</p>
         </button>
       </div>
-      <div class="registration-animal3" v-if="states.registrationAnimal3">
-        <div class="animal photo">
-          <div><p>фото животного</p></div>
-          <div class="forphoto">
-            <img src="../assets/ArrowL.svg" alt="" />
-            <input
-              type="file"
-              class="square"
-              @change="onFileChangeAnimal"
-              v-if="animalForm.photoAnimal.length < 1"
-            />
-            <input
-              type="file"
-              class="square"
-              @change="onFileChangeAnimal"
-              v-if="animalForm.photoAnimal.length < 2"
-            />
-            <input
-              type="file"
-              class="square"
-              @change="onFileChangeAnimal"
-              v-if="animalForm.photoAnimal.length < 3"
-            />
-            <img
-              class="square"
-              :src="imageurlAnimal[0]"
-              v-if="animalForm.photoAnimal.length > 0"
-            />
-            <img
-              class="square"
-              :src="imageurlAnimal[1]"
-              v-if="animalForm.photoAnimal.length > 1"
-            />
-            <img
-              class="square"
-              :src="imageurlAnimal[2]"
-              v-if="animalForm.photoAnimal.length > 2"
-            />
-            <img src="../assets/ArrowR.svg" alt="" />
-          </div>
-        </div>
-        <div class="animal photo">
-          <div><p>фото помета</p></div>
-          <div class="forphoto">
-            <img src="../assets/ArrowL.svg" alt="" />
-            <input
-              type="file"
-              class="square"
-              @change="onFileChangeLitter"
-              v-if="animalForm.photoLitter.length < 1"
-            />
-            <input
-              type="file"
-              class="square"
-              @change="onFileChangeLitter"
-              v-if="animalForm.photoLitter.length < 2"
-            />
-            <input
-              type="file"
-              class="square"
-              @change="onFileChangeLitter"
-              v-if="animalForm.photoLitter.length < 3"
-            />
-            <img
-              class="square"
-              :src="imageurlLitter[0]"
-              v-if="animalForm.photoLitter.length > 0"
-            />
-            <img
-              class="square"
-              :src="imageurlLitter[1]"
-              v-if="animalForm.photoLitter.length > 1"
-            />
-            <img
-              class="square"
-              :src="imageurlLitter[2]"
-              v-if="animalForm.photoLitter.length > 2"
-            />
-            <img src="../assets/ArrowR.svg" alt="" />
-          </div>
-        </div>
+      <div class="registration-animal3" v-if="states.registrationAnimal3.value">
+        <PhotoAdd :message="'Фото животных'" @photo="getPhotoAnimal" />
+        <PhotoAdd :message="'Фото потомства'" @photo="getPhotoLitter" />
         <div class="animal personal_data">
-          <div class="personal_data_checkbox"></div>
+          <div
+            class="personal_data_checkbox"
+            @click="licenseAgreement"
+            :class="{ checked: animalForm['licenseAgreement'] }"
+          ></div>
           <div class="personal_data_text">
             <p>Я принимаю Соглашение на обработку персональных данных</p>
           </div>
         </div>
         <div class="animal personal_data">
-          <div class="personal_data_checkbox"></div>
+          <div
+            class="personal_data_checkbox"
+            @click="startTrial"
+            :class="{ checked: animalForm['startTrial']['value'] }"
+          ></div>
           <div class="personal_data_text">
             <p>Попробовать бесплатно</p>
           </div>
@@ -220,7 +156,7 @@
         </button>
       </div>
     </div>
-    <div class="regwindow" v-if="states.start">
+    <div class="regwindow" v-if="states.start.value">
       <div class="forinput">
         <p>ЛОГИН (E-MAIL):</p>
         <input type="text" v-model="login" />
@@ -237,20 +173,25 @@
   </div>
 </template>
 <script>
+import PhotoAdd from "../components/PhotoAdd.vue";
 export default {
   name: "RegistrationScreen",
   props: {
     place: String,
     substate: String,
   },
+  components: {
+    PhotoAdd,
+  },
   data() {
     return {
       states: {
-        start: true,
-        registrationUser: false,
-        registrationAnimal1: false,
-        registrationAnimal2: false,
-        registrationAnimal3: false,
+        // previosState:null,
+        start:{value:true,previosState:'start'},
+        registrationUser: {value:false,previosState:'start'},
+        registrationAnimal1: {value:false,previosState:'registrationUser'},
+        registrationAnimal2:{value:false,previosState:'registrationAnimal1'},
+        registrationAnimal3: {value:false,previosState:'registrationAnimal2'},
       },
       signin: false,
       login: null,
@@ -283,18 +224,19 @@ export default {
         matingConditions: null,
         photoAnimal: [],
         photoLitter: [],
+        licenseAgreement: false,
+        startTrial: { value: false, date: null },
       },
-      imageurlAnimal: [],
-      imageurlLitter: [],
     };
   },
   mounted() {
     this.regForm.city = this.place;
     if (this.substate == "registrationUser") {
-      this.states.start = false;
-      this.states.registrationUser = true;
+      this.states.start.value = false;
+      // this.states.previosState='start'
+      this.states.registrationUser.value = true;
     }
-    this.getSelfState();
+    //  console.log(this.getSelfState());
   },
   watch: {
     animalType: function() {
@@ -326,17 +268,36 @@ export default {
     },
   },
   methods: {
+    getPhotoAnimal(value) {
+      this.animalForm.photoAnimal = value;
+      console.log(this.animalForm.photoAnimal);
+    },
+    getPhotoLitter(value) {
+      this.animalForm.photoLitter = value;
+    },
+    licenseAgreement() {
+      this.animalForm.licenseAgreement = !this.animalForm.licenseAgreement;
+    },
+    startTrial() {
+      this.animalForm.startTrial.value = !this.animalForm.startTrial.value;
+      if (this.animalForm.startTrial.value) {
+        this.animalForm.startTrial.date = new Date();
+      }
+    },
     getSelfState() {
+      let result=""
       Object.keys(this.states).forEach((key) => {
-        if (this.states[key] == true) {
-          console.log(key);
-          return key;
+        if (this.states[key].value == true) {
+          // console.log('getselfstate:',key);
+          result= key;
         }
-      });
+       
+      }); return result
     },
     changeStateRegist() {
-      this.states.start = false;
-      this.states.registrationUser = true;
+      this.states.start.value = false;
+      this.states.registrationUser.value = true;
+      // this.states.previosState='start'
     },
     getRegistration() {
       let valid = true;
@@ -378,28 +339,35 @@ export default {
       } else {
         this.$emit("regForm", { regForm: this.regForm });
         //  this.start = true;
-        this.states.registrationUser = false;
-        this.states.registrationAnimal1 = true;
-        console.log("correct", this.states);
+        this.states.registrationUser.value = false;
+        // this.states.previosState='registrationUser'
+        this.states.registrationAnimal1.value = true;
+        // console.log("correct", this.states);
       }
     },
     getRegistrationAnimal1() {
-      this.states.registrationAnimal1 = false;
-      this.states.registrationAnimal2 = true;
+      this.states.registrationAnimal1.value = false;
+      this.states.registrationAnimal2.value = true;
+      //  this.states.previosState='registrationAnimal1'
     },
     getRegistrationAnimal2() {
-      this.states.registrationAnimal2 = false;
-      this.states.registrationAnimal3 = true;
+       
+      this.states.registrationAnimal2.value = false;
+      this.states.registrationAnimal3.value = true;
     },
     getRegistrationAnimal3() {},
-    onFileChangeAnimal(f) {
-      this.animalForm.photoAnimal.push(f.target.files[0]);
-      this.imageurlAnimal.push(URL.createObjectURL(f.target.files[0]));
+    back(){
+      let stateKey=this.getSelfState()
+      if (stateKey=="start"){
+        return
+      }
+      this.states[stateKey].value=false
+      // console.log('state now:',stateKey)
+      this.states[this.states[stateKey].previosState].value=true
+      this.getSelfState()
+      //  console.log('state to:', this.states[this.states[stateKey].previosState])
     },
-    onFileChangeLitter(f) {
-      this.animalForm.photoLitter.push(f.target.files[0]);
-      this.imageurlLitter.push(URL.createObjectURL(f.target.files[0]));
-    },
+
     sign() {},
   },
 };
@@ -436,7 +404,7 @@ export default {
   position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: space-around;
 
   align-items: center;
 }
@@ -491,7 +459,39 @@ export default {
   overflow: hidden;
   position: relative;
 }
-
+.registration-title {
+  width:100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.registration-title__text {
+  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.75);
+  font-size: 2.5em;
+  /* flex: 4 1 4; */
+  /* justify-self: stretch; */
+  width: 57.5%;
+  Height:2em;
+}
+.registration-title__text>p {
+  padding-top:0.2em;
+   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.75);
+   font-size: 1.7em;
+}
+.registration-title__back {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 10%;
+  height: 2em;
+}
+.registration-title__back:hover{
+  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.5)) drop-shadow(10px 10px 4px rgba(9, 112, 7, 0.75));
+}
+.registration-title__back>img{
+  padding-top:0.25em;
+  height:2.1em;
+}
 .registration-user,
 .registration-animal1,
 .registration-animal2,
@@ -509,44 +509,7 @@ export default {
   text-align: center;
   overflow: hidden;
 }
-.photo {
-  gap: 0.3em;
-}
-.forphoto {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  gap: 1em;
-}
-.square {
-  width: 4em;
-  height: 4em;
-  border: 1px solid;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
-    0px 4px 4px rgba(0, 0, 0, 0.25);
-  border-radius: 10px;
-  position: relative;
-  background: #ffffff;
-  opacity: 0.5;
-  
-}
-.square:after {
-  content: "";
-  position: absolute;
-  /* width:1px; */
-  height: 80%;
-  border: 1px solid;
-  top: 10%;
-}
-.square:before {
-  content: "";
-  position: absolute;
-  /* width:1px; */
-  width: 80%;
-  border: 1px solid;
-  top: 50%;
-  left: 10%;
-}
+
 .personal_data {
   flex-direction: row;
   align-items: start;
@@ -567,8 +530,13 @@ export default {
   transform: matrix(1, 0, 0, 1, 0, 0);
 }
 .personal_data_text {
-  flex: 1;
-  max-width: 9em;
+  width: 9em;
+}
+.checked {
+  background: url("../assets/checked.svg");
+  background-position: center;
+  background-size: 90%;
+  background-repeat: no-repeat;
 }
 .regwindow {
   background: url("../assets/cover1.png");
@@ -669,6 +637,7 @@ button:hover {
   box-sizing: border-box;
   filter: drop-shadow(0px 4px 4px #00e04c) drop-shadow(0px 4px 4px #09461a)
     drop-shadow(0px 4px 4px #074110);
+
   border-radius: 25px 0px;
 }
 button:active {
