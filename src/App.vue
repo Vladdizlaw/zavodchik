@@ -1,10 +1,14 @@
 <template>
   <div class="app">
     <transition name="no-mode-translate-fade" mode="in-out">
-      <start-screen v-if="state == 'start'" @animalType="getAnimalType" @sign="getSign" @registration="getRegistration" />
+      <start-screen
+        v-if="state == 'start'"
+        @animalType="getAnimalType"
+        @sign="getSign"
+        @registration="getRegistration"
+      />
       <animal-property
         @animalProperty="getAnimalProperty"
-       
         :animalType="this.user.animal.animalType"
         :location="user.location"
         v-if="state == 'animalProperty'"
@@ -16,7 +20,13 @@
         @viewDetails="getId"
         v-if="state == 'mapScreen'"
       />
-      <registration-screen :place="searchParams.place" :substate="substate" v-if="state == 'registration'" />
+      <registration-screen
+        :place="searchParams.place"
+        :substate="substate"
+        v-if="state == 'registration'"
+        @registeredData="getRegForms"
+      />
+      <profile-screen :user="user" v-if="state == 'profile'"/>
     </transition>
   </div>
 </template>
@@ -26,6 +36,7 @@ import StartScreen from "./components/StartScreen.vue";
 import AnimalProperty from "./components/AnimalProperty.vue";
 import MapScreen from "./components/MapScreen.vue";
 import RegistrationScreen from "./components/RegistrationScreen.vue";
+import ProfileScreen from "./components/ProfileScreen.vue";
 export default {
   name: "App",
 
@@ -34,20 +45,23 @@ export default {
     AnimalProperty,
     MapScreen,
     RegistrationScreen,
+    ProfileScreen
   },
 
   data() {
     return {
       user: { animal: {}, location: null, id: null }, //Данные о пользователе и животном
       state: "start", //CСостояние
-      searchParams:{},
+      searchParams: {},
       autohorized: false,
       idSelected: false,
       lastEnterTime: null,
-      substate:null,
+      substate: null,
       errorStr: null,
     };
   },
+
+
 
   methods: {
     async getLocation() {
@@ -66,6 +80,7 @@ export default {
       });
     },
     async locateMe() {
+
       try {
         this.user.location = await this.getLocation();
       } catch (e) {
@@ -77,7 +92,7 @@ export default {
       this.state = "animalProperty";
     },
     getAnimalProperty(value) {
-      this.searchParams.animalType=this.user.animal.animalType
+      this.searchParams.animalType = this.user.animal.animalType;
       this.searchParams.age = value.animalProperty.age;
       this.searchParams.male = value.animalProperty.male;
       this.searchParams.breed = value.animalProperty.breed;
@@ -88,35 +103,53 @@ export default {
       // console.log(this.user);
       this.state = "mapScreen";
     },
-    getSign(){
-      this.substate='start'
-      this.state="registration"
+    getSign() {
+      this.substate = "start";
+      this.state = "registration";
     },
-    getRegistration(){
-      this.substate='registrationUser'
-      this.state="registration"
+    getRegistration() {
+      this.substate = "registrationUser";
+      this.state = "registration";
     },
 
     getId(value) {
       this.idSeleced = value;
       this.state = "registration";
     },
+    getRegForms(value){
+      this.user.profile=value.userForm
+      this.user.animal=value.animalForm
+      this.state= "profile"
+      console.log(this.user)
+    }
   },
   async mounted() {
+    let htmlEl=document.querySelector('html')
+    htmlEl.style.overflow='hidden'
     this.lastEnterTime = new Date();
     await this.locateMe();
+
     // console.log(this.user.location);
   },
 };
 </script>
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Amatic+SC:wght@700&display=swap");
+
+html {
+  overflow-y:hidden !important;
+ 
+}
+
+
 body {
-   max-height: 100vh;
+ 
+
+  max-height: 100vh;
   margin: 0;
   padding: 0;
   overflow: hidden;
-  overflow-y: hidden;
+ 
 }
 .app {
   max-height: 100vh;
@@ -130,5 +163,13 @@ body {
 .no-mode-translate-fade-enter,
 .no-mode-translate-fade-leave-active {
   opacity: 0;
+}
+::-webkit-scrollbar {
+  width: 0;
+  background: transparent;
+}
+html {
+  overflow-y:hidden !important;
+ 
 }
 </style>

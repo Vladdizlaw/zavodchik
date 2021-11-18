@@ -20,7 +20,7 @@
         <div class="user mail">
           <p>Введите email:</p>
           <input type="email" v-model="regForm.mail" />
-          <div ref="errmail" class="errmsg" :v-show="errs.mail">
+          <div class="errmsg" :v-show="errs.mail">
             {{ errs.mail }}
           </div>
         </div>
@@ -51,6 +51,7 @@
               >{{ city }}</option
             >
           </select>
+          <div class="errmsg" :v-show="errs.city">{{ errs.city }}</div>
         </div>
         <div class="user psw">
           <p>Пароль (не меньше 6 символов):</p>
@@ -74,6 +75,7 @@
             <option value="cat">Кошка </option>
             <option value="dog">Собака</option>
           </select>
+          <div class="errmsg" :v-show="errs.type">{{ errs.type }}</div>
         </div>
         <div class="animal male">
           <p>Пол</p>
@@ -81,6 +83,7 @@
             <option value="мужской">мужской </option>
             <option value="Женский">Женский</option>
           </select>
+          <div class="errmsg" :v-show="errs.male">{{ errs.male }}</div>
         </div>
 
         <div class="animal age">
@@ -94,6 +97,7 @@
               bred
             }}</option>
           </select>
+          <div class="errmsg" :v-show="errs.breed">{{ errs.breed }}</div>
         </div>
         <div class="animal name">
           <p>Имя животного</p>
@@ -138,7 +142,10 @@
             :class="{ checked: animalForm['licenseAgreement'] }"
           ></div>
           <div class="personal_data_text">
-            <p>Я принимаю Соглашение на обработку персональных данных</p>
+            <div><p>Я принимаю Соглашение на обработку персональных данных</p></div>
+            <div class="errmsg personal-text_err" :v-show="errs.licenseAgreement">
+              {{ errs.licenseAgreement }}
+            </div>
           </div>
         </div>
         <div class="animal personal_data">
@@ -149,6 +156,9 @@
           ></div>
           <div class="personal_data_text">
             <p>Попробовать бесплатно</p>
+            <div class="errmsg" :v-show="errs.startTrial">
+              {{ errs.startTrial }}
+            </div>
           </div>
         </div>
         <button class="next-btn" @click.stop="getRegistrationAnimal3">
@@ -187,11 +197,17 @@ export default {
     return {
       states: {
         // previosState:null,
-        start:{value:true,previosState:'start'},
-        registrationUser: {value:false,previosState:'start'},
-        registrationAnimal1: {value:false,previosState:'registrationUser'},
-        registrationAnimal2:{value:false,previosState:'registrationAnimal1'},
-        registrationAnimal3: {value:false,previosState:'registrationAnimal2'},
+        start: { value: true, previosState: "start" },
+        registrationUser: { value: false, previosState: "start" },
+        registrationAnimal1: { value: false, previosState: "registrationUser" },
+        registrationAnimal2: {
+          value: false,
+          previosState: "registrationAnimal1",
+        },
+        registrationAnimal3: {
+          value: false,
+          previosState: "registrationAnimal2",
+        },
       },
       signin: false,
       login: null,
@@ -202,6 +218,12 @@ export default {
         tel: "",
         name: "",
         pswd: "",
+        city: "",
+        breed: "",
+        type: "",
+        male: "",
+        licenseAgreement: "",
+        startTrial: "",
       },
       regForm: {
         mail: null,
@@ -269,11 +291,11 @@ export default {
   },
   methods: {
     getPhotoAnimal(value) {
-      this.animalForm.photoAnimal = value;
+      this.animalForm.photoAnimal = value.photo;
       console.log(this.animalForm.photoAnimal);
     },
     getPhotoLitter(value) {
-      this.animalForm.photoLitter = value;
+      this.animalForm.photoLitter = value.photo;
     },
     licenseAgreement() {
       this.animalForm.licenseAgreement = !this.animalForm.licenseAgreement;
@@ -285,19 +307,22 @@ export default {
       }
     },
     getSelfState() {
-      let result=""
+      let result = "";
       Object.keys(this.states).forEach((key) => {
         if (this.states[key].value == true) {
           // console.log('getselfstate:',key);
-          result= key;
+          result = key;
         }
-       
-      }); return result
+      });
+      return result;
     },
     changeStateRegist() {
       this.states.start.value = false;
       this.states.registrationUser.value = true;
       // this.states.previosState='start'
+    },
+    sendRegisteredData(){
+      this.$emit('registeredData',{userForm:this.regForm,animalForm:this.animalForm})
     },
     getRegistration() {
       let valid = true;
@@ -318,6 +343,13 @@ export default {
         this.errs.tel = "Введите корректный номер";
         setTimeout(() => {
           this.errs.tel = "";
+        }, 3000);
+      }
+      if (!this.regForm.city) {
+        valid = false;
+        this.errs.city = "Введите город";
+        setTimeout(() => {
+          this.errs.city = "";
         }, 3000);
       }
       if (!this.regForm.name) {
@@ -346,25 +378,70 @@ export default {
       }
     },
     getRegistrationAnimal1() {
+      let valid = true;
+      if (!this.animalForm.type) {
+        valid = false;
+        this.errs.type = "Выберите тип животного";
+        setTimeout(() => {
+          this.errs.type = "";
+        }, 3000);
+      }
+      if (!this.animalForm.male) {
+        valid = false;
+        this.errs.male = "Выберите пол";
+        setTimeout(() => {
+          this.errs.male = "";
+        }, 3000);
+      }
+      if (!this.animalForm.breed) {
+        valid = false;
+        this.errs.breed = "Выберите породу";
+        setTimeout(() => {
+          this.errs.breed = "";
+        }, 3000);
+      }
+      if (!valid) {
+        return;
+      }
       this.states.registrationAnimal1.value = false;
       this.states.registrationAnimal2.value = true;
       //  this.states.previosState='registrationAnimal1'
     },
     getRegistrationAnimal2() {
-       
       this.states.registrationAnimal2.value = false;
       this.states.registrationAnimal3.value = true;
     },
-    getRegistrationAnimal3() {},
-    back(){
-      let stateKey=this.getSelfState()
-      if (stateKey=="start"){
+    getRegistrationAnimal3() {
+      let valid = true;
+
+      if (!this.animalForm.licenseAgreement) {
+        valid = false;
+        this.errs.licenseAgreement = "Требуется подписать соглашение";
+        setTimeout(() => {
+          this.errs.licenseAgreement = "";
+        }, 3000);
+      }
+      if (!this.animalForm.startTrial.value) {
+        valid = false;
+        this.errs.startTrial = "Требуется активировать пробный период";
+        setTimeout(() => {
+          this.errs.startTrial = "";
+        }, 3000);
+      }
+      if (!valid){
         return
       }
-      this.states[stateKey].value=false
+      this.sendRegisteredData()
+    },
+    back() {
+      let stateKey = this.getSelfState();
+      if (stateKey == "start") {
+        return;
+      }
+      this.states[stateKey].value = false;
       // console.log('state now:',stateKey)
-      this.states[this.states[stateKey].previosState].value=true
-      this.getSelfState()
+      this.states[this.states[stateKey].previosState].value = true;
+      this.getSelfState();
       //  console.log('state to:', this.states[this.states[stateKey].previosState])
     },
 
@@ -460,7 +537,7 @@ export default {
   position: relative;
 }
 .registration-title {
-  width:100%;
+  width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -471,12 +548,12 @@ export default {
   /* flex: 4 1 4; */
   /* justify-self: stretch; */
   width: 57.5%;
-  Height:2em;
+  height: 2em;
 }
-.registration-title__text>p {
-  padding-top:0.2em;
-   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.75);
-   font-size: 1.7em;
+.registration-title__text > p {
+  padding-top: 0.2em;
+  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.75);
+  font-size: 1.7em;
 }
 .registration-title__back {
   display: flex;
@@ -485,12 +562,13 @@ export default {
   width: 10%;
   height: 2em;
 }
-.registration-title__back:hover{
-  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.5)) drop-shadow(10px 10px 4px rgba(9, 112, 7, 0.75));
+.registration-title__back:hover {
+  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.5))
+    drop-shadow(10px 10px 4px rgba(9, 112, 7, 0.75));
 }
-.registration-title__back>img{
-  padding-top:0.25em;
-  height:2.1em;
+.registration-title__back > img {
+  padding-top: 0.25em;
+  height: 2.1em;
 }
 .registration-user,
 .registration-animal1,
@@ -531,6 +609,12 @@ export default {
 }
 .personal_data_text {
   width: 9em;
+  display: flex;
+  position: relative;
+}
+.personal-text_err {
+  margin-top: 4em;
+  position:absolute;
 }
 .checked {
   background: url("../assets/checked.svg");
