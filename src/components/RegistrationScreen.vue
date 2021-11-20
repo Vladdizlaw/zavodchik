@@ -10,10 +10,7 @@
       "
     >
       <div class="registration-title">
-        <div class="registration-title__back" @click="back">
-          <img src="../assets/back.svg" />
-          <p>Назад</p>
-        </div>
+        <back-button :func="back" />
         <div class="registration-title__text"><p>Регистрация</p></div>
       </div>
       <div class="registration-user" v-if="states.registrationUser.value">
@@ -102,6 +99,7 @@
         <div class="animal name">
           <p>Имя животного</p>
           <input type="text" v-model="animalForm.name" />
+           <div class="errmsg" :v-show="errs.nameAnimal">{{ errs.nameAnimal }}</div>
         </div>
         <button class="next-btn" @click.stop="getRegistrationAnimal1">
           <p>Далее</p>
@@ -183,15 +181,18 @@
   </div>
 </template>
 <script>
+import { v4 as uuidv4 } from "uuid";
 import PhotoAdd from "../components/PhotoAdd.vue";
+import BackButton from './BackButton.vue';
 export default {
   name: "RegistrationScreen",
   props: {
-    place: String,
+    city: String,
     substate: String,
   },
   components: {
     PhotoAdd,
+    BackButton,
   },
   data() {
     return {
@@ -224,6 +225,7 @@ export default {
         male: "",
         licenseAgreement: "",
         startTrial: "",
+        nameAnimal:""
       },
       regForm: {
         mail: null,
@@ -231,6 +233,7 @@ export default {
         name: null,
         pass: null,
         city: null,
+        id:null
       },
       animalType: null,
       animalForm: {
@@ -252,7 +255,7 @@ export default {
     };
   },
   mounted() {
-    this.regForm.city = this.place;
+    this.regForm.city = this.city;
     if (this.substate == "registrationUser") {
       this.states.start.value = false;
       // this.states.previosState='start'
@@ -303,7 +306,8 @@ export default {
     startTrial() {
       this.animalForm.startTrial.value = !this.animalForm.startTrial.value;
       if (this.animalForm.startTrial.value) {
-        this.animalForm.startTrial.date = new Date();
+        this.animalForm.startTrial.dateStart = Date.now();
+        this.animalForm.startTrial.dateEnd = this.animalForm.startTrial.dateStart + 77760000
       }
     },
     getSelfState() {
@@ -386,6 +390,13 @@ export default {
           this.errs.type = "";
         }, 3000);
       }
+      if (!this.animalForm.name) {
+        valid = false;
+        this.errs.nameAnimal = "Введите имя животного";
+        setTimeout(() => {
+          this.errs.nameAnimal = "";
+        }, 3000);
+      }
       if (!this.animalForm.male) {
         valid = false;
         this.errs.male = "Выберите пол";
@@ -431,6 +442,7 @@ export default {
       if (!valid){
         return
       }
+      this.regForm.id=uuidv4()
       this.sendRegisteredData()
     },
     back() {
@@ -454,8 +466,8 @@ export default {
   background: url("../assets/catreg.svg"), url("../assets/dogreg.svg"),
     url("../assets/cover.png");
   background-repeat: no-repeat, no-repeat, no-repeat;
-  background-size: 26.5%, 29%, cover;
-  background-position: 2% 1.1em, 100% 0.8em, center;
+  background-size: 49vh, 50vh, cover;
+  background-position: 2% 2em, 100% 2em, center;
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -547,7 +559,7 @@ export default {
   font-size: 2.5em;
   /* flex: 4 1 4; */
   /* justify-self: stretch; */
-  width: 57.5%;
+  width: 57.5vw;
   height: 2em;
 }
 .registration-title__text > p {
@@ -555,21 +567,7 @@ export default {
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.75);
   font-size: 1.7em;
 }
-.registration-title__back {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 10%;
-  height: 2em;
-}
-.registration-title__back:hover {
-  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.5))
-    drop-shadow(10px 10px 4px rgba(9, 112, 7, 0.75));
-}
-.registration-title__back > img {
-  padding-top: 0.25em;
-  height: 2.1em;
-}
+
 .registration-user,
 .registration-animal1,
 .registration-animal2,

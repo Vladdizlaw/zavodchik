@@ -60,9 +60,8 @@
   </div>
 </template>
 <script>
-import axios from "axios";
-import translate from "translate";
-import { v4 as uuidv4 } from "uuid";
+
+
 export default {
   name: "AnimalProperty",
   //Компонент выбора свойств животного, принимает тип животного (cat,dog) и геопозицию,
@@ -70,7 +69,7 @@ export default {
   props: {
     animalType: String,
 
-    location: Object,
+    city: String,
   },
   data() {
     return {
@@ -82,7 +81,7 @@ export default {
         awards: "",
         place: "",
         dateMating: null,
-        id: null,
+        
       },
       breedList: [],
       cityList: [],
@@ -90,16 +89,8 @@ export default {
   },
   async mounted() {
     this.cityList = require("../cities.json");
-    const city = await this.getAdress(
-      this.location.coords.longitude,
-      this.location.coords.latitude
-    );
-    translate.engine = "google"; //переводим город  с латиницы на русский
-
-    translate.key = process.env.GOOGLE_KEY;
-    const city_translated = await translate(city, "ru");
-    console.log(city_translated);
-    this.animalProperty.place = city_translated;
+   
+    this.animalProperty.place = this.city
 
     if (this.animalType == "dog") {
       //В зависимости от типа животного подгружаем список пород
@@ -143,26 +134,11 @@ export default {
         return;
       } else {
         // console.log(new Date(this.animalProperty.dateMating),new Date())
-        this.animalProperty.id = uuidv4();
+       
         this.$emit("animalProperty", { animalProperty: this.animalProperty });
       }
     },
-    async getAdress(long, lat) {
-      //Получаем город из геопозиции
-      const data = await axios.get(
-        "https://maps.googleapis.com/maps/api/geocode/json?latlng=" +
-          lat +
-          "," +
-          long +
-          "&key=AIzaSyBR_KhfKe3u_31BhVXgGPApthBjcg2Va90"
-      );
-      console.log(data.data.results);
-      let result = data.data.results[0]["address_components"][2]['long_name']
-       
-        
-      
-      return result.split(' ')[0]=='Gorod'?result.split(' ')[1]:result;
-    },
+    
   },
 };
 </script>

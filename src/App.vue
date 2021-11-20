@@ -9,8 +9,8 @@
       />
       <animal-property
         @animalProperty="getAnimalProperty"
-        :animalType="this.user.animal.animalType"
-        :location="user.location"
+        :animalType="this.user.animal.animalType||user.animal.type"
+        :city="user.city"
         v-if="state == 'animalProperty'"
       >
       </animal-property>
@@ -21,17 +21,19 @@
         v-if="state == 'mapScreen'"
       />
       <registration-screen
-        :place="searchParams.place"
+        :city="user.city"
         :substate="substate"
         v-if="state == 'registration'"
         @registeredData="getRegForms"
       />
-      <profile-screen :user="user" v-if="state == 'profile'"/>
+      <profile-screen :user="user" @search="state='animalProperty'" v-if="state == 'profile'"/>
     </transition>
   </div>
 </template>
 
 <script>
+import translate from "translate";
+import axios from "axios"
 import StartScreen from "./components/StartScreen.vue";
 import AnimalProperty from "./components/AnimalProperty.vue";
 import MapScreen from "./components/MapScreen.vue";
@@ -50,7 +52,7 @@ export default {
 
   data() {
     return {
-      user: { animal: {}, location: null, id: null }, //Данные о пользователе и животном
+      user: { animal: {}, location: null,city:null, id: null }, //Данные о пользователе и животном
       state: "start", //CСостояние
       searchParams: {},
       autohorized: false,
@@ -65,6 +67,7 @@ export default {
 
   methods: {
     async getLocation() {
+      
       return new Promise((resolve, reject) => {
         if (!("geolocation" in navigator)) {
           reject(new Error("Геолокация недоступна"));
@@ -80,12 +83,40 @@ export default {
       });
     },
     async locateMe() {
-
+      //Получаем геолокацию устройства
       try {
         this.user.location = await this.getLocation();
       } catch (e) {
         console.log(e.message);
       }
+
+    },
+     async getAdress(long, lat) {
+      //Получаем город из геопозиции
+      const data = await axios.get(
+        "https://maps.googleapis.com/maps/api/geocode/json?latlng=" +
+          lat +
+          "," +
+          long +
+          "&key=AIzaSyBR_KhfKe3u_31BhVXgGPApthBjcg2Va90"
+      );
+      // console.log(data.data.results);
+      let result = data.data.results[0]["address_components"][2]['long_name']
+       
+        
+      
+      return result.split(' ')[0]=='Gorod'?result.split(' ')[1]:result;
+    },
+    async getCity(){
+    // const cityList = require("../cities.json");
+    const city = await this.getAdress(
+      this.user.location.coords.longitude,
+      this.user.location.coords.latitude
+    );
+    translate.engine = "google"; //переводим город  с латиницы на русский
+
+    translate.key = process.env.GOOGLE_KEY;
+    return await translate(city, "ru");
     },
     getAnimalType(value) {
       this.user.animal.animalType = value.animalType;
@@ -120,7 +151,7 @@ export default {
       this.user.profile=value.userForm
       this.user.animal=value.animalForm
       this.state= "profile"
-      console.log(this.user)
+      // console.log(this.user)
     }
   },
   async mounted() {
@@ -128,6 +159,8 @@ export default {
     htmlEl.style.overflow='hidden'
     this.lastEnterTime = new Date();
     await this.locateMe();
+    this.user.city = await this.getCity()
+    
 
     // console.log(this.user.location);
   },
