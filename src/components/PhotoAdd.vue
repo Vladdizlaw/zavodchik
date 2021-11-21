@@ -114,13 +114,13 @@ export default {
   },
   watch: {
     page() {
-      console.log((this.page - 1) * 3);
+      // console.log((this.page - 1) * 3);
       this.currentposition = (this.page - 1) * 3;
     },
   },
   methods: {
     validate(fileName){
-      let arrFileName=fileName.split('.')
+      const arrFileName=fileName.split('.')
       // console.log(arrFileName[arrFileName.length-1])
       const allowedExt=['jpg', 'gif', 'png','jpeg','bmp']
       if (allowedExt.includes(arrFileName[arrFileName.length-1])){

@@ -1,5 +1,5 @@
 <template>
-  <div class="app">
+  <div  class="app">
     <transition name="no-mode-translate-fade" mode="in-out">
       <start-screen
         v-if="state == 'start'"
@@ -9,7 +9,7 @@
       />
       <animal-property
         @animalProperty="getAnimalProperty"
-        :animalType="this.user.animal.animalType||user.animal.type"
+        :animalType="this.user.animal.animalType || user.animal.type"
         :city="user.city"
         v-if="state == 'animalProperty'"
       >
@@ -26,19 +26,25 @@
         v-if="state == 'registration'"
         @registeredData="getRegForms"
       />
-      <profile-screen :user="user" @search="state='animalProperty'" v-if="state == 'profile'"/>
+      <profile-screen
+        :user="user"
+        @search="state = 'animalProperty'"
+        v-if="state == 'profile'"
+      />
+      <settings-screen @back="back" :user="user" v-if="state=='settings'"/>
     </transition>
   </div>
 </template>
 
 <script>
 import translate from "translate";
-import axios from "axios"
+import axios from "axios";
 import StartScreen from "./components/StartScreen.vue";
 import AnimalProperty from "./components/AnimalProperty.vue";
 import MapScreen from "./components/MapScreen.vue";
 import RegistrationScreen from "./components/RegistrationScreen.vue";
 import ProfileScreen from "./components/ProfileScreen.vue";
+import SettingsScreen from './components/SettingsScreen.vue';
 export default {
   name: "App",
 
@@ -47,12 +53,13 @@ export default {
     AnimalProperty,
     MapScreen,
     RegistrationScreen,
-    ProfileScreen
+    ProfileScreen,
+    SettingsScreen,
   },
 
   data() {
     return {
-      user: { animal: {}, location: null,city:null, id: null }, //Данные о пользователе и животном
+      user: { animal: {type:'cat'}, location: null, city: null, id: null }, //Данные о пользователе и животном
       state: "start", //CСостояние
       searchParams: {},
       autohorized: false,
@@ -63,11 +70,8 @@ export default {
     };
   },
 
-
-
   methods: {
     async getLocation() {
-      
       return new Promise((resolve, reject) => {
         if (!("geolocation" in navigator)) {
           reject(new Error("Геолокация недоступна"));
@@ -89,9 +93,8 @@ export default {
       } catch (e) {
         console.log(e.message);
       }
-
     },
-     async getAdress(long, lat) {
+    async getAdress(long, lat) {
       //Получаем город из геопозиции
       const data = await axios.get(
         "https://maps.googleapis.com/maps/api/geocode/json?latlng=" +
@@ -101,22 +104,20 @@ export default {
           "&key=AIzaSyBR_KhfKe3u_31BhVXgGPApthBjcg2Va90"
       );
       // console.log(data.data.results);
-      let result = data.data.results[0]["address_components"][2]['long_name']
-       
-        
-      
-      return result.split(' ')[0]=='Gorod'?result.split(' ')[1]:result;
-    },
-    async getCity(){
-    // const cityList = require("../cities.json");
-    const city = await this.getAdress(
-      this.user.location.coords.longitude,
-      this.user.location.coords.latitude
-    );
-    translate.engine = "google"; //переводим город  с латиницы на русский
+      let result = data.data.results[0]["address_components"][2]["long_name"];
 
-    translate.key = process.env.GOOGLE_KEY;
-    return await translate(city, "ru");
+      return result.split(" ")[0] == "Gorod" ? result.split(" ")[1] : result;
+    },
+    async getCity() {
+      // const cityList = require("../cities.json");
+      const city = await this.getAdress(
+        this.user.location.coords.longitude,
+        this.user.location.coords.latitude
+      );
+      translate.engine = "google"; //переводим город  с латиницы на русский
+
+      translate.key = process.env.GOOGLE_KEY;
+      return await translate(city, "ru");
     },
     getAnimalType(value) {
       this.user.animal.animalType = value.animalType;
@@ -147,42 +148,49 @@ export default {
       this.idSeleced = value;
       this.state = "registration";
     },
-    getRegForms(value){
-      this.user.profile=value.userForm
-      this.user.animal=value.animalForm
-      this.state= "profile"
+    getRegForms(value) {
+      this.user.profile = value.userForm;
+      this.user.animal = value.animalForm;
+      this.state = "profile";
       // console.log(this.user)
+    },
+    back(e){
+      console.log('e')
+      this.state=e.state
     }
   },
   async mounted() {
-    let htmlEl=document.querySelector('html')
-    htmlEl.style.overflow='hidden'
+    let htmlEl = document.querySelector("html");
+    htmlEl.style.overflow = "hidden";
     this.lastEnterTime = new Date();
     await this.locateMe();
-    this.user.city = await this.getCity()
-    
-
-    // console.log(this.user.location);
+    this.user.city = await this.getCity();
+    this.state='settings'
+    //  console.log(this.user.location);
+    //  console.log(this.$refs['app'])
+        
   },
+  created(){
+   
+   
+  },
+  beforeDestroy(){
+   
+  }
 };
 </script>
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Amatic+SC:wght@700&display=swap");
 
 html {
-  overflow-y:hidden !important;
- 
+  overflow-y: hidden !important;
 }
 
-
 body {
- 
-
   max-height: 100vh;
   margin: 0;
   padding: 0;
   overflow: hidden;
- 
 }
 .app {
   max-height: 100vh;
@@ -202,7 +210,6 @@ body {
   background: transparent;
 }
 html {
-  overflow-y:hidden !important;
- 
+  overflow-y: hidden !important;
 }
 </style>
