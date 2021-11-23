@@ -1,23 +1,38 @@
 <template>
-  <div class="screen">
-    <div class="screen-text">
+  <div class="screen"><kinesis-container :duration="300" perspective="1000">
+   
+   <kinesis-element :strength="19" type="depth"> <div class="screen-text">
       <p>Выбор животного</p>
-    </div>
+    </div></kinesis-element>
     <div class="screen-image">
+       <kinesis-element :strength="17" type="depth">
       <div class="screen-image__dog" @click="chooseTypeAnimal('dog')"></div>
+      </kinesis-element>
+        <kinesis-element :strength="17" type="depth">
       <div class="screen-image__cat" @click="chooseTypeAnimal('cat')"></div>
+      </kinesis-element>
     </div>
     <div class="screen-r">
-      <hr class="hr1"/>
+       
+    
+      
+     <kinesis-element :strength="18" type="depth"> 
       <a class="reg" @click="registration">Регистрация</a>
+      </kinesis-element>
       <p>|</p>
+       <kinesis-element :strength="16" type="depth"> 
       <a class="sign"  @click="sign">Вход</a>
-      <hr class="hr2"/>
+       </kinesis-element>
+        
+     
+       
     </div>
-  </div>
+  </kinesis-container></div>
 </template>
 
 <script>
+// import VueKinesis from "vue-kinesis";
+// import {KinesisContainer, KinesisElement} from 'vue-kinesis'
 export default {
   name: "StartScreen",
   props: {},
@@ -163,7 +178,7 @@ export default {
 }
 .screen-r {
   position: relative;
-  margin-top: 1em;
+  margin-top: 3em;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -182,17 +197,27 @@ export default {
   left: 0%;
   width: 78%;
   border: 2px solid #000000;
+  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25);
 }
+
 .hr2 {
   position: relative;
   left: 0%;
   width: 5%;
   border: 2px solid #000000;
+  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+.reg,.sign{
+transition: all 0.5s;
 }
 .reg:hover{
   text-shadow: 5px 5px 4px #003902;
+  margin-right:0.3em;
+  font-size: 1.3em;
 }
 .sign:hover{
   text-shadow: 5px 5px 4px #003902;
+   margin-left:0.3em;
+    font-size: 1.3em;
 }
 </style>

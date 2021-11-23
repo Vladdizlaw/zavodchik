@@ -1,13 +1,15 @@
 <template>
   <div
     class="animalproperty"
-    ref="masterdiv"
+    
     :class="{ dog: animalType == 'dog', cat: animalType == 'cat' }"
-  >
+  ><kinesis-container :duration="300" perspective="10000"><kinesis-element :strength="19" type="depth"> 
     <div class="animalproperty-fortext">
-      <p>Параметры поиска</p>
+      <p>Поиск</p>
     </div>
+    </kinesis-element>
     <div class="animalproperty-forinput">
+      <kinesis-element :strength="9" type="depth"> 
       <div class="input male">
         <p>Пол искомого животного</p>
         <select v-model="animalProperty.male">
@@ -15,17 +17,23 @@
           <option value="women">женский</option>
         </select>
       </div>
-      <div class="input breed">
+      </kinesis-element>
+       <kinesis-element :strength="9" type="depth">
+      <div class="input breed"> 
         <p>Порода</p>
+       
         <select v-model="animalProperty.breed" placeholder="порода">
           <option :value="bred" v-for="(bred, ind) in breedList" :key="ind">{{
             bred
           }}</option>
         </select>
-      </div>
+         
+      </div></kinesis-element>
       <div class="input age">
         <p>Возраст</p>
+        
         <div class="ageinput">
+
           <div class="range">
             <p>OT</p>
             <input type="number" v-model="animalProperty.startAge" />
@@ -36,10 +44,13 @@
           </div>
         </div>
       </div>
+      <kinesis-element :strength="8" type="depth">
       <div class="input awards">
         <p>Награды</p>
         <input type="text" v-model="animalProperty.awards" />
       </div>
+      </kinesis-element>
+      <kinesis-element :strength="7" type="depth">
       <div class="input city">
         <p>Город</p>
         <select v-model="animalProperty.place" placeholder="город">
@@ -51,24 +62,29 @@
           >
         </select>
       </div>
+      </kinesis-element>
+      <kinesis-element :strength="6" type="depth">
       <div class="input mating">
         <p>Предположительная дата вязки</p>
         <input type="date" v-model="animalProperty.dateMating" />
       </div>
+      </kinesis-element>
+      <kinesis-element :strength="10" type="depth">
+       
       <button class="btn" @click="submit">Поиск</button>
-    </div>
+        
+      </kinesis-element>
+    </div></kinesis-container>
   </div>
 </template>
 <script>
-
-
 export default {
   name: "AnimalProperty",
   //Компонент выбора свойств животного, принимает тип животного (cat,dog) и геопозицию,
   //отдает событие "animalProperty" с обектом собранных данных animalProperty
   props: {
     animalType: String,
-
+    selectedCity: Array,
     city: String,
   },
   data() {
@@ -81,7 +97,6 @@ export default {
         awards: "",
         place: "",
         dateMating: null,
-        
       },
       breedList: [],
       cityList: [],
@@ -89,8 +104,8 @@ export default {
   },
   async mounted() {
     this.cityList = require("../cities.json");
-   
-    this.animalProperty.place = this.city
+
+    this.animalProperty.place = this.city;
 
     if (this.animalType == "dog") {
       //В зависимости от типа животного подгружаем список пород
@@ -107,17 +122,7 @@ export default {
     }
     // console.log(this.breedList)
   },
-  computed: {
-    selectedCity() {
-      //Сортируем города по алфавиту
-      let citySelected = [];
-      this.cityList.forEach((city) => {
-        citySelected.push(city["Город"]);
-      });
-
-      return citySelected.sort().filter((el) => el != "");
-    },
-  },
+  computed: {},
 
   methods: {
     submit() {
@@ -128,17 +133,17 @@ export default {
         !this.animalProperty.dateMating ||
         !this.animalProperty.place ||
         new Date(this.animalProperty.dateMating) < new Date() ||
-        Number(this.animalProperty.startAge) > Number(this.animalProperty.stopAge)
+        Number(this.animalProperty.startAge) >
+          Number(this.animalProperty.stopAge)
       ) {
-        console.log(this.animalProperty)
+        console.log(this.animalProperty);
         return;
       } else {
         // console.log(new Date(this.animalProperty.dateMating),new Date())
-       
+
         this.$emit("animalProperty", { animalProperty: this.animalProperty });
       }
     },
-    
   },
 };
 </script>
@@ -172,7 +177,7 @@ export default {
 }
 
 .animalproperty-fortext {
-  
+
   display: flex;
   position: relative;
   justify-content: center;
@@ -182,9 +187,11 @@ export default {
   font-weight: bold;
   font-size: 57px;
   line-height: 182px;
-  /* top: 0em; */
-  margin-bottom: 0.5em;
+   top: 0.4em; 
+  /* padding-bottom: 1.5em; */
+  /* margin-bottom: 0.9em; */
   color: #000000;
+  height:10%;
 
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
     0px 4px 4px rgba(0, 0, 0, 0.25);
@@ -209,7 +216,7 @@ export default {
   font-size: 2em;
   line-height: 121px;
   color: #000000;
-  margin-top: -30px;
+  margin-top: -10px;
 
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
     0px 4px 4px rgba(0, 0, 0, 0.25);
@@ -217,8 +224,8 @@ export default {
 
 .age {
   margin-top: 0px;
-  margin-bottom:10px;
-  padding-top:0px;
+  margin-bottom: 10px;
+  padding-top: 0px;
   height: 82px;
   width: 100%;
   display: flex;
@@ -227,9 +234,9 @@ export default {
   align-items: center;
   position: relative;
 }
-.age>p{
-  padding-bottom:10px;
- height:97px;
+.age > p {
+  padding-bottom: 10px;
+  height: 97px;
 }
 .ageinput {
   display: flex;
@@ -249,7 +256,7 @@ input {
     0px 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 8px;
   width: 17em;
-  height: 28px;
+  height: 1.3em;
   font-family: Amatic SC;
   font-style: normal;
   font-weight: bold;
@@ -259,6 +266,14 @@ input {
   text-align: center;
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
     0px 4px 4px rgba(0, 0, 0, 0.25);
+    transition: all 0.4s;
+    z-index: 100;
+}
+select:hover, input:hover{
+  /* transform: rotate3d(20); */
+  width: 17.1em;
+  height:1.4em;
+    font-size: 26px;
 }
 .range {
   display: flex;

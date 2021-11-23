@@ -236,6 +236,12 @@ export default {
   line-height: 23px;
   position: relative;
   opacity:1;
+  transition: all 0.5s;
+}
+.logomsg:hover{
+  font-size:1.3em;
+  width:11em;
+  height:8em;
 }
 .active {
   background: url("../assets/cover1.png");

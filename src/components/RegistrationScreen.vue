@@ -189,6 +189,7 @@ export default {
   props: {
     city: String,
     substate: String,
+    selectedCity:Array,
   },
   components: {
     PhotoAdd,
@@ -282,15 +283,7 @@ export default {
     },
   },
   computed: {
-    selectedCity() {
-      const cityList = require("../cities.json");
-      let citySelected = [];
-      cityList.forEach((city) => {
-        citySelected.push(city["Город"]);
-      });
-
-      return citySelected.sort().filter((el) => el != "");
-    },
+    
   },
   methods: {
     getPhotoAnimal(value) {
@@ -670,7 +663,7 @@ input,
 select,
 textarea {
   width: 12em;
-  height: 27px;
+  height: 0.9em;
   background: #ffffff;
   opacity: 0.7;
   border: 1px solid #000000;
@@ -681,11 +674,17 @@ textarea {
   font-family: Amatic SC;
   font-style: normal;
   font-weight: 900;
-  font-size: 23px;
+  font-size: 1em;
   line-height: 28px;
   /* identical to box height */
 
   color: rgba(0, 0, 0, 1);
+   transition: all 0.5s;
+}
+input:hover,
+select:hover{
+font-size:1.1em;
+height:1em;
 }
 option {
   display: flex;

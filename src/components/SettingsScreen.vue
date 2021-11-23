@@ -33,11 +33,18 @@
           <p>Адрес (Район/Улица)</p>
         </div>
         <div class="wrapper-right">
-          <input type="text" />
-          <input type="text" />
-          <input type="text" />
-          <input type="text" />
-          <input type="text" />
+          <input type="text" v-model="user.profile.name"/>
+          <input type="tel"  v-phone v-model="user.profile.tel"/>
+          <input type="text" v-model="user.profile.mail"/>
+          <input type="text" v-model="user.profile.pass"/>
+         <select v-model="user.profile.city" >
+          <option
+            :value="city"
+            v-for="(city, ind) in selectedCity"
+            :key="ind"
+            >{{ city }}</option
+          >
+        </select>
           <input type="text" />
         </div>
       </div>
@@ -60,10 +67,11 @@ import BackButton from "./BackButton.vue";
 export default {
   name: "SettingsScreen",
   components: { BackButton },
-  props: { user: Object },
+  props: { user: Object, selectedCity:Array },
   data() {
     return {
       state: "start",
+      
     };
   },
   methods: {
@@ -229,12 +237,14 @@ export default {
   justify-content: space-around;
   align-items: start;
 }
-.wrapper-right>input{
+.wrapper-right>input,.wrapper-right>select {
+text-align: center;
 background: rgba(255, 255, 255, 0.5);
 border: 1px solid #000000;
 box-sizing: border-box;
 border-radius: 10px;
 height: 1em;
 width:13em;
+box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25);
 }
 </style>

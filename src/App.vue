@@ -3,6 +3,7 @@
     <transition name="no-mode-translate-fade" mode="in-out">
       <start-screen
         v-if="state == 'start'"
+        :selectedCity="selectedCity"
         @animalType="getAnimalType"
         @sign="getSign"
         @registration="getRegistration"
@@ -11,16 +12,19 @@
         @animalProperty="getAnimalProperty"
         :animalType="this.user.animal.animalType || user.animal.type"
         :city="user.city"
+        :selectedCity="selectedCity"
         v-if="state == 'animalProperty'"
       >
       </animal-property>
       <map-screen
+        
         :location="user.location"
         :searchParams="this.searchParams"
         @viewDetails="getId"
         v-if="state == 'mapScreen'"
       />
       <registration-screen
+         :selectedCity="selectedCity"
         :city="user.city"
         :substate="substate"
         v-if="state == 'registration'"
@@ -29,9 +33,10 @@
       <profile-screen
         :user="user"
         @search="state = 'animalProperty'"
+        @back="back"
         v-if="state == 'profile'"
       />
-      <settings-screen @back="back" :user="user" v-if="state=='settings'"/>
+      <settings-screen :selectedCity="selectedCity" @back="back" :user="user" v-if="state=='settings'"/>
     </transition>
   </div>
 </template>
@@ -69,7 +74,17 @@ export default {
       errorStr: null,
     };
   },
+  computed:{
+    selectedCity() {
+      const cityList = require("./cities.json");
+      let citySelected = [];
+      cityList.forEach((city) => {
+        citySelected.push(city["Город"]);
+      });
 
+      return citySelected.sort().filter((el) => el != "");
+    },
+  },
   methods: {
     async getLocation() {
       return new Promise((resolve, reject) => {
@@ -165,7 +180,7 @@ export default {
     this.lastEnterTime = new Date();
     await this.locateMe();
     this.user.city = await this.getCity();
-    this.state='settings'
+    // this.state='settings'
     //  console.log(this.user.location);
     //  console.log(this.$refs['app'])
         

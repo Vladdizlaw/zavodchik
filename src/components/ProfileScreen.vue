@@ -70,8 +70,8 @@
       </div>
     </div>
     <div class="footer">
-      <div class="footer-setings">
-        <img src="../assets/setings.svg" alt="" />
+      <div class="footer-setings" @click="search">
+        <img src="../assets/setings.svg" alt=""  />
         <p>Настройка</p>
       </div>
       <div class="footer-time"><p>До конца пробного периода осталось: {{lastTrialTime}} дней</p> <button>Оплатить</button></div>
@@ -101,7 +101,7 @@ export default {
   methods:{
       back(){},
       search(){
-      this.$emit('search')
+       this.$emit("back", { state: "settings" });
     }
   },
   
