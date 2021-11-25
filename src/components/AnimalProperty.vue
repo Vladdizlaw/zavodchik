@@ -1,80 +1,85 @@
 <template>
   <div
     class="animalproperty"
-    
     :class="{ dog: animalType == 'dog', cat: animalType == 'cat' }"
-  ><kinesis-container :duration="300" perspective="10000"><kinesis-element :strength="19" type="depth"> 
-    <div class="animalproperty-fortext">
-      <p>Поиск</p>
-    </div>
-    </kinesis-element>
-    <div class="animalproperty-forinput">
-      <kinesis-element :strength="9" type="depth"> 
-      <div class="input male">
-        <p>Пол искомого животного</p>
-        <select v-model="animalProperty.male">
-          <option value="man">мужской </option>
-          <option value="women">женский</option>
-        </select>
-      </div>
+  >
+    <kinesis-container :duration="300" perspective="3000">
+      <kinesis-element :strength="19" type="depth">
+        <div class="animalproperty-fortext">
+          <p>Поиск</p>
+        </div>
       </kinesis-element>
-       <kinesis-element :strength="9" type="depth">
-      <div class="input breed"> 
-        <p>Порода</p>
-       
-        <select v-model="animalProperty.breed" placeholder="порода">
-          <option :value="bred" v-for="(bred, ind) in breedList" :key="ind">{{
-            bred
-          }}</option>
-        </select>
-         
-      </div></kinesis-element>
-      <div class="input age">
-        <p>Возраст</p>
-        
-        <div class="ageinput">
-
-          <div class="range">
-            <p>OT</p>
-            <input type="number" v-model="animalProperty.startAge" />
+      <div class="animalproperty-forinput">
+        <kinesis-element :strength="9" type="depth">
+          <div class="input male">
+            <p>Пол искомого животного</p>
+            <select v-model="animalProperty.male">
+              <option value="man">мужской </option>
+              <option value="women">женский</option>
+            </select>
           </div>
-          <div class="range">
-            <p>ДО</p>
-            <input type="number" v-model="animalProperty.stopAge" />
+        </kinesis-element>
+        <kinesis-element :strength="9" type="depth">
+          <div class="input breed">
+            <p>Порода</p>
+
+            <select v-model="animalProperty.breed" placeholder="порода">
+              <option
+                :value="bred"
+                v-for="(bred, ind) in breedList"
+                :key="ind"
+                >{{ bred }}</option
+              >
+            </select>
+          </div></kinesis-element
+        >
+
+        <div class="input age">
+          <kinesis-element :strength="6" type="depth">
+            <p>Возраст</p>
+          </kinesis-element>
+          <div class="ageinput">
+            <div class="range">
+              <p>OT</p>
+              <input type="number" v-model="animalProperty.startAge" />
+            </div>
+            <div class="range">
+              <p>ДО</p>
+              <input type="number" v-model="animalProperty.stopAge" />
+            </div>
           </div>
         </div>
-      </div>
-      <kinesis-element :strength="8" type="depth">
-      <div class="input awards">
-        <p>Награды</p>
-        <input type="text" v-model="animalProperty.awards" />
-      </div>
-      </kinesis-element>
-      <kinesis-element :strength="7" type="depth">
-      <div class="input city">
-        <p>Город</p>
-        <select v-model="animalProperty.place" placeholder="город">
-          <option
-            :value="city"
-            v-for="(city, ind) in selectedCity"
-            :key="ind"
-            >{{ city }}</option
-          >
-        </select>
-      </div>
-      </kinesis-element>
-      <kinesis-element :strength="6" type="depth">
-      <div class="input mating">
-        <p>Предположительная дата вязки</p>
-        <input type="date" v-model="animalProperty.dateMating" />
-      </div>
-      </kinesis-element>
-      <kinesis-element :strength="10" type="depth">
-       
-      <button class="btn" @click="submit">Поиск</button>
-        
-      </kinesis-element>
-    </div></kinesis-container>
+
+        <kinesis-element :strength="8" type="depth">
+          <div class="input awards">
+            <p>Награды</p>
+            <input type="text" v-model="animalProperty.awards" />
+          </div>
+        </kinesis-element>
+        <kinesis-element :strength="7" type="depth">
+          <div class="input city">
+            <p>Город</p>
+            <select v-model="animalProperty.place" placeholder="город">
+              <option
+                :value="city"
+                v-for="(city, ind) in selectedCity"
+                :key="ind"
+                >{{ city }}</option
+              >
+            </select>
+          </div>
+        </kinesis-element>
+        <kinesis-element :strength="6" type="depth">
+          <div class="input mating">
+            <p>Предположительная дата вязки</p>
+            <input type="date" v-model="animalProperty.dateMating" />
+          </div>
+        </kinesis-element>
+        <kinesis-element :strength="10" type="depth">
+          <button class="btn" @click="submit">Поиск</button>
+        </kinesis-element>
+      </div></kinesis-container
+    >
   </div>
 </template>
 <script>
@@ -177,7 +182,6 @@ export default {
 }
 
 .animalproperty-fortext {
-
   display: flex;
   position: relative;
   justify-content: center;
@@ -187,11 +191,12 @@ export default {
   font-weight: bold;
   font-size: 57px;
   line-height: 182px;
-   top: 0.4em; 
+  top: 0.2em;
+  /* bottom: 1em; */
   /* padding-bottom: 1.5em; */
   /* margin-bottom: 0.9em; */
   color: #000000;
-  height:10%;
+  height: 3em;
 
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
     0px 4px 4px rgba(0, 0, 0, 0.25);
@@ -214,7 +219,7 @@ export default {
   font-style: normal;
   font-weight: bold;
   font-size: 2em;
-  line-height: 121px;
+  line-height: 100px;
   color: #000000;
   margin-top: -10px;
 
@@ -242,11 +247,11 @@ export default {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  width: 100%;
+  min-width: 100%;
 }
 select,
 input {
-  margin-top: -25px;
+  margin-top: -20px;
   appearance: auto;
   background: #ffffff;
   opacity: 0.5;
@@ -266,14 +271,15 @@ input {
   text-align: center;
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
     0px 4px 4px rgba(0, 0, 0, 0.25);
-    transition: all 0.4s;
-    z-index: 100;
+  transition: all 0.4s;
+  z-index: 100;
 }
-select:hover, input:hover{
+select:hover,
+input:hover {
   /* transform: rotate3d(20); */
   width: 17.1em;
-  height:1.4em;
-    font-size: 26px;
+  height: 1.4em;
+  font-size: 26px;
 }
 .range {
   display: flex;

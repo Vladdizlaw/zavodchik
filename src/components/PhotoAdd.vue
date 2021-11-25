@@ -11,6 +11,7 @@
         @click="previos"
         v-show="page > 1"
       />
+    
       <label
         for="fileupload"
         class="square"
@@ -27,6 +28,7 @@
           @change="onFileChange"
         />
       </label>
+      
       <label
         class="square"
         v-if="
@@ -41,6 +43,7 @@
           @change="onFileChange"
         />
       </label>
+      
       <label
         class="square"
         v-if="
@@ -95,11 +98,14 @@
         @click="next"
         v-show="photo.length >= 3 && page < 3"
       />
-    </div>
+    </div> 
     <div class="error" :v-show="error">{{error}}</div>
   </div>
+ 
 </template>
 <script>
+// import {KinesisContainer, KinesisElement} from 'vue-kinesis'
+
 export default {
   name: "PhotoAdd",
   props: { message: String },

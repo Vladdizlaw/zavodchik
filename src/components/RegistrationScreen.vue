@@ -618,19 +618,21 @@ export default {
   background-position: center;
   background-size: cover;
   overflow: hidden;
-  width: 35%;
-  height: 40%;
+  width: 35vw;
+  height: 40vh;
   border: 2px solid;
-  border-radius: 3em 8em 3em 8em;
+  border-radius: 8em 0em 8em 0em;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
   box-shadow: 5px 7px rgb(100, 100, 22);
-  opacity: 0.9;
+  opacity: 0.4;
   transition: all 0.3s;
+  font-size: 1.2em;
   /* padding: 2em 2em; */
 }
+
 .forbutton {
   display: flex;
   flex-direction: row;

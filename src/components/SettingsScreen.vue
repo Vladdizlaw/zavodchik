@@ -5,12 +5,22 @@
   >
     <div class="header">
       <back-button :func="back" class="backbutton" />
-      <div class="header__text">
-        <img src="../assets/setting.svg" alt="" v-if="state == 'start'" />
-        <p v-if="state == 'start'">Настройка</p>
-        <p v-if="state == 'contacts'">Контактные данные</p>
-      </div>
-      <div class="header__save" v-show="state !== 'start'">
+      <kinesis-container :duration="300" perspective="3000">
+        <div class="header__text">
+          <kinesis-element
+            :strength="500"
+            type="rotate"
+            :transformOrigin="backWheelOrigin"
+          >
+            <img src="../assets/setting.svg" alt="" v-if="state == 'start'" />
+          </kinesis-element>
+
+          <p v-if="state == 'start'">Настройка</p>
+
+          <p v-if="state == 'contacts'">Контактные данные</p>
+        </div></kinesis-container
+      >
+      <div class="header__save" @click="save" v-show="state !== 'start'">
         <img src="../assets/save.svg" alt="" />
         <p>Сохранить изменения</p>
       </div>
@@ -33,19 +43,47 @@
           <p>Адрес (Район/Улица)</p>
         </div>
         <div class="wrapper-right">
-          <input type="text" v-model="user.profile.name"/>
-          <input type="tel"  v-phone v-model="user.profile.tel"/>
-          <input type="text" v-model="user.profile.mail"/>
-          <input type="text" v-model="user.profile.pass"/>
-         <select v-model="user.profile.city" >
-          <option
-            :value="city"
-            v-for="(city, ind) in selectedCity"
-            :key="ind"
-            >{{ city }}</option
-          >
-        </select>
-          <input type="text" />
+          <input type="text" v-model="user.profile.name" />
+          <div class="input__seen">
+            <input ref="tel" type="tel" v-phone v-model="user.profile.tel" :class="{unseen:!seenTelFlag}" />
+            <img
+              src="../assets/seen.svg"
+              @click="seenTel"
+              alt=""
+              v-if="seenTelFlag"
+            /><img
+              src="../assets/unseen.svg"
+              v-if="!seenTelFlag"
+              @click="seenTel"
+              alt=""
+            />
+          </div>
+
+          <input type="text" v-model="user.profile.mail" />
+          <input type="text" v-model="user.profile.pass" />
+          <select v-model="user.profile.city">
+            <option
+              :value="city"
+              v-for="(city, ind) in selectedCity"
+              :key="ind"
+              >{{ city }}</option
+            >
+          </select>
+          <div class="input__seen">
+            <input ref="hood" type="text" v-model="user.profile.hood" :class="{unseen:!seenHoodFlag}"/>
+            <img
+              src="../assets/seen.svg"
+              v-if="seenHoodFlag"
+              @click="seenHood"
+              alt=""
+            />
+            <img
+              src="../assets/unseen.svg"
+              v-if="!seenHoodFlag"
+              @click="seenHood"
+              alt=""
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -63,15 +101,18 @@
   </div>
 </template>
 <script>
+//  import { nextTick } from 'vue/types/umd';
+// import {KinesisContainer, KinesisElement} from 'vue-kinesis'
 import BackButton from "./BackButton.vue";
 export default {
   name: "SettingsScreen",
   components: { BackButton },
-  props: { user: Object, selectedCity:Array },
+  props: { user: Object, selectedCity: Array },
   data() {
     return {
       state: "start",
-      
+      seenTelFlag: true,
+      seenHoodFlag: true,
     };
   },
   methods: {
@@ -83,16 +124,56 @@ export default {
       }
     },
     exit() {
-      this.$emit("back", { state: "registration" });
+      this.$emit("back", { state: "registration", substate: "start" });
     },
     contacts() {
       this.state = "contacts";
-      console.log(this.state);
+      // console.log(this.state);
+    },
+    save() {
+      this.user.profile.seenFlags={seenTelFlag:this.seenTelFlag,seenHoodFlag:this.seenHoodFlag}
+      this.$emit("save", this.user);
+    },
+    seenTel() {
+      if (this.seenTelFlag) {
+        this.$refs.tel.style.opacity = "0.5";
+        this.seenTelFlag = false;
+      } else {
+        // this.$refs.tel.style.backgroundColor='rgba(255, 255, 255, 0.5)'
+        this.$refs.tel.style.opacity = "1";
+        this.seenTelFlag = true;
+      }
+    },
+    seenHood() {
+      if (this.seenHoodFlag) {
+        this.$refs.hood.style.opacity = "0.5";
+        // this.$refs.hood.style.backDropFilter='blur(2px);'
+        // console.log(this.$refs.hood.style);
+        this.seenHoodFlag = false;
+      } else {
+        // this.$refs.hood.style.filter='none'
+        this.$refs.hood.style.opacity = "1";
+        this.seenHoodFlag = true;
+      }
     },
   },
+  computed: {},
+  mounted() {
+    this.$nextTick(()=>{
+    if (!this.seenTelFlag) {
+      this.$refs.tel.style.opacity = "0.5";
+    }
+    if (!this.seenHoodFlag) {
+      this.$refs.hood.style.opacity = "0.5";
+    }
+  })
+  }
 };
 </script>
 <style scoped>
+.unseen{
+  opacity: 0.5;
+}
 .dog {
   background: url("../assets/cover_dog_acc.svg"), url("../assets/cover_dog.png");
   background-position: center, center;
@@ -133,6 +214,7 @@ export default {
   position: relative;
 }
 .header__text {
+  margin-left: 4em;
   width: 79%;
   display: flex;
   align-items: center;
@@ -170,10 +252,12 @@ export default {
   justify-content: space-around;
   line-height: 81px;
   font-size: 1.5em;
+  transition: all 0.3s;
 }
 .main-menu > p:hover {
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.5),
     10px 10px 4px rgba(9, 112, 7, 0.75);
+  font-size: 1.1em;
 }
 .footer {
   margin-top: 1em;
@@ -218,7 +302,7 @@ export default {
   height: 90%;
   justify-content: flex-start;
   align-items: center;
-  width:100vw;
+  width: 100vw;
 }
 .wrapper-left {
   padding-left: 1em;
@@ -229,7 +313,7 @@ export default {
   justify-content: space-around;
   align-items: start;
 }
-.wrapper-right{
+.wrapper-right {
   display: flex;
   width: 70%;
   height: 100%;
@@ -237,14 +321,35 @@ export default {
   justify-content: space-around;
   align-items: start;
 }
-.wrapper-right>input,.wrapper-right>select {
-text-align: center;
-background: rgba(255, 255, 255, 0.5);
-border: 1px solid #000000;
-box-sizing: border-box;
-border-radius: 10px;
-height: 1em;
-width:13em;
-box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25);
+.input__seen > img {
+  /* display: flex; */
+  padding-left: 0.2em;
+  width: 1.1em;
+  /* filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.75)); */
+}
+
+.input__seen > input,
+.wrapper-right > input,
+.wrapper-right > select {
+  text-align: center;
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid #000000;
+  box-sizing: border-box;
+  border-radius: 10px;
+  height: 1em;
+  width: 13em;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
+    0px 4px 4px rgba(0, 0, 0, 0.25);
+  transition: all 0.3s;
+}
+input:hover,
+select:hover {
+  font-size: 1.01em;
+  /* height: 2em; */
+}
+option {
+  display: flex;
+  justify-content: center;
+  text-align: center;
 }
 </style>

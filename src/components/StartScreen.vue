@@ -1,14 +1,14 @@
 <template>
-  <div class="screen"><kinesis-container :duration="300" perspective="1000">
+  <div class="screen"><kinesis-container :duration="300" perspective="3000">
    
-   <kinesis-element :strength="19" type="depth"> <div class="screen-text">
+   <kinesis-element :strength="29" type="depth"> <div class="screen-text">
       <p>Выбор животного</p>
     </div></kinesis-element>
     <div class="screen-image">
-       <kinesis-element :strength="17" type="depth">
+       <kinesis-element :strength="25" type="depth">
       <div class="screen-image__dog" @click="chooseTypeAnimal('dog')"></div>
       </kinesis-element>
-        <kinesis-element :strength="17" type="depth">
+        <kinesis-element :strength="25" type="depth">
       <div class="screen-image__cat" @click="chooseTypeAnimal('cat')"></div>
       </kinesis-element>
     </div>
@@ -208,6 +208,8 @@ export default {
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25);
 }
 .reg,.sign{
+  margin-left:0.2em;
+   margin-right:0.2em;
 transition: all 0.5s;
 }
 .reg:hover{
