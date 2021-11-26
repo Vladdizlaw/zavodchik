@@ -5,19 +5,16 @@
   >
     <div class="header">
       <back-button :func="back" class="backbutton" />
-      <kinesis-container :duration="300" perspective="3000">
+      <kinesis-container :duration="300">
         <div class="header__text">
-          <kinesis-element
-            :strength="500"
-            type="rotate"
-            :transformOrigin="backWheelOrigin"
-          >
+          <kinesis-element :strength="500" type="rotate">
             <img src="../assets/setting.svg" alt="" v-if="state == 'start'" />
           </kinesis-element>
 
           <p v-if="state == 'start'">Настройка</p>
-
-          <p v-if="state == 'contacts'">Контактные данные</p>
+          <div v-if="state == 'contacts'">
+            <p>Контактные данные</p>
+          </div>
         </div></kinesis-container
       >
       <div class="header__save" @click="save" v-show="state !== 'start'">
@@ -45,7 +42,13 @@
         <div class="wrapper-right">
           <input type="text" v-model="user.profile.name" />
           <div class="input__seen">
-            <input ref="tel" type="tel" v-phone v-model="user.profile.tel" :class="{unseen:!seenTelFlag}" />
+            <input
+              ref="tel"
+              type="tel"
+              v-phone
+              v-model="user.profile.tel"
+              :class="{ unseen: !seenTelFlag }"
+            />
             <img
               src="../assets/seen.svg"
               @click="seenTel"
@@ -70,7 +73,12 @@
             >
           </select>
           <div class="input__seen">
-            <input ref="hood" type="text" v-model="user.profile.hood" :class="{unseen:!seenHoodFlag}"/>
+            <input
+              ref="hood"
+              type="text"
+              v-model="user.profile.hood"
+              :class="{ unseen: !seenHoodFlag }"
+            />
             <img
               src="../assets/seen.svg"
               v-if="seenHoodFlag"
@@ -131,7 +139,11 @@ export default {
       // console.log(this.state);
     },
     save() {
-      this.user.profile.seenFlags={seenTelFlag:this.seenTelFlag,seenHoodFlag:this.seenHoodFlag}
+      this.user.profile.seenFlags = {
+        seenTelFlag: this.seenTelFlag,
+        seenHoodFlag: this.seenHoodFlag,
+      };
+      console.log(this.user);
       this.$emit("save", this.user);
     },
     seenTel() {
@@ -146,32 +158,26 @@ export default {
     },
     seenHood() {
       if (this.seenHoodFlag) {
-        this.$refs.hood.style.opacity = "0.5";
+        // this.$refs.hood.style.opacity = "0.5";
         // this.$refs.hood.style.backDropFilter='blur(2px);'
         // console.log(this.$refs.hood.style);
         this.seenHoodFlag = false;
       } else {
         // this.$refs.hood.style.filter='none'
-        this.$refs.hood.style.opacity = "1";
+        // this.$refs.hood.style.opacity = "1";
         this.seenHoodFlag = true;
       }
     },
   },
   computed: {},
   mounted() {
-    this.$nextTick(()=>{
-    if (!this.seenTelFlag) {
-      this.$refs.tel.style.opacity = "0.5";
-    }
-    if (!this.seenHoodFlag) {
-      this.$refs.hood.style.opacity = "0.5";
-    }
-  })
-  }
+   this.seenHoodFlag=this.user.profile.seenFlags.seenHoodFlag
+   this.seenTelFlag=this.user.profile.seenFlags.seenTelFlag
+  },
 };
 </script>
 <style scoped>
-.unseen{
+.unseen {
   opacity: 0.5;
 }
 .dog {
@@ -214,12 +220,15 @@ export default {
   position: relative;
 }
 .header__text {
-  margin-left: 4em;
-  width: 79%;
+  position: relative;
+  left: 27vw;
+  width: 26vw;
+  justify-self: center;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2em;
+  font-size: 1.8em;
+  flex-wrap: nowrap;
 }
 .header__save {
   display: flex;
@@ -271,6 +280,7 @@ export default {
 .footer-support {
   display: flex;
   justify-content: center;
+  min-width: 10rem;
   margin-left: 0.3em;
 }
 .footer-time {

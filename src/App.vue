@@ -64,44 +64,44 @@ export default {
 
   data() {
     return {
-      user:{
-    "animal": {
-        "type": "cat",
-        "male": "мужской",
-        "age": 1,
-        "breed": "Американский бобтейл короткошёрстный",
-        "name": "1111111",
-        "dateMating": null,
-        "awards": null,
-        "vaccination": null,
-        "color": null,
-        "matingConditions": null,
-        "photoAnimal": [
-            {}
-        ],
-        "photoLitter": [],
-        "licenseAgreement": true,
-        "startTrial": {
-            "value": true,
-            "date": null,
-            "dateStart": 1637857237324,
-            "dateEnd": 1637934997324
-        }
-    },
-    "location": {},
-    "city": "Краснодар",
-    "id": null,
-    "profile": {
-        "mail": "r-vas@inbox.ru",
-        "tel": "89180998906",
-        "name": "1111111",
-        "pass": "111111111",
-        "city": "Краснодар",
-        "id": "b908357d-e23a-4682-917f-2be56e7c4fcc",
-        "hood": "1111"
-    }
-},
-      // user: { animal: {type:'cat'}, location: null, city: null, id: null }, //Данные о пользователе и животном
+//       user:{
+//     "animal": {
+//         "type": "cat",
+//         "male": "мужской",
+//         "age": 1,
+//         "breed": "Американский бобтейл короткошёрстный",
+//         "name": "1111111",
+//         "dateMating": null,
+//         "awards": null,
+//         "vaccination": null,
+//         "color": null,
+//         "matingConditions": null,
+//         "photoAnimal": [
+//             {}
+//         ],
+//         "photoLitter": [],
+//         "licenseAgreement": true,
+//         "startTrial": {
+//             "value": true,
+//             "date": null,
+//             "dateStart": 1637857237324,
+//             "dateEnd": 1637934997324
+//         }
+//     },
+//     "location": {},
+//     "city": "Краснодар",
+//     "id": null,
+//     "profile": {
+//         "mail": "r-vas@inbox.ru",
+//         "tel": "89180998906",
+//         "name": "1111111",
+//         "pass": "111111111",
+//         "city": "Краснодар",
+//         "id": "b908357d-e23a-4682-917f-2be56e7c4fcc",
+//         "hood": "1111"
+//     }
+// },
+      user: { animal: {type:'cat'}, location: null, city: null, id: null }, //Данные о пользователе и животном
       state: "start", //CСостояние
       searchParams: {},
       autohorized: false,
@@ -207,7 +207,10 @@ export default {
       // console.log(this.user)
     },
     save(e){
+      const data=JSON.stringify(e)
+      window.localStorage.setItem('user',data)
       this.user=e
+     
     },
     back(e){
       // console.log('e')
@@ -217,13 +220,15 @@ export default {
       }
     }
   },
-  async mounted() {
+  async mounted() { 
+    console.log(localStorage.user)
+    // this.user=window.localStorage.getItem('user')
     let htmlEl = document.querySelector("html");
     htmlEl.style.overflow = "hidden";
     this.lastEnterTime = new Date();
     await this.locateMe();
     this.user.city = await this.getCity();
-    this.state='settings'
+    // this.state='settings'
     //  console.log(this.user.location);
     //  console.log(this.$refs['app'])
         
