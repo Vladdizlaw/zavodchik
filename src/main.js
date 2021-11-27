@@ -2,14 +2,14 @@ import Vue from "vue";
 import App from "./App.vue";
 import VueKinesis from "vue-kinesis";
 import vuetify from "./plugins/vuetify";
-
+import Vuex from "vuex";
+import store from './store/index.js'
 Vue.config.productionTip = false;
 
 new Vue({
-  vuetify,
+  vuetify,store,
   render: (h) => h(App),
 }).$mount("#app");
-
 
 Vue.directive("phone", {
   bind(el) {
@@ -55,4 +55,5 @@ Vue.directive("phone", {
   },
 });
 Vue.use(VueKinesis);
+Vue.use(Vuex);
 

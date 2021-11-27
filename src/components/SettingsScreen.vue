@@ -125,6 +125,7 @@ export default {
   },
   methods: {
     back() {
+      console.log(this.user)
       if (this.state == "start") {
         this.$emit("back", { state: "profile" });
       } else {
@@ -143,16 +144,16 @@ export default {
         seenTelFlag: this.seenTelFlag,
         seenHoodFlag: this.seenHoodFlag,
       };
-      console.log(this.user);
+      // console.log(this.user);
       this.$emit("save", this.user);
     },
     seenTel() {
       if (this.seenTelFlag) {
-        this.$refs.tel.style.opacity = "0.5";
+        // this.$refs.tel.style.opacity = "0.5";
         this.seenTelFlag = false;
       } else {
         // this.$refs.tel.style.backgroundColor='rgba(255, 255, 255, 0.5)'
-        this.$refs.tel.style.opacity = "1";
+        // this.$refs.tel.style.opacity = "1";
         this.seenTelFlag = true;
       }
     },
@@ -171,8 +172,8 @@ export default {
   },
   computed: {},
   mounted() {
-   this.seenHoodFlag=this.user.profile.seenFlags.seenHoodFlag
-   this.seenTelFlag=this.user.profile.seenFlags.seenTelFlag
+   this.seenHoodFlag=this.user.profile.seenFlags?.seenHoodFlag
+   this.seenTelFlag=this.user.profile.seenFlags?.seenTelFlag
   },
 };
 </script>

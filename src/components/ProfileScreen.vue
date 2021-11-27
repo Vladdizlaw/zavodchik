@@ -204,7 +204,7 @@ export default {
 .dog {
   background: url("../assets/cover_dog_acc.svg"), url("../assets/cover_dog.png");
   background-position: center, center;
-  background-size: 70vh, cover;
+  background-size: 100vh, cover;
   background-repeat: no-repeat, no-repeat;
 }
 .cat {

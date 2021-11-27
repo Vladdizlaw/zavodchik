@@ -319,7 +319,7 @@ export default {
       // this.states.previosState='start'
     },
     sendRegisteredData(){
-      this.$emit('registeredData',{userForm:this.regForm,animalForm:this.animalForm})
+      this.$emit('registeredData',{profile:this.regForm,animal:this.animalForm})
     },
     getRegistration() {
       let valid = true;

@@ -50,6 +50,7 @@ import MapScreen from "./components/MapScreen.vue";
 import RegistrationScreen from "./components/RegistrationScreen.vue";
 import ProfileScreen from "./components/ProfileScreen.vue";
 import SettingsScreen from './components/SettingsScreen.vue';
+// import store from './store/index.js'
 export default {
   name: "App",
 
@@ -76,8 +77,7 @@ export default {
 //         "vaccination": null,
 //         "color": null,
 //         "matingConditions": null,
-//         "photoAnimal": [
-//             {}
+//         "photoAnimal": [         
 //         ],
 //         "photoLitter": [],
 //         "licenseAgreement": true,
@@ -101,7 +101,7 @@ export default {
 //         "hood": "1111"
 //     }
 // },
-      user: { animal: {type:'cat'}, location: null, city: null, id: null }, //Данные о пользователе и животном
+    //   user: { animal: {type:'cat'}, location: null, city: null, id: null }, //Данные о пользователе и животном
       state: "start", //CСостояние
       searchParams: {},
       autohorized: false,
@@ -112,6 +112,9 @@ export default {
     };
   },
   computed:{
+    user(){
+      return this.$store.getters.USER
+    },
     selectedCity() {
       const cityList = require("./cities.json");
       let citySelected = [];
@@ -172,11 +175,12 @@ export default {
       return await translate(city, "ru");
     },
     getAnimalType(value) {
-      this.user.animal.animalType = value.animalType;
+      // this.user.animal.animalType = value.animalType;
+      this.$store.commit('SAVE_USER_ANIMAL',value)
       this.state = "animalProperty";
     },
     getAnimalProperty(value) {
-      this.searchParams.animalType = this.user.animal.animalType;
+      this.searchParams.animalType = this.user.animal.type;
       this.searchParams.age = value.animalProperty.age;
       this.searchParams.male = value.animalProperty.male;
       this.searchParams.breed = value.animalProperty.breed;
@@ -201,19 +205,23 @@ export default {
       this.state = "registration";
     },
     getRegForms(value) {
-      this.user.profile = value.userForm;
-      this.user.animal = value.animalForm;
+
+      this.$store.commit('SAVE_USER_PROFILE', value.profile);
+       this.$store.commit('SAVE_USER_ANIMAL', value.animal);
+      // this.$store.commit('SAVE_USER',value.animalForm);
       this.state = "profile";
-      // console.log(this.user)
+      console.log(this.user)
     },
     save(e){
       const data=JSON.stringify(e)
       window.localStorage.setItem('user',data)
-      this.user=e
+      console.log('save from save:',e)
+      this.$store.commit('SAVE_USER_PROFILE',e.profile);
      
     },
     back(e){
       // console.log('e')
+       
       this.state=e.state
       if (e.substate){
         this.substate=e.substate
@@ -221,7 +229,7 @@ export default {
     }
   },
   async mounted() { 
-    console.log(localStorage.user)
+    console.log(this.user)
     // this.user=window.localStorage.getItem('user')
     let htmlEl = document.querySelector("html");
     htmlEl.style.overflow = "hidden";
