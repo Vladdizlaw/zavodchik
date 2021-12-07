@@ -7,12 +7,12 @@
   >
     <div class="formap">
       <div id="map"></div>
-      <div class="logo" v-for="user in users" :key="user.id">
-        <div :id="user.name" class="forimage">
+      <div class="logo" v-for="user in users" :key="user.profile.id">
+        <div :id="user.animal.name" class="forimage">
           <img
             :src="require(`../assets/${srcpic}.svg`)"
             class="catlogo"
-            :alt="user.name"
+            :alt="user.animal.name"
             @mouseenter="clack = true"
             @mouseleave="clack = false"
           />
@@ -23,15 +23,16 @@
             :class="{ active: clack }"
           >
             <p>
-              Порода: <span>{{ user.breed }}</span>
+              Порода: <span>{{ user.animal.breed }}</span>
             </p>
+            <div class="logomsg__image"><img :src="user.photoAnimal[0]" v-if="user.photoAnimal.length" alt=""/></div>
             <p>
-              Возраст: <span>{{ user.age }}</span>
+              Возраст: <span>{{ user.animal.age }}</span>
             </p>
-            <p>
-              Дата вязки: <span>{{ user.dateMating }}</span>
+            <p v-if="user.animal.dateMating">
+              Вязка: <span>{{ user.animal.dateMating }}</span>
             </p>
-            <button @click.stop="viewDetails(user.id)">
+            <button @click.stop="viewDetails(user.profile.id)">
               
               <p>Детали</p>
             </button>
@@ -47,7 +48,7 @@ import Map from "ol/Map";
 import View from "ol/View";
 import OSM from "ol/source/OSM";
 import TileLayer from "ol/layer/Tile";
-
+import axios from 'axios'
 import "ol/ol.css";
 import { fromLonLat } from "ol/proj";
 export default {
@@ -59,7 +60,7 @@ export default {
   },
   data() {
     return {
-      users: null,
+      users: [],
 
       clack: false, //aфлаг для отображения деталей на карте
     };
@@ -109,13 +110,14 @@ export default {
       }
     },
   },
-  created() {
-    this.getUsersData();
+  async created() {
+   
   },
-  mounted() {
+  async mounted() {
+     await this.getUsersData();
     let projection = fromLonLat(
       //Позиция для центра карты по текущей геопозиции
-      [this.location.coords.longitude, this.location.coords.latitude],
+      [this.location.longitude, this.location.latitude],
       "EPSG:3857"
     );
     const map = new Map({ target: "map" }); //Создаем карту
@@ -129,13 +131,14 @@ export default {
     const osmSource = new OSM();
     const osmLayer = new TileLayer({ source: osmSource });
     map.addLayer(osmLayer);
-    // console.log(this.location);
+    // console.log('users',this.users);
     this.users.forEach((user) => {
+      console.log('user',user)
       //выводим на карту всех юзеров
       const catlogo = new Overlay({
-        element: document.getElementById(user.name),
+        element: document.getElementById(user.animal.name),
       });
-      catlogo.setPosition(fromLonLat([user.lat, user.long]));
+      catlogo.setPosition(fromLonLat([user.location.longitude, user.location.latitude]));
       map.addOverlay(catlogo);
     });
   },
@@ -149,13 +152,18 @@ export default {
      
       f.path[0].style.opacity = 0.2;
     },
-    getUsersData() {
+    async getUsersData() {
       //Получаем данные о юзерах из файла (заглушка)
-      if (this.searchParams.animalType == "dog") {
-        this.users = require("../user_dog.json");
-      } else {
-        this.users = require("../user_cat.json");
-      }
+      // if (this.searchParams.animalType == "dog") {
+      //   this.users = require("../user_dog.json");
+      // } else {
+      //   this.users = require("../user_cat.json");
+      // }
+      const {data}= await axios.get('http://localhost:5000/api/get_users')
+      // const data1= await data.json()
+      console.log("response",data)
+      this.users = data
+      // console.log(this.users)
     },
     viewDetails(data) {
       this.$emit("viewDetails", { id: data });
@@ -200,12 +208,13 @@ export default {
   z-index: 100;
 }
 .catlogo {
-  width: 5em;
+  width: 7em;
   height: 5em;
   transition: all 1s;
+  /* font-size: 1rem; */
 }
 .catlogo:hover {
-  width: 6em;
+  width: 8em;
   height: 6em;
   /* color: rgb(9, 39, 9); */
 }
@@ -219,7 +228,7 @@ export default {
     drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))
     drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
   border-radius: 50px 0px;
-
+  padding:1rem 1rem 1rem 1rem;
   background: url("../assets/cover1.png");
   background-position: center;
   background-size: cover;
@@ -232,16 +241,40 @@ export default {
   font-family: Amatic SC;
   font-style: normal;
   font-weight: bold;
-  font-size: 18px;
+  font-size: 1rem;
   line-height: 23px;
   position: relative;
   opacity:1;
   transition: all 0.5s;
 }
+.logomsg__image{
+  width: 30%;
+  height: 52%;
+  position:absolute;
+  top:35%;
+  left:1em;
+  border:1px solid black;
+   transition: all 0.5s;
+   /* position: relative; */
+   overflow: hidden;
+}
+.logomsg__image>img{
+  position: absolute;
+  width:100%;
+  height:100%;
+
+
+}
 .logomsg:hover{
   font-size:1.3em;
-  width:11em;
-  height:8em;
+  min-width:11em;
+  min-height:8em;
+
+}
+.logomsg__image:hover{
+  width:35%;
+  height:57%;
+  transform: rotate3d(1, 2.0, 3.0, 360deg);
 }
 .active {
   background: url("../assets/cover1.png");
@@ -250,7 +283,7 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: space-around;
-  align-items: center;
+  align-items: flex-end;
   /* opacity: 1; */
   position: relative;
    opacity: 0.2; 

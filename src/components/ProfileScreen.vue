@@ -39,7 +39,7 @@
           <p>Возможный период случки:{{ user.animal.date }}</p>
           <p>Условие вязки:{{ user.animal.matingConditions }}</p>
           <p>
-            Контактные данные:{{ user.profile.name }},{{ user.profile.tel }},
+            Контактные данные:{{ user.profile.name }},{{user.profile.seenFlags.seenTelFlag? user.profile.tel:'' }}
             {{ user.profile.mail }}
           </p>
         </div>
@@ -167,6 +167,7 @@ export default {
     cancelModal() {
       const modal = this.$refs.modal;
       const img = modal.getElementsByTagName("img");
+      
       //  console.log(img)
 
      
@@ -178,15 +179,15 @@ export default {
   },
   computed: {
     urls() {
-      if (!this.user.animal.photoAnimal) {
+      if (!this.user.photoAnimal) {
         return null;
       }
       const urls = [];
-      this.user.animal.photoAnimal.forEach((u) => {
-        urls.push(URL.createObjectURL(u));
+      this.user.photoAnimal.forEach((u) => {
+        urls.push(u);
       });
-      this.user.animal.photoLitter.forEach((u) => {
-        urls.push(URL.createObjectURL(u));
+      this.user.photoLitter.forEach((u) => {
+        urls.push(u);
       });
       return urls;
     },

@@ -1,5 +1,5 @@
 <template>
-  <div  class="app">
+  <div class="app">
     <transition name="no-mode-translate-fade" mode="in-out">
       <start-screen
         v-if="state == 'start'"
@@ -10,22 +10,21 @@
       />
       <animal-property
         @animalProperty="getAnimalProperty"
-        :animalType="this.user.animal.animalType || user.animal.type"
-        :city="user.city"
+        :animalType="user.animal.type"
+        :city="user.profile.city"
         :selectedCity="selectedCity"
         v-if="state == 'animalProperty'"
       >
       </animal-property>
       <map-screen
-        
         :location="user.location"
         :searchParams="this.searchParams"
         @viewDetails="getId"
         v-if="state == 'mapScreen'"
       />
       <registration-screen
-         :selectedCity="selectedCity"
-        :city="user.city"
+        :selectedCity="selectedCity"
+        :city="user.profile.city"
         :substate="substate"
         v-if="state == 'registration'"
         @registeredData="getRegForms"
@@ -36,7 +35,13 @@
         @back="back"
         v-if="state == 'profile'"
       />
-      <settings-screen :selectedCity="selectedCity" @save="save" @back="back" :user="user" v-if="state=='settings'"/>
+      <settings-screen
+        :selectedCity="selectedCity"
+        @saveProfile="updateProfile"
+        @back="back"
+        :user="user"
+        v-if="state == 'settings'"
+      />
     </transition>
   </div>
 </template>
@@ -49,7 +54,7 @@ import AnimalProperty from "./components/AnimalProperty.vue";
 import MapScreen from "./components/MapScreen.vue";
 import RegistrationScreen from "./components/RegistrationScreen.vue";
 import ProfileScreen from "./components/ProfileScreen.vue";
-import SettingsScreen from './components/SettingsScreen.vue';
+import SettingsScreen from "./components/SettingsScreen.vue";
 // import store from './store/index.js'
 export default {
   name: "App",
@@ -65,43 +70,7 @@ export default {
 
   data() {
     return {
-//       user:{
-//     "animal": {
-//         "type": "cat",
-//         "male": "мужской",
-//         "age": 1,
-//         "breed": "Американский бобтейл короткошёрстный",
-//         "name": "1111111",
-//         "dateMating": null,
-//         "awards": null,
-//         "vaccination": null,
-//         "color": null,
-//         "matingConditions": null,
-//         "photoAnimal": [         
-//         ],
-//         "photoLitter": [],
-//         "licenseAgreement": true,
-//         "startTrial": {
-//             "value": true,
-//             "date": null,
-//             "dateStart": 1637857237324,
-//             "dateEnd": 1637934997324
-//         }
-//     },
-//     "location": {},
-//     "city": "Краснодар",
-//     "id": null,
-//     "profile": {
-//         "mail": "r-vas@inbox.ru",
-//         "tel": "89180998906",
-//         "name": "1111111",
-//         "pass": "111111111",
-//         "city": "Краснодар",
-//         "id": "b908357d-e23a-4682-917f-2be56e7c4fcc",
-//         "hood": "1111"
-//     }
-// },
-    //   user: { animal: {type:'cat'}, location: null, city: null, id: null }, //Данные о пользователе и животном
+    
       state: "start", //CСостояние
       searchParams: {},
       autohorized: false,
@@ -111,9 +80,9 @@ export default {
       errorStr: null,
     };
   },
-  computed:{
-    user(){
-      return this.$store.getters.USER
+  computed: {
+    user() {
+      return this.$store.getters.USER;
     },
     selectedCity() {
       const cityList = require("./cities.json");
@@ -126,6 +95,46 @@ export default {
     },
   },
   methods: {
+    async senpPhoto(){
+      // let index
+      //  const headers={
+        // 'Content-Type': 'multipart/form-data'}
+        const PhotoArray=[...this.user.photoAnimal,... this.user.photoLitter]
+        console.log(PhotoArray)
+         let formData= new FormData()
+      PhotoArray.forEach(  (photo,ind)=>{
+        
+         formData.append(`file[${ind}]`,photo)
+        
+      })
+
+
+      // this.user.photoLitter?.forEach( (photo,ind)=>{
+        
+      //    formData.append(`file[${index+ind}]`,photo)
+        
+      // })
+      formData.append('id',this.user.profile.id)
+     const answer= await axios.post('http://localhost:5000/api/create_photo',formData,{headers:{
+        'Content-Type': 'multipart/form-data'}})
+     console.log(answer,'formData:',formData)
+    },
+
+    async sendUser(){
+     
+
+      const headers={
+        'Content-Type': 'application/json'}
+      await axios.post('http://localhost:5000/api/create_user'
+    ,this.user,{headers:headers})
+      console.log('send to server -',this.user)
+    },
+    async updateUser(){
+      const headers={
+        'Content-Type': 'application/json'}
+       await axios.put('http://localhost:5000/api/update_user'
+    ,this.user,{headers:headers})
+    },
     async getLocation() {
       return new Promise((resolve, reject) => {
         if (!("geolocation" in navigator)) {
@@ -144,7 +153,9 @@ export default {
     async locateMe() {
       //Получаем геолокацию устройства
       try {
-        this.user.location = await this.getLocation();
+        const location = await this.getLocation();
+
+        this.$store.commit('SAVE_USER',{'location':{latitude:location.coords.latitude,longitude:location.coords.longitude} })
       } catch (e) {
         console.log(e.message);
       }
@@ -158,7 +169,7 @@ export default {
           long +
           "&key=AIzaSyBR_KhfKe3u_31BhVXgGPApthBjcg2Va90"
       );
-      // console.log(data.data.results);
+      console.log(data.data.results);
       let result = data.data.results[0]["address_components"][2]["long_name"];
 
       return result.split(" ")[0] == "Gorod" ? result.split(" ")[1] : result;
@@ -166,8 +177,8 @@ export default {
     async getCity() {
       // const cityList = require("../cities.json");
       const city = await this.getAdress(
-        this.user.location.coords.longitude,
-        this.user.location.coords.latitude
+        this.user.location.longitude,
+        this.user.location.latitude
       );
       translate.engine = "google"; //переводим город  с латиницы на русский
 
@@ -176,7 +187,7 @@ export default {
     },
     getAnimalType(value) {
       // this.user.animal.animalType = value.animalType;
-      this.$store.commit('SAVE_USER_ANIMAL',value)
+      this.$store.commit("SAVE_USER_ANIMAL", value);
       this.state = "animalProperty";
     },
     getAnimalProperty(value) {
@@ -200,54 +211,65 @@ export default {
       this.state = "registration";
     },
 
-    getId(value) {
-      this.idSeleced = value;
+    async getId(value) {
+     
+      // console.log(value)
+      const {data}= await axios.get(`http://localhost:5000/api/get_user/${value.id}`)
+      console.log('data',data) 
+      this.idSelected = data;
+      console.log(this.idSelected)
       this.state = "registration";
     },
-    getRegForms(value) {
-
-      this.$store.commit('SAVE_USER_PROFILE', value.profile);
-       this.$store.commit('SAVE_USER_ANIMAL', value.animal);
+    async getRegForms(value) {
+      // this.$store.commit("SAVE_USER_PROFILE", value.profile);
+      // this.$store.commit("SAVE_USER_ANIMAL", value.animal);
       // this.$store.commit('SAVE_USER',value.animalForm);
-      this.state = "profile";
-      console.log(this.user)
+      this.$store.commit("SAVE_USER", value);
+      
+      await this.sendUser()
+      await this.senpPhoto()
+      // this.state = "profile";
+      console.log('get reg form this.user',this.user);
     },
-    save(e){
-      const data=JSON.stringify(e)
-      window.localStorage.setItem('user',data)
-      console.log('save from save:',e)
-      this.$store.commit('SAVE_USER_PROFILE',e.profile);
-     
+    saveProfile(e) {  
+      const data = JSON.stringify(e);
+      window.localStorage.setItem("user", data);
+      console.log("save from saveProfile:", this.user);
+      this.$store.commit("SAVE_USER_PROFILE", e.profile);
+        this.sendUser()
     },
-    back(e){
+    updateProfile(e) {  
+      const data = JSON.stringify(e);
+      window.localStorage.setItem("user", data);
+      console.log("save from updateProfile:", this.user);
+      this.$store.commit("SAVE_USER_PROFILE", e.profile);
+        this.updateUser()
+    },
+    back(e) {
       // console.log('e')
-       
-      this.state=e.state
-      if (e.substate){
-        this.substate=e.substate
+
+      this.state = e.state;
+      if (e.substate) {
+        this.substate = e.substate;
       }
-    }
+    },
   },
-  async mounted() { 
-    console.log(this.user)
+  async mounted() {
+    console.log('start:',this.user);
     // this.user=window.localStorage.getItem('user')
     let htmlEl = document.querySelector("html");
     htmlEl.style.overflow = "hidden";
     this.lastEnterTime = new Date();
     await this.locateMe();
-    this.user.city = await this.getCity();
+    const city = await this.getCity();
+    this.$store.commit('SAVE_USER_PROFILE',{'city':city})
+    // console.log('start after locate:',this.user);
     // this.state='settings'
     //  console.log(this.user.location);
     //  console.log(this.$refs['app'])
-        
   },
-  created(){
-   
-   
-  },
-  beforeDestroy(){
-   
-  }
+  created() {},
+  beforeDestroy() {},
 };
 </script>
 <style scoped>

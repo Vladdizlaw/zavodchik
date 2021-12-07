@@ -3,7 +3,7 @@
     class="animalproperty"
     :class="{ dog: animalType == 'dog', cat: animalType == 'cat' }"
   >
-    <kinesis-container :duration="300" perspective="3000">
+    <kinesis-container :duration="300" :perspective="5000">
       <kinesis-element :strength="19" type="depth">
         <div class="animalproperty-fortext">
           <p>Поиск</p>

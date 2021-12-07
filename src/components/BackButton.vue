@@ -23,6 +23,7 @@ export default {
   line-height: 45px;
   letter-spacing: 0em;
   text-align: left;
+  cursor:pointer;
 
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
     0px 4px 4px rgba(0, 0, 0, 0.25);
@@ -39,6 +40,6 @@ export default {
 }
 .registration-title__back > img {
   padding-top: 0.25em;
-  height-max: 2.5em;
+  max-height: 2.5em;
 }
 </style>

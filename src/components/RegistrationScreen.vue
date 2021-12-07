@@ -234,9 +234,14 @@ export default {
         name: null,
         pass: null,
         city: null,
-        id:null
+        id:null,
+         hood: "",
+          seenFlags:{seenHoodFlag:true,seenTelFlag:true},
       },
       animalType: null,
+      
+       photoAnimal: [],
+       photoLitter: [],
       animalForm: {
         type: null,
         male: null,
@@ -248,8 +253,7 @@ export default {
         vaccination: null,
         color: null,
         matingConditions: null,
-        photoAnimal: [],
-        photoLitter: [],
+       
         licenseAgreement: false,
         startTrial: { value: false, date: null },
       },
@@ -287,11 +291,11 @@ export default {
   },
   methods: {
     getPhotoAnimal(value) {
-      this.animalForm.photoAnimal = value.photo;
-      console.log(this.animalForm.photoAnimal);
+      this.photoAnimal = value.photo;
+      // console.log(this.animalForm.photoAnimal);
     },
     getPhotoLitter(value) {
-      this.animalForm.photoLitter = value.photo;
+      this.photoLitter = value.photo;
     },
     licenseAgreement() {
       this.animalForm.licenseAgreement = !this.animalForm.licenseAgreement;
@@ -319,7 +323,7 @@ export default {
       // this.states.previosState='start'
     },
     sendRegisteredData(){
-      this.$emit('registeredData',{profile:this.regForm,animal:this.animalForm})
+      this.$emit('registeredData',{profile:this.regForm,id:this.regForm.id,photoAnimal:this.photoAnimal,photoLitter:this.photoLitter,animal:this.animalForm})
     },
     getRegistration() {
       let valid = true;
@@ -546,7 +550,9 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  transition: all 0.3s;
 }
+
 .registration-title__text {
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.75);
   font-size: 2.5em;
@@ -618,8 +624,8 @@ export default {
   background-position: center;
   background-size: cover;
   overflow: hidden;
-  width: 35vw;
-  height: 40vh;
+  min-width: 40vw;
+  min-height: 50vh;
   border: 2px solid;
   border-radius: 8em 0em 8em 0em;
   display: flex;
@@ -627,10 +633,18 @@ export default {
   justify-content: space-around;
   align-items: center;
   box-shadow: 5px 7px rgb(100, 100, 22);
-  opacity: 0.4;
+  opacity: 0.9;
   transition: all 0.3s;
   font-size: 1.2em;
   /* padding: 2em 2em; */
+}
+.forinput>input{
+ width:13rem;
+ height: 2rem;
+}
+.forinput>input:hover{
+  width:14rem;
+ height:2rem;
 }
 
 .forbutton {

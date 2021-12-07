@@ -140,11 +140,26 @@ export default {
       }
     },
     onFileChange(f) {
+      // let file
       // console.log(f.target.files[0]);
       if (this.validate(f?.target?.files[0].name)){
-      this.photo.push(f.target.files[0]);
-      this.imageUrl.push(URL.createObjectURL(f.target.files[0]));
-      this.$emit("photo", { photo: this.photo });}
+        // console.log(typeof(f.target.files[0]))
+        // const reader= new FileReader ()
+        // reader.onload = ev=>{
+        //   file=ev.target.result
+        //   console.log('file',file)
+        //   this.photo.push(file);
+        //   this.imageUrl.push(file)
+        this.photo.push(f.target.files[0]);
+        this.imageUrl.push(URL.createObjectURL(f.target.files[0]));
+       this.$emit("photo", { photo: this.photo })
+        }
+        
+      // reader.readAsDataURL(f.target.files[0])  
+      
+      // console.log('photo',this.photo)
+      
+    // ;}
       
       return
     },
@@ -226,6 +241,7 @@ export default {
     0px 6px 6px rgba(0, 0, 0, 0.25);
   width: 3.2em;
   height: 3.2em;
+  opacity:1;
 }
 input[type="file"] {
   color: transparent;

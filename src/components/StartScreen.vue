@@ -1,5 +1,5 @@
 <template>
-  <div class="screen"><kinesis-container :duration="300" perspective="3000">
+  <div class="screen"><kinesis-container :duration="300" :perspective="10000">
    
    <kinesis-element :strength="29" type="depth"> <div class="screen-text">
       <p>Выбор животного</p>
@@ -16,11 +16,11 @@
        
     
       
-     <kinesis-element :strength="18" type="depth"> 
+     <kinesis-element :strength="19" type="depth"> 
       <a class="reg" @click="registration">Регистрация</a>
       </kinesis-element>
       <p>|</p>
-       <kinesis-element :strength="16" type="depth"> 
+       <kinesis-element :strength="21" type="depth"> 
       <a class="sign"  @click="sign">Вход</a>
        </kinesis-element>
         

@@ -145,7 +145,7 @@ export default {
         seenHoodFlag: this.seenHoodFlag,
       };
       // console.log(this.user);
-      this.$emit("save", this.user);
+      this.$emit("saveProfile", this.user);
     },
     seenTel() {
       if (this.seenTelFlag) {
