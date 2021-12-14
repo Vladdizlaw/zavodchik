@@ -142,13 +142,8 @@ export default {
     onFileChange(f) {
       // let file
       // console.log(f.target.files[0]);
-      if (this.validate(f?.target?.files[0].name)){
-        // console.log(typeof(f.target.files[0]))
-        // const reader= new FileReader ()
-        // reader.onload = ev=>{
-        //   file=ev.target.result
-        //   console.log('file',file)
-        //   this.photo.push(file);
+      if (this.validate(f?.target?.files[0]?.name)){
+   
         //   this.imageUrl.push(file)
         this.photo.push(f.target.files[0]);
         this.imageUrl.push(URL.createObjectURL(f.target.files[0]));

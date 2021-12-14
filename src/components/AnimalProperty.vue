@@ -3,14 +3,13 @@
     class="animalproperty"
     :class="{ dog: animalType == 'dog', cat: animalType == 'cat' }"
   >
-    <kinesis-container :duration="300" :perspective="5000">
-      <kinesis-element :strength="19" type="depth">
+   
         <div class="animalproperty-fortext">
-          <p>Поиск</p>
+          <p>Поиск пары</p>
         </div>
-      </kinesis-element>
+    
       <div class="animalproperty-forinput">
-        <kinesis-element :strength="9" type="depth">
+       
           <div class="input male">
             <p>Пол искомого животного</p>
             <select v-model="animalProperty.male">
@@ -18,8 +17,7 @@
               <option value="women">женский</option>
             </select>
           </div>
-        </kinesis-element>
-        <kinesis-element :strength="9" type="depth">
+    
           <div class="input breed">
             <p>Порода</p>
 
@@ -31,13 +29,12 @@
                 >{{ bred }}</option
               >
             </select>
-          </div></kinesis-element
-        >
+          </div>
 
         <div class="input age">
-          <kinesis-element :strength="6" type="depth">
+         
             <p>Возраст</p>
-          </kinesis-element>
+        
           <div class="ageinput">
             <div class="range">
               <p>OT</p>
@@ -50,13 +47,12 @@
           </div>
         </div>
 
-        <kinesis-element :strength="8" type="depth">
+      
           <div class="input awards">
             <p>Награды</p>
             <input type="text" v-model="animalProperty.awards" />
           </div>
-        </kinesis-element>
-        <kinesis-element :strength="7" type="depth">
+       
           <div class="input city">
             <p>Город</p>
             <select v-model="animalProperty.place" placeholder="город">
@@ -68,18 +64,16 @@
               >
             </select>
           </div>
-        </kinesis-element>
-        <kinesis-element :strength="6" type="depth">
+       
           <div class="input mating">
             <p>Предположительная дата вязки</p>
             <input type="date" v-model="animalProperty.dateMating" />
           </div>
-        </kinesis-element>
-        <kinesis-element :strength="10" type="depth">
+       
           <button class="btn" @click="submit">Поиск</button>
-        </kinesis-element>
-      </div></kinesis-container
-    >
+      
+      </div>
+    
   </div>
 </template>
 <script>
@@ -174,10 +168,10 @@ export default {
 .animalproperty {
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content:center;
   align-items: center;
-  width: 100vw;
-  height: 100vh;
+ width: 100vw;
+ height: 100vh;
   position: relative;
 }
 
@@ -189,28 +183,31 @@ export default {
   font-family: Amatic SC;
   font-style: normal;
   font-weight: bold;
-  font-size: 57px;
+  font-size: 3.2rem;
   line-height: 182px;
-  top: 0.2em;
+  top: 1rem;
+  /* left: 50vh; */
   /* bottom: 1em; */
   /* padding-bottom: 1.5em; */
-  /* margin-bottom: 0.9em; */
+  margin-bottom: -0.5em;
   color: #000000;
-  height: 3em;
+  max-height: 1rem;
 
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
     0px 4px 4px rgba(0, 0, 0, 0.25);
 }
 
 .animalproperty-forinput {
+  min-height:95vh;
   display: flex;
   flex-direction: column;
   width: auto;
-  justify-content: space-around;
+  justify-content: center;
   align-items: center;
-  margin-top: -55px;
+  /* margin-top: -3rem; */
 }
 .input {
+  /* flex:1 1 6rem; */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -221,17 +218,21 @@ export default {
   font-size: 2em;
   line-height: 100px;
   color: #000000;
-  margin-top: -10px;
-
+  margin-top: 5px;
+  height:6rem;
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
     0px 4px 4px rgba(0, 0, 0, 0.25);
+    /* margin-bottom:0.5rem; */
 }
-
+.input>p{
+  margin-top:-1.4rem;
+  margin-bottom:1.4rem;
+}
 .age {
-  margin-top: 0px;
-  margin-bottom: 10px;
-  padding-top: 0px;
-  height: 82px;
+  /* margin-top: 1rem; */
+  /* margin-bottom: 0.5rem; */
+  /* padding-top: 1rem; */
+  max-height: 4rem;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -240,8 +241,9 @@ export default {
   position: relative;
 }
 .age > p {
-  padding-bottom: 10px;
-  height: 97px;
+  margin-top: 1rem;
+  /* padding-bottom: 10px; */
+  height: 3rem;
 }
 .ageinput {
   display: flex;
@@ -251,7 +253,8 @@ export default {
 }
 select,
 input {
-  margin-top: -20px;
+  
+  margin-top: -3rem;
   appearance: auto;
   background: #ffffff;
   opacity: 0.5;
@@ -265,7 +268,7 @@ input {
   font-family: Amatic SC;
   font-style: normal;
   font-weight: bold;
-  font-size: 24px;
+  font-size: 1.5rem;
   line-height: 91px;
   color: #000000;
   text-align: center;
@@ -279,7 +282,7 @@ input:hover {
   /* transform: rotate3d(20); */
   width: 17.1em;
   height: 1.4em;
-  font-size: 26px;
+  font-size: 1.7rem;
 }
 .range {
   display: flex;
@@ -299,57 +302,46 @@ input:hover {
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
     0px 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 8px;
-  width: 96px;
-  height: 28px;
+  width:6rem;
+  height: 1.8rem;
   font-family: Amatic SC;
   font-style: normal;
   font-weight: bold;
-  font-size: 24px;
+  font-size: 1.5rem;
   line-height: 91px;
   color: #000000;
   text-align: center;
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
     0px 4px 4px rgba(0, 0, 0, 0.25);
 }
+.range > input:hover{
+ width:6.5rem;
+  height: 1.85rem;
+   font-size: 1.7rem;
+}
+@keyframes shake {
+  10%,
+  90% {
+    transform: translate3d(-1px, 0, 0);
+  }
 
-option {
-  font-family: Amatic SC;
-  font-style: normal;
-  font-weight: bold;
-  font-size: 28px;
-  line-height: 91px;
+  20%,
+  80% {
+    transform: translate3d(2px, 0, 0);
+  }
 
-  color: #000000;
+  30%,
+  50%,
+  70% {
+    transform: translate3d(-4px, 0, 0);
+  }
 
-  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
-    0px 4px 4px rgba(0, 0, 0, 0.25);
+  40%,
+  60% {
+    transform: translate3d(4px, 0, 0);
+  }
 }
 
-button {
-  margin-top: 30px;
-  margin-bottom: 2em;
-  width: 131px;
-  height: 68px;
-  border: 1px solid #000000;
-  box-sizing: border-box;
-  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))
-    drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))
-    drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
-  border-radius: 25px 0px;
-  transform: matrix(1, 0, 0, 1, 0, 0);
-  font-family: Amatic SC;
-  font-style: normal;
-  font-weight: bold;
-  font-size: 48px;
-  line-height: 61px;
-
-  color: #000000;
-
-  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-}
-button:hover {
-  box-shadow: 7px 12px;
-}
 button:active {
   box-shadow: 3px 6px;
 
@@ -365,4 +357,45 @@ button:active {
     transform: rotate(10deg);
   }
 }
+option {
+  font-family: Amatic SC;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 28px;
+  line-height: 91px;
+
+  color: #000000;
+
+  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
+    0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+button {
+  position: relative;
+  /* bottom: 2rem; */
+  margin-top:1rem;
+  width: 8rem;
+  height: 4rem;
+  border: 1px solid #000000;
+  box-sizing: border-box;
+  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))
+    drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))
+    drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+  border-radius: 25px 0px;
+  transform: matrix(1, 0, 0, 1, 0, 0);
+  font-family: Amatic SC;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 3rem;
+  line-height: 61px;
+background: transparent;
+  color: #000000;
+
+  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+button:hover {
+  box-shadow: 7px 12px;
+  animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite;
+}
+
 </style>

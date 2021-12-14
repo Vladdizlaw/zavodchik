@@ -25,15 +25,19 @@
             <p>
               Порода: <span>{{ user.animal.breed }}</span>
             </p>
-            <div class="logomsg__image"><img :src="user.photoAnimal[0]" v-if="user.photoAnimal.length" alt=""/></div>
+            <div class="logomsg__image">
+              <img :src="getUrl(user)" v-if="user.photoUrl.length" alt="" />
+            </div>
+            <p>
+              Пол: <span>{{ user.animal.male }}</span>
+            </p>
             <p>
               Возраст: <span>{{ user.animal.age }}</span>
             </p>
             <p v-if="user.animal.dateMating">
               Вязка: <span>{{ user.animal.dateMating }}</span>
             </p>
-            <button @click.stop="viewDetails(user.profile.id)">
-              
+            <button class="logomsg_button" @click.stop="viewDetails(user.profile.id)">
               <p>Детали</p>
             </button>
           </div>
@@ -48,7 +52,7 @@ import Map from "ol/Map";
 import View from "ol/View";
 import OSM from "ol/source/OSM";
 import TileLayer from "ol/layer/Tile";
-import axios from 'axios'
+import axios from "axios";
 import "ol/ol.css";
 import { fromLonLat } from "ol/proj";
 export default {
@@ -110,11 +114,9 @@ export default {
       }
     },
   },
-  async created() {
-   
-  },
+  async created() {},
   async mounted() {
-     await this.getUsersData();
+    await this.getUsersData();
     let projection = fromLonLat(
       //Позиция для центра карты по текущей геопозиции
       [this.location.longitude, this.location.latitude],
@@ -133,23 +135,51 @@ export default {
     map.addLayer(osmLayer);
     // console.log('users',this.users);
     this.users.forEach((user) => {
-      console.log('user',user)
+      console.log("user", user);
       //выводим на карту всех юзеров
       const catlogo = new Overlay({
         element: document.getElementById(user.animal.name),
       });
-      catlogo.setPosition(fromLonLat([user.location.longitude, user.location.latitude]));
+      catlogo.setPosition(
+        fromLonLat([user.location.longitude, user.location.latitude])
+      );
       map.addOverlay(catlogo);
     });
   },
+
   methods: {
+    getUrl(user) {
+      if (!user.photoUrl[0]) {
+        return;
+      } else {
+        // let binaryData = null;
+        // let binarydata = [];
+        // binarydata.push(user.photoAnimal[0].data);
+        // let reader = new FileReader();
+        // reader.readAsDataURL(new Blob(binarydata, { type: user.photoAnimal[0].mimetype })); // converts the blob to base64 and calls onload
+
+        // reader.onload = function() {
+        //   binaryData = reader.result;
+        //   console.log("binarydata", reader.result);
+
+          return 'http://localhost:5000/'+user.photoUrl[0]
+          // }
+          // const url= URL.createObjectURL(user.photoAnimal[0])
+          //  let blob = new Blob(Array.from(user.photoAnimal[0]),{type:user.photoAnimal[0].mimetype})
+          //  console.log(blob)
+          // const url= URL.createObjectURL(blob
+          // );
+
+          //
+        }
+      
+    },
     upElement(f) {
       //отображение деталей на карте без opacity
-     
+
       f.path[0].style.opacity = 1;
     },
     downElement(f) {
-     
       f.path[0].style.opacity = 0.2;
     },
     async getUsersData() {
@@ -159,10 +189,10 @@ export default {
       // } else {
       //   this.users = require("../user_cat.json");
       // }
-      const {data}= await axios.get('http://localhost:5000/api/get_users')
+      const { data } = await axios.get("http://localhost:5000/api/get_users");
       // const data1= await data.json()
-      console.log("response",data)
-      this.users = data
+      console.log("response", data);
+      this.users = data;
       // console.log(this.users)
     },
     viewDetails(data) {
@@ -228,12 +258,12 @@ export default {
     drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))
     drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
   border-radius: 50px 0px;
-  padding:1rem 1rem 1rem 1rem;
+  padding: 1rem 1rem 1rem 1rem;
   background: url("../assets/cover1.png");
   background-position: center;
   background-size: cover;
   min-width: 10em;
-  min-height: 7em;
+  min-height: 5em;
   /* color: rgb(41, 3, 3); */
   z-index: -1;
   display: none;
@@ -244,37 +274,63 @@ export default {
   font-size: 1rem;
   line-height: 23px;
   position: relative;
-  opacity:1;
+  opacity: 1;
   transition: all 0.5s;
 }
-.logomsg__image{
+.logomsg__image {
   width: 30%;
   height: 52%;
-  position:absolute;
-  top:35%;
-  left:1em;
-  border:1px solid black;
-   transition: all 0.5s;
-   /* position: relative; */
-   overflow: hidden;
-}
-.logomsg__image>img{
   position: absolute;
-  width:100%;
-  height:100%;
-
-
+  top: 35%;
+  left: 1em;
+  border: 1px solid black;
+  transition: all 0.5s;
+   border-radius: 10px 10px;
+  /* position: relative; */
+  overflow: hidden;
+ 
 }
-.logomsg:hover{
-  font-size:1.3em;
-  min-width:11em;
-  min-height:8em;
-
+.logomsg__button:hover{
+ animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite;
 }
-.logomsg__image:hover{
-  width:35%;
-  height:57%;
-  transform: rotate3d(1, 2.0, 3.0, 360deg);
+@keyframes shake {
+  10%,
+  90% {
+    transform: translate3d(-1px, 0, 0);
+  }
+
+  20%,
+  80% {
+    transform: translate3d(2px, 0, 0);
+  }
+
+  30%,
+  50%,
+  70% {
+    transform: translate3d(-4px, 0, 0);
+  }
+
+  40%,
+  60% {
+    transform: translate3d(4px, 0, 0);
+  }
+}
+.logomsg__image > img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+    border-radius: 10px 10px;
+}
+.logomsg:hover {
+  font-size: 1.3em;
+  min-width: 11em;
+  min-height: 8em;
+  transform:scaleZ( 11em) ;
+}
+.logomsg__image:hover {
+  width: 35%;
+  height: 57%;
+  transform:r (40%);
 }
 .active {
   background: url("../assets/cover1.png");
@@ -286,8 +342,8 @@ export default {
   align-items: flex-end;
   /* opacity: 1; */
   position: relative;
-   opacity: 0.2; 
- 
+  opacity: 0.2;
+
   z-index: 1000;
   overflow: hidden;
 }
@@ -296,15 +352,25 @@ export default {
   display: none;
 }
 button {
+  font: inherit;
+  font-size: 1em;
+  /* align-self: center; */
   border: 1px solid;
-  width: 50%;
-  
+  width: 35%;
+  margin-right: 1rem;
+  height: 2em;
   border-radius: 0 50px;
-  /* background-color: rgba(31, 236, 117, 0.5); */
+  background-color: transparent;
+  text-align: center;
+  align-content: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   /* box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25); */
-  font-size: 0.7em;
+  /* font-size: 0.7em; */
 }
 button:hover {
+  animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite;
   box-shadow: 3px 4px black;
 }
 button:active {

@@ -1,13 +1,13 @@
 import Vue from "vue";
 import App from "./App.vue";
 import VueKinesis from "vue-kinesis";
-import vuetify from "./plugins/vuetify";
+
 import Vuex from "vuex";
 import store from './store/index.js'
 Vue.config.productionTip = false;
-
+Vue.use(VueKinesis);
 new Vue({
-  vuetify,store,
+  store,
   render: (h) => h(App),
 }).$mount("#app");
 

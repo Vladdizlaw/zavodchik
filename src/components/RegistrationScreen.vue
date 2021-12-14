@@ -13,7 +13,7 @@
         <back-button :func="back" />
         <div class="registration-title__text"><p>Регистрация</p></div>
       </div>
-      <div class="registration-user" v-if="states.registrationUser.value">
+      <section class="registration-user" v-if="states.registrationUser.value">
         <div class="user mail">
           <p>Введите email:</p>
           <input type="email" v-model="regForm.mail" />
@@ -64,8 +64,8 @@
         <button class="next-btn" @click.stop="getRegistration">
           <p>Далее</p>
         </button>
-      </div>
-      <div class="registration-animal1" v-if="states.registrationAnimal1.value">
+      </section>
+      <section class="registration-animal1" v-if="states.registrationAnimal1.value">
         <div class="animal type">
           <p>Вид животного</p>
           <select v-model="animalType">
@@ -104,8 +104,8 @@
         <button class="next-btn" @click.stop="getRegistrationAnimal1">
           <p>Далее</p>
         </button>
-      </div>
-      <div class="registration-animal2" v-if="states.registrationAnimal2.value">
+      </section>
+      <section class="registration-animal2" v-if="states.registrationAnimal2.value">
         <div class="animal mating">
           <p>Предположительная дата вязки</p>
           <input type="date" v-model="animalForm.dateMating" />
@@ -129,10 +129,10 @@
         <button class="next-btn" @click.stop="getRegistrationAnimal2">
           <p>Далее</p>
         </button>
-      </div>
-      <div class="registration-animal3" v-if="states.registrationAnimal3.value">
+      </section>
+      <section class="registration-animal3" v-if="states.registrationAnimal3.value">
         <PhotoAdd :message="'Фото животных'" @photo="getPhotoAnimal" />
-        <PhotoAdd :message="'Фото потомства'" @photo="getPhotoLitter" />
+       
         <div class="animal personal_data">
           <div
             class="personal_data_checkbox"
@@ -162,9 +162,9 @@
         <button class="next-btn" @click.stop="getRegistrationAnimal3">
           <p>Зарегестрировать</p>
         </button>
-      </div>
+      </section>
     </div>
-    <div class="regwindow" v-if="states.start.value">
+    <section class="regwindow" v-if="states.start.value">
       <div class="forinput">
         <p>ЛОГИН (E-MAIL):</p>
         <input type="text" v-model="login" />
@@ -177,7 +177,7 @@
         </button>
         <button class="signin" @click="sign"><p>ВОЙТИ</p></button>
       </div>
-    </div>
+    </section>
   </div>
 </template>
 <script>
@@ -241,7 +241,7 @@ export default {
       animalType: null,
       
        photoAnimal: [],
-       photoLitter: [],
+       photoUrl: [],
       animalForm: {
         type: null,
         male: null,
@@ -294,9 +294,7 @@ export default {
       this.photoAnimal = value.photo;
       // console.log(this.animalForm.photoAnimal);
     },
-    getPhotoLitter(value) {
-      this.photoLitter = value.photo;
-    },
+   
     licenseAgreement() {
       this.animalForm.licenseAgreement = !this.animalForm.licenseAgreement;
     },
@@ -323,7 +321,7 @@ export default {
       // this.states.previosState='start'
     },
     sendRegisteredData(){
-      this.$emit('registeredData',{profile:this.regForm,id:this.regForm.id,photoAnimal:this.photoAnimal,photoLitter:this.photoLitter,animal:this.animalForm})
+      this.$emit('registeredData',{profile:this.regForm,id:this.regForm.id,photoAnimal:this.photoAnimal,animal:this.animalForm})
     },
     getRegistration() {
       let valid = true;
@@ -454,7 +452,9 @@ export default {
       //  console.log('state to:', this.states[this.states[stateKey].previosState])
     },
 
-    sign() {},
+    sign() {
+      this.$emit('sign',{mail:this.login,pass:this.password})
+    },
   },
 };
 </script>
@@ -529,8 +529,9 @@ export default {
 
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   transform: matrix(1, 0, 0, 1, 0, 0);
-  top: 35px;
+  top: 4.7rem;
   position: absolute;
+   animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite;
 }
 .registration {
   display: flex;
@@ -559,10 +560,12 @@ export default {
   /* flex: 4 1 4; */
   /* justify-self: stretch; */
   width: 57.5vw;
-  height: 2em;
+  max-height: 2em;
+  display: flex;
+  align-items: center;
 }
 .registration-title__text > p {
-  padding-top: 0.2em;
+  /* padding-top: 0.2em; */
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.75);
   font-size: 1.7em;
 }
@@ -572,22 +575,28 @@ export default {
 .registration-animal2,
 .registration-animal3 {
   font-size: 2em;
-
+  /* margin-top:-2em; */
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content: center;
   align-items: center;
   /* border: 2px solid; */
   width: 100%;
-  height: 100%;
-
+  max-height: 89%;
+  /* gap:-0.1rem; */
   text-align: center;
   overflow: hidden;
 }
-
+.user,
+.animal {
+  margin-top:-2rem;
+  height:9rem;
+  min-width: 30%;
+}
 .personal_data {
+  margin-top:2rem;
   flex-direction: row;
-  align-items: start;
+  align-items: center;
   justify-content: center;
   gap: 1em;
 }
@@ -638,14 +647,6 @@ export default {
   font-size: 1.2em;
   /* padding: 2em 2em; */
 }
-.forinput>input{
- width:13rem;
- height: 2rem;
-}
-.forinput>input:hover{
-  width:14rem;
- height:2rem;
-}
 
 .forbutton {
   display: flex;
@@ -664,10 +665,7 @@ export default {
   font: bold oblique large fantasy;
   text-shadow: 5px 5px 10px rgb(49, 42, 42);
 }
-.user,
-.animal {
-  min-width: 30%;
-}
+
 .registration-title > p {
   font-size: 3em;
   height: 1fr;
@@ -679,7 +677,7 @@ input,
 select,
 textarea {
   width: 12em;
-  height: 0.9em;
+  height: 1em;
   background: #ffffff;
   opacity: 0.7;
   border: 1px solid #000000;
@@ -692,8 +690,9 @@ textarea {
   font-weight: 900;
   font-size: 1em;
   line-height: 28px;
+  align-content:center;
   /* identical to box height */
-
+z-index: 100;
   color: rgba(0, 0, 0, 1);
    transition: all 0.5s;
 }
@@ -706,12 +705,22 @@ option {
   display: flex;
   justify-content: center;
   text-align: center;
+   border-radius: 10px;
+}
+.forinput input{
+ width:13em;
+ height: 2rem;
+ transition: all 0.6s;
+}
+.forinput input:hover{
+  width:14em;
+ height:2.1rem;
 }
 button {
   display: flex;
   justify-content: center;
-  width: 180px;
-  height: 58px;
+  width: 11rem;
+  height:3rem;
   border: 1px solid #000000;
   box-sizing: border-box;
   filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
@@ -719,21 +728,53 @@ button {
   font-family: Amatic SC;
   font-style: normal;
   font-weight: bold;
-  font-size: 48px;
+  font-size: 3rem;
   line-height: 61px;
-
+  align-items: center;
+  text-align: center;
+  background: transparent;
+  margin-top:0.1rem;
+ cursor:pointer;
   color: #000000;
+}
+.registration-user .next-btn{
+  margin-top:1rem;
 }
 
 .regwindow:hover {
   opacity: 1;
   box-shadow: 7px 9px rgb(100, 100, 22);
 }
+@keyframes shake {
+  10%,
+  90% {
+    transform: translate3d(-1px, 0, 0);
+  }
+
+  20%,
+  80% {
+    transform: translate3d(2px, 0, 0);
+  }
+
+  30%,
+  50%,
+  70% {
+    transform: translate3d(-4px, 0, 0);
+  }
+
+  40%,
+  60% {
+    transform: translate3d(4px, 0, 0);
+  }
+}
 button:hover {
+   /* box-shadow: 7px 12px; */
+  animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite;
   border: 1px solid #000000;
-  box-sizing: border-box;
+  /* box-sizing: border-box; */
   filter: drop-shadow(0px 4px 4px #00e04c) drop-shadow(0px 4px 4px #09461a)
     drop-shadow(0px 4px 4px #074110);
+    
 
   border-radius: 25px 0px;
 }

@@ -16,7 +16,7 @@
     <div class="header">
       <back-button :func="back" class="backbutton" />
       <div class="header__text">
-        <p>Аккаунт</p>
+        <p>Профиль</p>
       </div>
 
       <div class="header__search" @click="search">
@@ -109,7 +109,7 @@
     </div>
     <div class="footer">
       <div class="footer-setings" @click="search">
-        <img src="../assets/setings.svg" alt="" />
+        <img  class="roll" src="../assets/setings.svg" alt="" />
         <p>Настройка</p>
       </div>
       <div class="footer-time">
@@ -138,7 +138,7 @@ export default {
     };
   },
   mounted() {
-    console.log(this.user);
+    console.log('profileUser:',this.user);
   },
   methods: {
     back() {},
@@ -179,16 +179,14 @@ export default {
   },
   computed: {
     urls() {
-      if (!this.user.photoAnimal) {
+      if (!this.user.photoUrl?.length) {
         return null;
       }
       const urls = [];
-      this.user.photoAnimal.forEach((u) => {
-        urls.push(u);
+      this.user.photoUrl?.forEach((u) => {
+        urls.push('http://localhost:5000/'+u);
       });
-      this.user.photoLitter.forEach((u) => {
-        urls.push(u);
-      });
+     
       return urls;
     },
     lastTrialTime() {
@@ -270,7 +268,7 @@ export default {
 
 .header {
   width: 100%;
-  height: 5em;
+  height: 2em;
   display: flex;
   justify-content: start;
   align-items: center;
@@ -278,6 +276,7 @@ export default {
 .backbutton {
   font-size: 1.25em;
   max-width: 20%;
+ 
 }
 .header__text {
   min-width: 78%;
@@ -291,9 +290,10 @@ export default {
 .header__search {
   font-size: 1.4em;
   display: flex;
-  max-width: 22%;
+  max-width: 25%;
   flex-wrap: nowrap;
   gap: 0.15em;
+  align-items: center;
 }
 .header__search > img {
   height: 0.7em;
@@ -305,7 +305,7 @@ export default {
 .main {
   display: flex;
   width: 90vw;
-  height: 70vh;
+  max-height: 65vh;
   justify-content: start;
   align-items: center;
 }
@@ -316,21 +316,27 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: start;
-  align-items: space-between;
+  align-items: space-around;
+  
 }
 .main-left__name {
-  height: 20%;
-  font-size: 1.5em;
-  margin-bottom: 1em;
+  max-height: 10%;
+  font-size: 3.5rem;
+  /* margin-bottom: 1em; */
 }
 .main-left__data {
-  flex: 2;
-  min-height: 80%;
+  flex: 1 1 35vh;
+  max-height: 70%;
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content: center;
   align-items: start;
-  gap: 1%;
+  margin-top: 2rem;
+  font-size: 2rem;
+}
+.main-left__data>p{
+  margin-top:-2rem;
+
 }
 .main-right {
   width: 40%;
@@ -338,6 +344,8 @@ export default {
   display: flex;
   justify-content: end;
   margin-left: 2em;
+  margin-top: 2rem;
+  
 }
 
 .main-right__photos {
@@ -479,11 +487,15 @@ export default {
 .footer-setings {
   display: flex;
   justify-content: center;
+  align-items: center;
+  transition: 0.3s;
+   cursor:pointer;
 }
 .footer-time {
   display: flex;
   min-width: 68%;
   justify-content: center;
+   align-items: center;
   gap: 1em;
   font-size: 0.7em;
 }
@@ -493,22 +505,27 @@ export default {
   filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.75));
   border-radius: 15px 0px;
   padding: 0 1em 0 1em;
+  background: transparent;
 }
 .footer-exit {
   flex-wrap: nowrap;
   width: 20%;
   display: flex;
   justify-content: center;
+   align-items: center;
+   cursor:pointer;
 }
 .footer-exit > img {
   height: 0.9em;
   margin-top: 0.1em;
   margin-left: 0.2em;
 }
-.footer-exit:hover,
-.footer-setings:hover {
-  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.5))
-    drop-shadow(10px 10px 4px rgba(9, 112, 7, 0.75));
+.roll{
+   transition: 0.4s ;
+}
+/* .footer-exit:hover, */
+.footer-setings:hover  .roll{
+  transform: rotate(1080deg) ;
 }
 .footer-time > button:hover {
   box-shadow: 5px 5px 10px 5px rgba(1, 32, 0, 0.25),

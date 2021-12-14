@@ -30,7 +30,7 @@
         <p>Настроить уведомления</p>
         <p>Оплата</p>
       </div>
-      <div class="contacts" v-if="state == 'contacts'">
+      <div class="contacts" v-show="state == 'contacts'">
         <div class="wrapper-left">
           <p>Ваше имя</p>
           <p>Телефон</p>
@@ -174,6 +174,12 @@ export default {
   mounted() {
    this.seenHoodFlag=this.user.profile.seenFlags?.seenHoodFlag
    this.seenTelFlag=this.user.profile.seenFlags?.seenTelFlag
+   const div=document.querySelector('.wrapper-left')
+   const arrP=div.querySelectorAll('p')
+   arrP.forEach(el=>{
+     console.log(el)
+     el.style.margin=0
+   })
   },
 };
 </script>
@@ -253,16 +259,22 @@ export default {
   align-items: center;
   width: 100vw;
   height: 70vh;
+ 
 }
-.main-menu {
-  min-height: 80%;
+.main-menu { 
+  padding-top: 5rem;
+  max-height: 80%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-around;
   line-height: 81px;
-  font-size: 1.5em;
+  font-size: 1.2em;
   transition: all 0.3s;
+   cursor:pointer;
+}
+.main-menu > p{
+  margin-top:-3rem;
 }
 .main-menu > p:hover {
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.5),
@@ -277,12 +289,15 @@ export default {
   height: auto;
   justify-content: space-around;
   flex-wrap: nowrap;
+  position: absolute;
+  bottom:0rem;
 }
 .footer-support {
   display: flex;
   justify-content: center;
   min-width: 10rem;
   margin-left: 0.3em;
+   align-items: center;
 }
 .footer-time {
   display: flex;
@@ -293,9 +308,10 @@ export default {
 }
 .footer-exit {
   flex-wrap: nowrap;
-  width: 20%;
+  width: 22%;
   display: flex;
   justify-content: center;
+  align-items: center;
 }
 .footer-exit > img {
   height: 0.9em;
@@ -319,15 +335,18 @@ export default {
   padding-left: 1em;
   display: flex;
   width: 35%;
-  height: 100%;
+  min-height: 100%;
   flex-direction: column;
   justify-content: space-around;
   align-items: start;
 }
+.wrapper-left > p{
+  margin-top:-20px;
+}
 .wrapper-right {
   display: flex;
   width: 70%;
-  height: 100%;
+  min-height: 100%;
   flex-direction: column;
   justify-content: space-around;
   align-items: start;
@@ -348,10 +367,11 @@ export default {
   box-sizing: border-box;
   border-radius: 10px;
   height: 1em;
-  width: 13em;
+  min-width: 13em;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
     0px 4px 4px rgba(0, 0, 0, 0.25);
   transition: all 0.3s;
+  font-size:inherit ;
 }
 input:hover,
 select:hover {

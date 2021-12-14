@@ -28,6 +28,7 @@
         :substate="substate"
         v-if="state == 'registration'"
         @registeredData="getRegForms"
+        @sign="Sign"
       />
       <profile-screen
         :user="user"
@@ -99,7 +100,7 @@ export default {
       // let index
       //  const headers={
         // 'Content-Type': 'multipart/form-data'}
-        const PhotoArray=[...this.user.photoAnimal,... this.user.photoLitter]
+        const PhotoArray=[...this.user.photoAnimal]
         console.log(PhotoArray)
          let formData= new FormData()
       PhotoArray.forEach(  (photo,ind)=>{
@@ -115,25 +116,18 @@ export default {
         
       // })
       formData.append('id',this.user.profile.id)
-     const answer= await axios.post('http://localhost:5000/api/create_photo',formData,{headers:{
+     const answer= await axios.post('http://localhost:5000/api/create_photo',formData,{headers:{  
         'Content-Type': 'multipart/form-data'}})
      console.log(answer,'formData:',formData)
     },
-
+    async getUser(){
+       this.$store.dispatch("GET_USER",this.user.profile.id)
+    },
     async sendUser(){
-     
-
-      const headers={
-        'Content-Type': 'application/json'}
-      await axios.post('http://localhost:5000/api/create_user'
-    ,this.user,{headers:headers})
-      console.log('send to server -',this.user)
+     this.$store.dispatch('POST_USER',this.user)
     },
     async updateUser(){
-      const headers={
-        'Content-Type': 'application/json'}
-       await axios.put('http://localhost:5000/api/update_user'
-    ,this.user,{headers:headers})
+        this.$store.dispatch('UPDATE_USER',this.user)
     },
     async getLocation() {
       return new Promise((resolve, reject) => {
@@ -214,8 +208,8 @@ export default {
     async getId(value) {
      
       // console.log(value)
-      const {data}= await axios.get(`http://localhost:5000/api/get_user/${value.id}`)
-      console.log('data',data) 
+      const {data}= await axios.get(`http://localhost:5000/api/get_user${value.id}`)
+      console.log('data---',data) 
       this.idSelected = data;
       console.log(this.idSelected)
       this.state = "registration";
@@ -227,20 +221,27 @@ export default {
       this.$store.commit("SAVE_USER", value);
       
       await this.sendUser()
+       setTimeout(async ()=>{
       await this.senpPhoto()
-      // this.state = "profile";
+       },1000)
+      setTimeout(async ()=>{
+         await this.getUser()
+          this.state = "profile";
+      },1000)
+     
+     
       console.log('get reg form this.user',this.user);
     },
-    saveProfile(e) {  
-      const data = JSON.stringify(e);
-      window.localStorage.setItem("user", data);
-      console.log("save from saveProfile:", this.user);
-      this.$store.commit("SAVE_USER_PROFILE", e.profile);
-        this.sendUser()
-    },
+    // saveProfile(e) {  
+    //   // const data = JSON.stringify(e);
+    //   // window.localStorage.setItem("user", data);
+    //   console.log("save from saveProfile:", this.user);
+    //   this.$store.commit("SAVE_USER_PROFILE", e.profile);
+    //     this.sendUser()
+    // },
     updateProfile(e) {  
-      const data = JSON.stringify(e);
-      window.localStorage.setItem("user", data);
+      // const data = JSON.stringify(e);
+      // window.localStorage.setItem("user", data);
       console.log("save from updateProfile:", this.user);
       this.$store.commit("SAVE_USER_PROFILE", e.profile);
         this.updateUser()
@@ -253,15 +254,24 @@ export default {
         this.substate = e.substate;
       }
     },
+    async Sign(e){
+      const user=await axios.post('http://localhost:5000/api/login',e)
+      this.$store.commit('SAVE_USER',user.data)
+      this.state='profile'
+      console.log('SIGN-----',user)
+    },
   },
   async mounted() {
     console.log('start:',this.user);
     // this.user=window.localStorage.getItem('user')
     let htmlEl = document.querySelector("html");
     htmlEl.style.overflow = "hidden";
+    const body=document.querySelector("body");
+    body.style.margin=0
     this.lastEnterTime = new Date();
     await this.locateMe();
-    const city = await this.getCity();
+    // const city = await this.getCity();
+    const city ='Краснодар'
     this.$store.commit('SAVE_USER_PROFILE',{'city':city})
     // console.log('start after locate:',this.user);
     // this.state='settings'
@@ -274,21 +284,24 @@ export default {
 </script>
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Amatic+SC:wght@700&display=swap");
-
+*{
+  padding:0px;
+  margin:0px;
+}
 html {
   overflow-y: hidden !important;
 }
 
 body {
   max-height: 100vh;
-  margin: 0;
+  margin: 0!important;
   padding: 0;
   overflow: hidden;
 }
 .app {
-  max-height: 100vh;
+  height: 100vh;
   overflow: hidden;
-  max-width: 100vw;
+  width: 100vw;
 }
 .no-mode-translate-fade-enter-active,
 .no-mode-translate-fade-leave-active {

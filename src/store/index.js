@@ -28,8 +28,9 @@ export default new Vuex.Store({
       },
       id: null,
       location: null,
+      token: null,
       photoAnimal: [],
-      photoLitter: [],
+      photoUrl: [],
       profile: {
         mail: "",
         tel: "",
@@ -68,12 +69,39 @@ export default new Vuex.Store({
     },
   },
   actions: {
-    GET_USER: async (context) => {
-      let { data } = await Axios.get("http://localhost:5000/get_user");
+    GET_USER: async (context, payload) => {
+      const headers = {
+        "Content-Type": "application/json",
+      };
+      let  {data}  = await Axios.get(
+        `http://localhost:5000/api/get_user${payload}`,
+        {
+          headers: headers,
+        }
+      );
+      console.log("GET_USER-", data);
       context.commit("SAVE_USER", data);
     },
-    // POST_USER:async (context,payload)=>{
-    //   await axios.post('http://localhost:5000/create_user',payload)
-    // }
+    POST_USER: async (context, payload) => {
+      const headers = {
+        "Content-Type": "application/json",
+      };
+      // console.log("Vuex payload:", payload);
+      await Axios.post("http://localhost:5000/api/create_user", payload, {
+        headers: headers,
+      });
+      context.commit("SAVE_USER", payload);
+    },
+    UPDATE_USER: async (context, payload) => {
+      const headers = {
+        "Content-Type": "application/json",
+      };
+      let { data } = await Axios.put(
+        "http://localhost:5000/api/update_user",
+        payload,
+        { headers: headers }
+      );
+      context.commit("SAVE_USER", data);
+    },
   },
 });
