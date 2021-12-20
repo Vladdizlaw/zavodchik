@@ -34,6 +34,7 @@
         :user="user"
         @search="state = 'animalProperty'"
         @back="back"
+        @logout="logout"
         v-if="state == 'profile'"
       />
       <settings-screen
@@ -56,6 +57,7 @@ import MapScreen from "./components/MapScreen.vue";
 import RegistrationScreen from "./components/RegistrationScreen.vue";
 import ProfileScreen from "./components/ProfileScreen.vue";
 import SettingsScreen from "./components/SettingsScreen.vue";
+// import cookie from "cookie"
 // import store from './store/index.js'
 export default {
   name: "App",
@@ -96,6 +98,29 @@ export default {
     },
   },
   methods: {
+    async logout(){
+      const headers = {
+        "Content-Type": "application/json",
+      };
+      await axios.get(`http://localhost:5000/api/logout`,{ withCredentials: true },
+        {
+          headers: headers,
+        }
+      )
+      this.state='start'
+    },
+    isAutentificate(){
+      const token=document.cookie?.split(';').filter(el=>el.includes('access_token'))
+        // console.log(token[0].split('=')[1])
+      if (!token||token.length<=0||token[0].split('=')[1]==='null') {
+        return false
+      }
+        return true
+    },
+    async getAuthUser(){
+      
+      this.$store.dispatch('GET_AUTH_USER')
+    },
     async senpPhoto(){
       // let index
       //  const headers={
@@ -226,6 +251,7 @@ export default {
        },1000)
       setTimeout(async ()=>{
          await this.getUser()
+         document.cookie=`access_token=${this.user.token}`
           this.state = "profile";
       },1000)
      
@@ -257,11 +283,21 @@ export default {
     async Sign(e){
       const user=await axios.post('http://localhost:5000/api/login',e)
       this.$store.commit('SAVE_USER',user.data)
+      document.cookie=`access_token=${this.user.token}`
+      console.log('from Sign',document.cookie)
       this.state='profile'
       console.log('SIGN-----',user)
     },
   },
   async mounted() {
+    if (this.isAutentificate()){
+       await this.getAuthUser()
+       setTimeout(()=>{
+         this.state='profile'
+       },1000)
+       
+    }
+   
     console.log('start:',this.user);
     // this.user=window.localStorage.getItem('user')
     let htmlEl = document.querySelector("html");

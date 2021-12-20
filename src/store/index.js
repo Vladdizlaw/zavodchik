@@ -69,6 +69,19 @@ export default new Vuex.Store({
     },
   },
   actions: {
+    GET_AUTH_USER: async (context) => {
+      const headers = {
+        "Content-Type": "application/json",
+      };
+      let  {data}  = await Axios.get(
+        `http://localhost:5000/api/get_auth_user`,{ withCredentials: true },
+        {
+          headers: headers,
+        }
+      );
+      console.log("GET_AUTH_USER-", data);
+      context.commit("SAVE_USER", data);
+    },
     GET_USER: async (context, payload) => {
       const headers = {
         "Content-Type": "application/json",

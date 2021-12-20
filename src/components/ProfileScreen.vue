@@ -116,7 +116,7 @@
         <p>До конца пробного периода осталось: {{ lastTrialTime }} дней</p>
         <button>Оплатить</button>
       </div>
-      <div class="footer-exit">
+      <div class="footer-exit" @click="logout">
         <p>Выйти из аккаунта</p>
         <img src="../assets/exit.svg" alt="" />
       </div>
@@ -138,12 +138,15 @@ export default {
     };
   },
   mounted() {
-    console.log('profileUser:',this.user);
+    // console.log('profileUser:',this.user);
   },
   methods: {
+    logout(){
+      this.$emit('logout',null)
+    },
     back() {},
     search() {
-      this.$emit("back", { state: "settings" });
+      this.$emit("back", { state: "search" });
     },
     checkPhoto(e) {
       if (!e.target.name){
