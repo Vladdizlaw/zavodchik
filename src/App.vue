@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import translate from "translate";
+// import translate from "translate";
 import axios from "axios";
 import StartScreen from "./components/StartScreen.vue";
 import AnimalProperty from "./components/AnimalProperty.vue";
@@ -179,30 +179,12 @@ export default {
         console.log(e.message);
       }
     },
-    async getAdress(long, lat) {
-      //Получаем город из геопозиции
-      const data = await axios.get(
-        "https://maps.googleapis.com/maps/api/geocode/json?latlng=" +
-          lat +
-          "," +
-          long +
-          "&key=AIzaSyBR_KhfKe3u_31BhVXgGPApthBjcg2Va90"
-      );
-      console.log(data.data.results);
-      let result = data.data.results[0]["address_components"][2]["long_name"];
-
-      return result.split(" ")[0] == "Gorod" ? result.split(" ")[1] : result;
-    },
+  
     async getCity() {
-      // const cityList = require("../cities.json");
-      const city = await this.getAdress(
-        this.user.location.longitude,
-        this.user.location.latitude
-      );
-      translate.engine = "google"; //переводим город  с латиницы на русский
-
-      translate.key = process.env.GOOGLE_KEY;
-      return await translate(city, "ru");
+      
+      const {data} = await axios.get(`http://localhost:5000/api/get_city/${this.user.location.longitude}/${this.user.location.latitude}`)
+        
+       return data
     },
     getAnimalType(value) {
       // this.user.animal.animalType = value.animalType;
@@ -292,7 +274,7 @@ export default {
   async mounted() {
     if (this.isAutentificate()){
        await this.getAuthUser()
-       setTimeout(()=>{
+          setTimeout(()=>{
          this.state='profile'
        },1000)
        
@@ -306,9 +288,12 @@ export default {
     body.style.margin=0
     this.lastEnterTime = new Date();
     await this.locateMe();
-    // const city = await this.getCity();
-    const city ='Краснодар'
+    const city = await this.getCity();
+    console.log('city',city)
+    // const city ='Краснодар'
+    if (!this.isAutentificate()){
     this.$store.commit('SAVE_USER_PROFILE',{'city':city})
+    }
     // console.log('start after locate:',this.user);
     // this.state='settings'
     //  console.log(this.user.location);

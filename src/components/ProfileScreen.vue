@@ -146,7 +146,7 @@ export default {
     },
     back() {},
     search() {
-      this.$emit("back", { state: "search" });
+      this.$emit("back", { state: "animalProperty" });
     },
     checkPhoto(e) {
       if (!e.target.name){
