@@ -8,7 +8,7 @@
         ref="modal"
         class="modal"
         @click="cancelModal"
-        @keydown.esc="cancelModal"
+       
         v-show="modalPhoto"
         :class="{ active: modalPhoto }"
       ></div>
@@ -108,7 +108,7 @@
       </div>
     </div>
     <div class="footer">
-      <div class="footer-setings" @click="search">
+      <div class="footer-setings" @click="settings">
         <img  class="roll" src="../assets/setings.svg" alt="" />
         <p>Настройка</p>
       </div>
@@ -147,6 +147,9 @@ export default {
     back() {},
     search() {
       this.$emit("back", { state: "animalProperty" });
+    },
+    settings(){
+      this.$emit("back", { state: "settings" });
     },
     checkPhoto(e) {
       if (!e.target.name){
@@ -297,6 +300,7 @@ export default {
   flex-wrap: nowrap;
   gap: 0.15em;
   align-items: center;
+  cursor: pointer;
 }
 .header__search > img {
   height: 0.7em;
@@ -364,6 +368,7 @@ export default {
   align-items: start;
   padding: 0;
   margin: 0;
+  cursor:pointer;     
 }
 .photo__LU {
   width: 50%;

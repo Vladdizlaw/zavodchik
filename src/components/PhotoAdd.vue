@@ -213,6 +213,7 @@ export default {
   background: #ffffff;
   opacity: 0.5;
   transition: all 0.3s;
+  cursor:pointer;
 }
 .square:after {
   content: "";

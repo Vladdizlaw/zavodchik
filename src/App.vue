@@ -73,7 +73,6 @@ export default {
 
   data() {
     return {
-    
       state: "start", //CСостояние
       searchParams: {},
       autohorized: false,
@@ -98,61 +97,69 @@ export default {
     },
   },
   methods: {
-    async logout(){
+    async logout() {
       const headers = {
         "Content-Type": "application/json",
       };
-      await axios.get(`http://localhost:5000/api/logout`,{ withCredentials: true },
+      await axios.get(
+        `http://localhost:5000/api/logout`,
+        { withCredentials: true },
         {
           headers: headers,
         }
-      )
-      this.state='start'
+      );
+      this.state = "start";
     },
-    isAutentificate(){
-      const token=document.cookie?.split(';').filter(el=>el.includes('access_token'))
-        // console.log(token[0].split('=')[1])
-      if (!token||token.length<=0||token[0].split('=')[1]==='null') {
-        return false
+    isAutentificate() {
+
+      const token = document.cookie
+        ?.split(";")
+        .filter((el) => el.includes("access_token"));
+      // console.log(token[0].split('=')[1])
+      if (!token || token.length <= 0 || token[0].split("=")[1] === "null") {
+        return false;
       }
-        return true
+      return true;
     },
-    async getAuthUser(){
-      
-      this.$store.dispatch('GET_AUTH_USER')
+    async getAuthUser() {
+      this.$store.dispatch("GET_AUTH_USER");
     },
-    async senpPhoto(){
+    async senpPhoto() {
       // let index
       //  const headers={
-        // 'Content-Type': 'multipart/form-data'}
-        const PhotoArray=[...this.user.photoAnimal]
-        console.log(PhotoArray)
-         let formData= new FormData()
-      PhotoArray.forEach(  (photo,ind)=>{
-        
-         formData.append(`file[${ind}]`,photo)
-        
-      })
-
+      // 'Content-Type': 'multipart/form-data'}
+      const PhotoArray = [...this.user.photoAnimal];
+      console.log(PhotoArray);
+      let formData = new FormData();
+      PhotoArray.forEach((photo, ind) => {
+        formData.append(`file[${ind}]`, photo);
+      });
 
       // this.user.photoLitter?.forEach( (photo,ind)=>{
-        
+
       //    formData.append(`file[${index+ind}]`,photo)
-        
+
       // })
-      formData.append('id',this.user.profile.id)
-     const answer= await axios.post('http://localhost:5000/api/create_photo',formData,{headers:{  
-        'Content-Type': 'multipart/form-data'}})
-     console.log(answer,'formData:',formData)
+      formData.append("id", this.user.profile.id);
+      const answer = await axios.post(
+        "http://localhost:5000/api/create_photo",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      console.log(answer, "formData:", formData);
     },
-    async getUser(){
-       this.$store.dispatch("GET_USER",this.user.profile.id)
+    async getUser() {
+      this.$store.dispatch("GET_USER", this.user.profile.id);
     },
-    async sendUser(){
-     this.$store.dispatch('POST_USER',this.user)
+    async sendUser() {
+      this.$store.dispatch("POST_USER", this.user);
     },
-    async updateUser(){
-        this.$store.dispatch('UPDATE_USER',this.user)
+    async updateUser() {
+      this.$store.dispatch("UPDATE_USER", this.user);
     },
     async getLocation() {
       return new Promise((resolve, reject) => {
@@ -174,17 +181,23 @@ export default {
       try {
         const location = await this.getLocation();
 
-        this.$store.commit('SAVE_USER',{'location':{latitude:location.coords.latitude,longitude:location.coords.longitude} })
+        this.$store.commit("SAVE_USER", {
+          location: {
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+          },
+        });
       } catch (e) {
         console.log(e.message);
       }
     },
-  
+
     async getCity() {
-      
-      const {data} = await axios.get(`http://localhost:5000/api/get_city/${this.user.location.longitude}/${this.user.location.latitude}`)
-        
-       return data
+      const { data } = await axios.get(
+        `http://localhost:5000/api/get_city/${this.user.location.longitude}/${this.user.location.latitude}`
+      );
+
+      return data;
     },
     getAnimalType(value) {
       // this.user.animal.animalType = value.animalType;
@@ -213,12 +226,13 @@ export default {
     },
 
     async getId(value) {
-     
       // console.log(value)
-      const {data}= await axios.get(`http://localhost:5000/api/get_user${value.id}`)
-      console.log('data---',data) 
+      const { data } = await axios.get(
+        `http://localhost:5000/api/get_user${value.id}`
+      );
+      console.log("data---", data);
       this.idSelected = data;
-      console.log(this.idSelected)
+      console.log(this.idSelected);
       this.state = "registration";
     },
     async getRegForms(value) {
@@ -226,33 +240,24 @@ export default {
       // this.$store.commit("SAVE_USER_ANIMAL", value.animal);
       // this.$store.commit('SAVE_USER',value.animalForm);
       this.$store.commit("SAVE_USER", value);
-      
-      await this.sendUser()
-       setTimeout(async ()=>{
-      await this.senpPhoto()
-       },1000)
-      setTimeout(async ()=>{
-         await this.getUser()
-         document.cookie=`access_token=${this.user.token}`
-          this.state = "profile";
-      },1000)
-     
-     
-      console.log('get reg form this.user',this.user);
+
+      await this.sendUser();
+      setTimeout(async () => {
+        await this.senpPhoto();
+      }, 1000);
+      setTimeout(async () => {
+        await this.getUser();
+        setTimeout(()=>{
+          document.cookie = `access_token=${this.user.token}`;
+        this.state = "profile";},1000)
+      }, 1000);
+
+      console.log("get reg form this.user", this.user);
     },
-    // saveProfile(e) {  
-    //   // const data = JSON.stringify(e);
-    //   // window.localStorage.setItem("user", data);
-    //   console.log("save from saveProfile:", this.user);
-    //   this.$store.commit("SAVE_USER_PROFILE", e.profile);
-    //     this.sendUser()
-    // },
-    updateProfile(e) {  
-      // const data = JSON.stringify(e);
-      // window.localStorage.setItem("user", data);
-      console.log("save from updateProfile:", this.user);
+
+    async updateProfile(e) {
       this.$store.commit("SAVE_USER_PROFILE", e.profile);
-        this.updateUser()
+      await this.updateUser();
     },
     back(e) {
       // console.log('e')
@@ -262,37 +267,43 @@ export default {
         this.substate = e.substate;
       }
     },
-    async Sign(e){
-      const user=await axios.post('http://localhost:5000/api/login',e)
-      this.$store.commit('SAVE_USER',user.data)
-      document.cookie=`access_token=${this.user.token}`
-      console.log('from Sign',document.cookie)
-      this.state='profile'
-      console.log('SIGN-----',user)
+    async Sign(e) {
+      const user = await axios.post("http://localhost:5000/api/login", e);
+      this.$store.commit("SAVE_USER", user.data);
+      document.cookie = `access_token=${this.user.token}`;
+      console.log("from Sign", document.cookie);
+      this.state = "profile";
+      console.log("SIGN-----", user);
     },
   },
   async mounted() {
-    if (this.isAutentificate()){
-       await this.getAuthUser()
-          setTimeout(()=>{
-         this.state='profile'
-       },1000)
-       
+    
+    if (this.isAutentificate()) {
+      try {
+        console.log("cookie:", document.cookie);
+        await this.getAuthUser();
+        setTimeout(() => {
+         this.state = "profile";
+        }, 1000);
+      } catch (e) {
+        console.log("errorrre", e);
+      }
     }
-   
-    console.log('start:',this.user);
+
+    console.log("start:", this.user);
     // this.user=window.localStorage.getItem('user')
     let htmlEl = document.querySelector("html");
     htmlEl.style.overflow = "hidden";
-    const body=document.querySelector("body");
-    body.style.margin=0
+    const body = document.querySelector("body");
+    body.style.margin = 0;
     this.lastEnterTime = new Date();
     await this.locateMe();
-    const city = await this.getCity();
-    console.log('city',city)
+   
+    // console.log("city", city);
     // const city ='Краснодар'
-    if (!this.isAutentificate()){
-    this.$store.commit('SAVE_USER_PROFILE',{'city':city})
+    if (!this.isAutentificate()) {
+       const city = await this.getCity();
+      this.$store.commit("SAVE_USER_PROFILE", { city: city });
     }
     // console.log('start after locate:',this.user);
     // this.state='settings'
@@ -305,9 +316,9 @@ export default {
 </script>
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Amatic+SC:wght@700&display=swap");
-*{
-  padding:0px;
-  margin:0px;
+* {
+  padding: 0px;
+  margin: 0px;
 }
 html {
   overflow-y: hidden !important;
@@ -315,7 +326,7 @@ html {
 
 body {
   max-height: 100vh;
-  margin: 0!important;
+  margin: 0 !important;
   padding: 0;
   overflow: hidden;
 }

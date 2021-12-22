@@ -582,7 +582,7 @@ export default {
   align-items: center;
   /* border: 2px solid; */
   width: 100%;
-  max-height: 89%;
+  min-height: 90%;
   /* gap:-0.1rem; */
   text-align: center;
   overflow: hidden;
@@ -611,7 +611,12 @@ export default {
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
     0px 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 10px;
-  transform: matrix(1, 0, 0, 1, 0, 0);
+  transition: all 0.2s;
+  cursor:pointer;
+}
+.personal_data_checkbox:hover{
+  width:1.1em;
+  height: 1.1em;
 }
 .personal_data_text {
   width: 9em;
@@ -674,8 +679,8 @@ export default {
   /* flex: auto 0 50%; */
 }
 input,
-select,
-textarea {
+select
+{
   width: 12em;
   height: 1em;
   background: #ffffff;
@@ -684,7 +689,7 @@ textarea {
   box-sizing: border-box;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 10px;
-  text-align: center;
+  text-align: center!important;
   font-family: Amatic SC;
   font-style: normal;
   font-weight: 900;
@@ -702,10 +707,12 @@ font-size:1.1em;
 height:1em;
 }
 option {
-  display: flex;
-  justify-content: center;
-  text-align: center;
-   border-radius: 10px;
+ background: #FFFFFF;
+border: 1px solid #000000;
+box-sizing: border-box;
+box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.75);
+border-radius: 20px;
+font-size: 0.7em;
 }
 .forinput input{
  width:13em;
@@ -733,8 +740,8 @@ button {
   align-items: center;
   text-align: center;
   background: transparent;
-  margin-top:0.1rem;
- cursor:pointer;
+  margin-top:1.5rem;
+  cursor:pointer;
   color: #000000;
 }
 .registration-user .next-btn{

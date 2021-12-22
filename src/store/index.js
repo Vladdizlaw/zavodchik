@@ -63,8 +63,10 @@ export default new Vuex.Store({
     },
     SAVE_USER: (state, payload) => {
       Object.keys(payload).forEach((key) => {
+        if (key!=="_id"){
         state.user[key] = payload[key];
         console.log("save user", key);
+        }
       });
     },
   },
