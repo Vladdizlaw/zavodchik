@@ -33,6 +33,7 @@ export default {
   align-items: center;
   width: 10%;
   height: 2em;
+   transition: 0.3s;
 }
 .registration-title__back:hover {
   filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.5))

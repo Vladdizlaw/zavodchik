@@ -34,9 +34,13 @@
         :user="user"
         @search="state = 'animalProperty'"
         @back="back"
-        @logout="logout"
+       
         v-if="state == 'profile'"
-      />
+      >
+      <template #footer>
+        <profile-footer  @back="back" @logout="logout" :startTrial="user.animal.startTrial"/>
+      </template>
+      </profile-screen>
       <settings-screen
         :selectedCity="selectedCity"
         @saveProfile="updateProfile"
@@ -57,6 +61,7 @@ import MapScreen from "./components/MapScreen.vue";
 import RegistrationScreen from "./components/RegistrationScreen.vue";
 import ProfileScreen from "./components/ProfileScreen.vue";
 import SettingsScreen from "./components/SettingsScreen.vue";
+import ProfileFooter from './components/ProfileFooter.vue';
 // import cookie from "cookie"
 // import store from './store/index.js'
 export default {
@@ -69,6 +74,7 @@ export default {
     RegistrationScreen,
     ProfileScreen,
     SettingsScreen,
+    ProfileFooter,
   },
 
   data() {

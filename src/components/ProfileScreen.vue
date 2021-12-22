@@ -108,18 +108,9 @@
       </div>
     </div>
     <div class="footer">
-      <div class="footer-setings" @click="settings">
-        <img  class="roll" src="../assets/setings.svg" alt="" />
-        <p>Настройка</p>
-      </div>
-      <div class="footer-time">
-        <p>До конца пробного периода осталось: {{ lastTrialTime }} дней</p>
-        <button>Оплатить</button>
-      </div>
-      <div class="footer-exit" @click="logout">
-        <p>Выйти из аккаунта</p>
-        <img src="../assets/exit.svg" alt="" />
-      </div>
+     <slot name="footer" >
+
+     </slot>
     </div>
   </div>
 </template>
@@ -141,16 +132,12 @@ export default {
     // console.log('profileUser:',this.user);
   },
   methods: {
-    logout(){
-      this.$emit('logout',null)
-    },
+   
     back() {},
     search() {
       this.$emit("back", { state: "animalProperty" });
     },
-    settings(){
-      this.$emit("back", { state: "settings" });
-    },
+   
     checkPhoto(e) {
       if (!e.target.name){
         return
@@ -195,13 +182,7 @@ export default {
      
       return urls;
     },
-    lastTrialTime() {
-      const timestampNow = Date.now();
-      let result = Math.round(
-        (this.user.animal.startTrial.dateEnd - timestampNow) / 5184000
-      );
-      return result;
-    },
+   
   },
 };
 </script>
@@ -242,9 +223,7 @@ export default {
   position: absolute;
   background: rgba(235, 222, 42, 0.863), linear-gradient(to bottom, rgba(245, 246, 252, 0.52));
   backdrop-filter: blur(2px);
-  /* backdrop-filter: drop-shadow(4px 4px 10px blue); */
-  /* backdrop-filter: grayscale(30%); */
-  /* opacity: 0.7; */
+  
   left: 50;
   width: 100vw;
   height: 100vh;
@@ -358,7 +337,7 @@ export default {
 .main-right__photos {
   width: 100%;
   height: 100%;
-  /* border: 2px solid black; */
+ 
   display: flex;
   flex-wrap: nowrap;
   flex-direction: row;
@@ -381,9 +360,7 @@ export default {
 .LU__UP {
   width: 100%;
   height: 45%;
-  /* box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.75); */
-  /* border-radius: 10px; */
-  /* border: 1px dashed black; */
+ 
 }
 .LU__DOWN {
   width: 100%;
@@ -414,9 +391,7 @@ export default {
 .RU__UP_right_3 {
   height: 33%;
   width: 100%;
-  /* border: 1px dashed; */
-  /* box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.75); */
-  /* border-radius: 10px; */
+ 
 }
 .LU__DOWN_right_1,
 .LU__DOWN_right_2,
@@ -424,9 +399,7 @@ export default {
 .RU__UP_left_2 {
   height: 50%;
   width: 100%;
-  /* border: 1px dashed; */
-  /* box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.75); */
-  /* border-radius: 10px; */
+ 
 }
 .photo__RU {
   width: 50%;
@@ -459,8 +432,7 @@ export default {
 .RU__DOWN {
   height: 55%;
   width: 100%;
-  /* box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.75); */
-  /* border-radius: 10px; */
+ 
 }
 .photo {
   position: relative;
@@ -492,51 +464,5 @@ export default {
   justify-content: space-around;
   flex-wrap: nowrap;
 }
-.footer-setings {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: 0.3s;
-   cursor:pointer;
-}
-.footer-time {
-  display: flex;
-  min-width: 68%;
-  justify-content: center;
-   align-items: center;
-  gap: 1em;
-  font-size: 0.7em;
-}
-.footer-time > button {
-  border: 1px solid #000000;
-  box-sizing: border-box;
-  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.75));
-  border-radius: 15px 0px;
-  padding: 0 1em 0 1em;
-  background: transparent;
-}
-.footer-exit {
-  flex-wrap: nowrap;
-  width: 20%;
-  display: flex;
-  justify-content: center;
-   align-items: center;
-   cursor:pointer;
-}
-.footer-exit > img {
-  height: 0.9em;
-  margin-top: 0.1em;
-  margin-left: 0.2em;
-}
-.roll{
-   transition: 0.4s ;
-}
-/* .footer-exit:hover, */
-.footer-setings:hover  .roll{
-  transform: rotate(1080deg) ;
-}
-.footer-time > button:hover {
-  box-shadow: 5px 5px 10px 5px rgba(1, 32, 0, 0.25),
-    10px 10px 10px 10px rgba(9, 112, 7, 0.75);
-}
+
 </style>
