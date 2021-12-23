@@ -14,15 +14,7 @@
       ></div>
     </transition>
     <div class="header">
-      <back-button :func="back" class="backbutton" />
-      <div class="header__text">
-        <p>Профиль</p>
-      </div>
-
-      <div class="header__search" @click="search">
-        <img src="../assets/search.svg" alt="" />
-        <p>Поиск</p>
-      </div>
+      <slot name="header"></slot>
     </div>
     <div class="main">
       <div class="main-left">
@@ -115,9 +107,9 @@
   </div>
 </template>
 <script>
-import BackButton from "./BackButton.vue";
+// import BackButton from "./BackButton.vue";
 export default {
-  components: { BackButton },
+  
   name: "ProfileScreen",
   props: {
     user: Object,
@@ -133,10 +125,10 @@ export default {
   },
   methods: {
    
-    back() {},
-    search() {
-      this.$emit("back", { state: "animalProperty" });
+    back() {
+      this.$emit('back',null)
     },
+    
    
     checkPhoto(e) {
       if (!e.target.name){
@@ -250,44 +242,16 @@ export default {
     transform: scale(1);
   }
 }
-
 .header {
+  margin-top:1rem;
+  margin-bottom:1rem;
   width: 100%;
   height: 2em;
   display: flex;
   justify-content: start;
   align-items: center;
 }
-.backbutton {
-  font-size: 1.25em;
-  max-width: 20%;
- 
-}
-.header__text {
-  min-width: 78%;
-  justify-self: center;
-  font-size: 2.5em;
-  justify-content: center;
-  align-items: center;
-  align-content: center;
-  text-align: center;
-}
-.header__search {
-  font-size: 1.4em;
-  display: flex;
-  max-width: 25%;
-  flex-wrap: nowrap;
-  gap: 0.15em;
-  align-items: center;
-  cursor: pointer;
-}
-.header__search > img {
-  height: 0.7em;
-}
-.header__search:hover {
-  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.5))
-    drop-shadow(10px 10px 4px rgba(9, 112, 7, 0.75));
-}
+
 .main {
   display: flex;
   width: 90vw;
@@ -456,8 +420,8 @@ export default {
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.75); */
 }
 .footer {
-  margin-top: 1em;
-  margin-bottom: 0.5em;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
   display: flex;
   width: 100vw;
   height: auto;

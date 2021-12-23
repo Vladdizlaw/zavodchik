@@ -34,12 +34,28 @@
         :user="user"
         @search="state = 'animalProperty'"
         @back="back"
-       
         v-if="state == 'profile'"
       >
-      <template #footer>
-        <profile-footer  @back="back" @logout="logout" :startTrial="user.animal.startTrial"/>
+      <template #header>
+        <profile-header @back="back"/>
       </template>
+        <template #footer>
+          <profile-footer
+            @back="back"
+            @logout="logout"
+            :startTrial="user.animal.startTrial"
+          />
+        </template>
+      </profile-screen>
+       <profile-screen
+        :user="idSelected"
+        @search="state = 'animalProperty'"
+        @back="backSearchResult"
+        v-if="state == 'searchResult'"
+      >
+        <template #footer>
+         
+        </template>
       </profile-screen>
       <settings-screen
         :selectedCity="selectedCity"
@@ -61,7 +77,8 @@ import MapScreen from "./components/MapScreen.vue";
 import RegistrationScreen from "./components/RegistrationScreen.vue";
 import ProfileScreen from "./components/ProfileScreen.vue";
 import SettingsScreen from "./components/SettingsScreen.vue";
-import ProfileFooter from './components/ProfileFooter.vue';
+import ProfileFooter from "./components/ProfileFooter.vue";
+import ProfileHeader from "./components/ProfileHeader.vue";
 // import cookie from "cookie"
 // import store from './store/index.js'
 export default {
@@ -75,6 +92,7 @@ export default {
     ProfileScreen,
     SettingsScreen,
     ProfileFooter,
+    ProfileHeader,
   },
 
   data() {
@@ -117,7 +135,6 @@ export default {
       this.state = "start";
     },
     isAutentificate() {
-
       const token = document.cookie
         ?.split(";")
         .filter((el) => el.includes("access_token"));
@@ -233,13 +250,21 @@ export default {
 
     async getId(value) {
       // console.log(value)
+      if (!this.isAutentificate()){
+        console.log(this.isAutentificate())
+          this.state = "registration";
+          return
+      }
       const { data } = await axios.get(
         `http://localhost:5000/api/get_user${value.id}`
       );
-      console.log("data---", data);
+     
       this.idSelected = data;
-      console.log(this.idSelected);
-      this.state = "registration";
+      this.state= "searchResult"
+    
+    },
+    backSearchResult(){
+      this.state='mapScreen'
     },
     async getRegForms(value) {
       // this.$store.commit("SAVE_USER_PROFILE", value.profile);
@@ -253,9 +278,10 @@ export default {
       }, 1000);
       setTimeout(async () => {
         await this.getUser();
-        setTimeout(()=>{
+        setTimeout(() => {
           document.cookie = `access_token=${this.user.token}`;
-        this.state = "profile";},1000)
+          this.state = "profile";
+        }, 1000);
       }, 1000);
 
       console.log("get reg form this.user", this.user);
@@ -283,13 +309,12 @@ export default {
     },
   },
   async mounted() {
-    
     if (this.isAutentificate()) {
       try {
         console.log("cookie:", document.cookie);
         await this.getAuthUser();
         setTimeout(() => {
-         this.state = "profile";
+          this.state = "profile";
         }, 1000);
       } catch (e) {
         console.log("errorrre", e);
@@ -304,11 +329,11 @@ export default {
     body.style.margin = 0;
     this.lastEnterTime = new Date();
     await this.locateMe();
-   
+
     // console.log("city", city);
     // const city ='Краснодар'
     if (!this.isAutentificate()) {
-       const city = await this.getCity();
+      const city = await this.getCity();
       this.$store.commit("SAVE_USER_PROFILE", { city: city });
     }
     // console.log('start after locate:',this.user);
