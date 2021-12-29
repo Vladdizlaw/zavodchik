@@ -1,65 +1,38 @@
 <template>
- <transition name="bounce">
-     <div
-        ref="modal"
-        class="modal"
-        @click="cancelModal"
-        @keydown.esc="cancelModal"
-        v-show="modalPhoto"
-        :class="{ active: modalPhoto }"
-      > 
-      <img :src="imageUrl"  class="image" alt="">
-      </div>
- </transition>
+  <transition name="bounce">
+    <div
+      class="modal"
+      tabindex="1"
+       @keydown.esc="cancelModal"
+      @click="cancelModal"
+     
+      v-if="flag"
+    >
+      <img :src="imageUrl"  class="image" alt="" />
+    </div>
+  </transition>
 </template>
 <script>
 export default {
-    name:'Modal',
-    props:{imageUrl:String},
-    data(){
-        return{
-            modalPhoto:false
-        }
-    },
-    methods:{
-        checkPhoto(e) {
-      if (!e.target.name){
-        return
-      }
-      const modal = this.$refs.modal;
-
-      const img = document.createElement("img");
-      img.style.height = "90vh";
-      img.style.maxWidth = "80vw"
-      img.style.border = "1px solid black";
-      img.style.borderRadius = "5px";
-      // console.log(e.target.name)
-      img.src = this.imageUrl;
-      modal.style.zIndex = "1000";
-      modal.prepend(img);
-      this.modalPhoto = true;
-      // console.log(img.style);
-    },
-
+  name: "Modal",
+  props: { imageUrl: String, flag: Boolean },
+  data() {
+    return {
+      // modalPhoto:false
+    };
+  },
+  methods: {
     cancelModal() {
-      const modal = this.$refs.modal;
-      const img = modal.getElementsByTagName("img");
-      
-      //  console.log(img)
-
-     
-      this.modalPhoto = false;
-      Array.from(img).forEach((el) => {
-        el.remove();
-      });
+      this.$emit("cancelModal", null);
     },
-    }
-}
+  },
+};
 </script>
 <style scoped>
 .modal {
   position: absolute;
-  background: rgba(235, 222, 42, 0.863), linear-gradient(to bottom, rgba(245, 246, 252, 0.52));
+  background: rgba(235, 222, 42, 0.863),
+    linear-gradient(to bottom, rgba(245, 246, 252, 0.52));
   backdrop-filter: blur(2px);
   /* backdrop-filter: drop-shadow(4px 4px 10px blue); */
   /* backdrop-filter: grayscale(30%); */
@@ -71,12 +44,13 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 1000;
 }
-.image{
-  max-height : 90vh;
-  max-width :80vw;
-  border :1px solid black;
-  border-radius : 5px;
+.image {
+  max-height: 90vh;
+  max-width: 80vw;
+  border: 1px solid black;
+  border-radius: 5px;
 }
 .bounce-enter-active {
   animation: bounce-in 0.5s;

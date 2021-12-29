@@ -37,15 +37,31 @@
         v-if="state == 'profile'"
       >
       <template #header>
-        <profile-header @back="back"/>
+        <Header >
+          <template #left>
+            <back-button :func="back"/>
+          </template>
+          <template #center>
+            <p>Профиль</p>
+          </template>
+          <template #right>
+            <search-button @back="back" />
+          </template>
+        </Header>
       </template>
-        <template #footer>
-          <profile-footer
-            @back="back"
-            @logout="logout"
-            :startTrial="user.animal.startTrial"
-          />
-        </template>
+         <template #footer>
+        <Header >
+          <template #left>
+            <settings-button @back="back"/>
+          </template>
+          <template #center>
+            <trial-block :startTrial="user.animal.startTrial" @pay="pay"/>
+          </template>
+          <template #right>
+            <logout-button @back="logout"/>
+          </template>
+        </Header>
+      </template>
       </profile-screen>
        <profile-screen
         :user="idSelected"
@@ -77,8 +93,13 @@ import MapScreen from "./components/MapScreen.vue";
 import RegistrationScreen from "./components/RegistrationScreen.vue";
 import ProfileScreen from "./components/ProfileScreen.vue";
 import SettingsScreen from "./components/SettingsScreen.vue";
-import ProfileFooter from "./components/ProfileFooter.vue";
-import ProfileHeader from "./components/ProfileHeader.vue";
+// import ProfileFooter from "./components/ProfileFooter.vue";
+import Header from "./components/Header.vue";
+import BackButton from './components/BackButton.vue';
+import SearchButton from './components/SearchButton.vue';
+import SettingsButton from './components/SettingsButton.vue';
+import TrialBlock from './components/TrialBlock.vue';
+import LogoutButton from './components/LogoutButton.vue';
 // import cookie from "cookie"
 // import store from './store/index.js'
 export default {
@@ -91,8 +112,12 @@ export default {
     RegistrationScreen,
     ProfileScreen,
     SettingsScreen,
-    ProfileFooter,
-    ProfileHeader,
+    SettingsButton,
+    Header,
+    BackButton,
+    SearchButton,
+    TrialBlock,
+    LogoutButton,
   },
 
   data() {
@@ -132,7 +157,9 @@ export default {
           headers: headers,
         }
       );
+      this.$store.commit('DELETE_USER')
       this.state = "start";
+      console.log(this.user)
     },
     isAutentificate() {
       const token = document.cookie
@@ -306,6 +333,9 @@ export default {
       console.log("from Sign", document.cookie);
       this.state = "profile";
       console.log("SIGN-----", user);
+    },
+    pay(){
+      console.log('pay')
     },
   },
   async mounted() {

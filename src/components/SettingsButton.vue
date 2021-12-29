@@ -1,45 +1,26 @@
 <template>
-  <div class="footer">
     <div class="footer-setings" @click="settings">
       <img class="roll" src="../assets/setings.svg" alt="" />
       <p>Настройка</p>
     </div>
-   <trial-block :startTrial=""
-    <logout-button/>
-  </div>
 </template>
 <script>
-import LogoutButton from './LogoutButton.vue';
-import TrialBlock from './TrialBlock.vue';
 export default {
-  name: "ProfileFooter",
-  
-  components: {LogoutButton, TrialBlock},
-  
-  data() {
-    return {};
-  },
-  methods: {
-   
-   
+    name:'SettingsButton',
+    data() {
+        return{
 
-    settings() {
+        }
+        
+    },
+    methods:{
+         settings() {
       this.$emit("back", { state: "settings" });
     },
-  },
- 
-};
+    }
+}
 </script>
 <style scoped>
-.footer {
-  margin-top: 1em;
-  margin-bottom: 0.5em;
-  display: flex;
-  width: 100vw;
-  height: auto;
-  justify-content: space-around;
-  flex-wrap: nowrap;
-}
 .footer-setings {
   display: flex;
   justify-content: center;
@@ -60,10 +41,4 @@ export default {
 filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.5))
     drop-shadow(10px 10px 4px rgba(9, 112, 7, 0.75));
 }
-button{
-  font-size: 1rem;
-  min-height: 2rem;
-   transition: 0.3s;
-}
- 
 </style>

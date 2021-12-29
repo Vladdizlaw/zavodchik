@@ -4,14 +4,8 @@
     :class="{ dog: user.animal.type == 'dog', cat: user.animal.type == 'cat' }"
   >
     <transition name="bounce">
-      <div
-        ref="modal"
-        class="modal"
-        @click="cancelModal"
-       
-        v-show="modalPhoto"
-        :class="{ active: modalPhoto }"
-      ></div>
+      <Modal :flag="modalPhoto" :imageUrl="url" @cancelModal="cancelModal" />
+     
     </transition>
     <div class="header">
       <slot name="header"></slot>
@@ -19,7 +13,7 @@
     <div class="main">
       <div class="main-left">
         <div class="main-left__name">
-          <p>{{ user.animal.name }} {{ user.animal.age }}</p>
+          <p>{{ user.animal.name }}, {{ user.animal.age }} {{ pluralize }}</p>
         </div>
         <div class="main-left__data">
           <p>Пол:{{ user.animal.male }}</p>
@@ -31,15 +25,17 @@
           <p>Возможный период случки:{{ user.animal.date }}</p>
           <p>Условие вязки:{{ user.animal.matingConditions }}</p>
           <p>
-            Контактные данные:{{ user.profile.name }},{{user.profile.seenFlags.seenTelFlag? user.profile.tel:'' }}
+            Контактные данные:{{ user.profile.name }},{{
+              user.profile.seenFlags.seenTelFlag ? user.profile.tel : ""
+            }}
             {{ user.profile.mail }}
           </p>
         </div>
       </div>
-      <div class="main-right" v-show="urls">
-        <div class="main-right__photos" @click="checkPhoto">
+      <div class="main-right" v-show="urls" >
+        <div class="main-right__photos" @click="сheckPhotos($event)">
           <div class="photo__LU">
-            <div class="LU__UP photo" v-show="urls[0]">
+            <div class="LU__UP photo" v-show="urls[0]" >
               <img :src="urls[0]" name="0" />
             </div>
             <div class="LU__DOWN">
@@ -83,12 +79,7 @@
                   <img :src="urls[9]" name="9" alt="" v-show="urls[9]" />
                 </div>
                 <div class="RU__UP_right_3 photo">
-                  <img
-                    :src="urls[11]"
-                    name="11"
-                    alt=""
-                    v-show="urls[11]"
-                  />
+                  <img :src="urls[11]" name="11" alt="" v-show="urls[11]" />
                 </div>
               </div>
             </div>
@@ -100,17 +91,15 @@
       </div>
     </div>
     <div class="footer">
-     <slot name="footer" >
-
-     </slot>
+      <slot name="footer"> </slot>
     </div>
   </div>
 </template>
 <script>
-// import BackButton from "./BackButton.vue";
+import Modal from "./Modal.vue";
 export default {
-  
   name: "ProfileScreen",
+  components:{Modal},
   props: {
     user: Object,
   },
@@ -120,61 +109,64 @@ export default {
       modalPhoto: false,
     };
   },
-  mounted() {
-    // console.log('profileUser:',this.user);
-  },
+ 
   methods: {
-   
-    back() {
-      this.$emit('back',null)
-    },
-    
-   
-    checkPhoto(e) {
-      if (!e.target.name){
-        return
+    сheckPhotos(e) {
+      console.log('check',e)
+      if (!e?.target.name) {
+        return;
       }
-      const modal = this.$refs.modal;
+      // const modal = this.$refs.modal;
 
-      const img = document.createElement("img");
-      img.style.height = "90vh";
-      img.style.maxWidth = "80vw"
-      img.style.border = "1px solid black";
-      img.style.borderRadius = "5px";
+      // const img = document.createElement("img");
+      // img.style.height = "90vh";
+      // img.style.maxWidth = "80vw";
+      // img.style.border = "1px solid black";
+      // img.style.borderRadius = "5px";
       // console.log(e.target.name)
-      img.src = this.urls[e.target.name];
-      modal.style.zIndex = "1000";
-      modal.prepend(img);
+      this.url = this.urls[e.target.name];
+      // modal.style.zIndex = "1000";
+      // modal.prepend(img);
       this.modalPhoto = true;
-      // console.log(img.style);
+      console.log(this.url);
     },
 
     cancelModal() {
-      const modal = this.$refs.modal;
-      const img = modal.getElementsByTagName("img");
-      
-      //  console.log(img)
+      // const modal = this.$refs.modal;
+      // const img = modal.getElementsByTagName("img");
 
-     
+      // //  console.log(img)
+
       this.modalPhoto = false;
-      Array.from(img).forEach((el) => {
-        el.remove();
-      });
+      // Array.from(img).forEach((el) => {
+      //   el.remove();
+      // });
     },
   },
   computed: {
+    pluralize() {
+      let res;
+      if (this.user.animal.age>1&&this.user.animal.age<5) {
+        res = "года";
+      } else if (this.user.animal.age == 1) {
+        res = "год";
+      } else {
+        res = "лет";
+      }
+      return res;
+    },
+
     urls() {
       if (!this.user.photoUrl?.length) {
         return null;
       }
       const urls = [];
       this.user.photoUrl?.forEach((u) => {
-        urls.push('http://localhost:5000/'+u);
+        urls.push("http://localhost:5000/" + u);
       });
-     
+
       return urls;
     },
-   
   },
 };
 </script>
@@ -211,40 +203,10 @@ export default {
   justify-content: start;
   position: relative;
 }
-.modal {
-  position: absolute;
-  background: rgba(235, 222, 42, 0.863), linear-gradient(to bottom, rgba(245, 246, 252, 0.52));
-  backdrop-filter: blur(2px);
-  
-  left: 50;
-  width: 100vw;
-  height: 100vh;
-  transition: all 1s;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
 
-.bounce-enter-active {
-  animation: bounce-in 0.5s;
-}
-.bounce-leave-active {
-  animation: bounce-in 0.5s reverse;
-}
-@keyframes bounce-in {
-  0% {
-    transform: scale(0);
-  }
-  50% {
-    transform: scale(1.5);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
 .header {
-  margin-top:1rem;
-  margin-bottom:1rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
   width: 100%;
   height: 2em;
   display: flex;
@@ -267,7 +229,6 @@ export default {
   flex-direction: column;
   justify-content: start;
   align-items: space-around;
-  
 }
 .main-left__name {
   max-height: 10%;
@@ -284,9 +245,8 @@ export default {
   margin-top: 2rem;
   font-size: 2rem;
 }
-.main-left__data>p{
-  margin-top:-2rem;
-
+.main-left__data > p {
+  margin-top: -2rem;
 }
 .main-right {
   width: 40%;
@@ -295,13 +255,12 @@ export default {
   justify-content: end;
   margin-left: 2em;
   margin-top: 2rem;
-  
 }
 
 .main-right__photos {
   width: 100%;
   height: 100%;
- 
+
   display: flex;
   flex-wrap: nowrap;
   flex-direction: row;
@@ -311,7 +270,7 @@ export default {
   align-items: start;
   padding: 0;
   margin: 0;
-  cursor:pointer;     
+  cursor: pointer;
 }
 .photo__LU {
   width: 50%;
@@ -324,7 +283,6 @@ export default {
 .LU__UP {
   width: 100%;
   height: 45%;
- 
 }
 .LU__DOWN {
   width: 100%;
@@ -355,7 +313,6 @@ export default {
 .RU__UP_right_3 {
   height: 33%;
   width: 100%;
- 
 }
 .LU__DOWN_right_1,
 .LU__DOWN_right_2,
@@ -363,7 +320,6 @@ export default {
 .RU__UP_left_2 {
   height: 50%;
   width: 100%;
- 
 }
 .photo__RU {
   width: 50%;
@@ -396,7 +352,6 @@ export default {
 .RU__DOWN {
   height: 55%;
   width: 100%;
- 
 }
 .photo {
   position: relative;
@@ -428,5 +383,4 @@ export default {
   justify-content: space-around;
   flex-wrap: nowrap;
 }
-
 </style>

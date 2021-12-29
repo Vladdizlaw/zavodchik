@@ -91,6 +91,9 @@
               @click="seenHood"
               alt=""
             />
+            <div class="input__seen__help">
+              <p>Другие польователи видят эти данные</p>
+            </div>
           </div>
         </div>
       </div>
@@ -357,17 +360,39 @@ export default {
   width: 1.1em;
   /* filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.75)); */
 }
-
+.input__seen{
+  display:flex;
+  position: relative;
+}
+.input__seen__help{
+right:0rem;
+ background: rgba(255, 255, 255, 0.5);
+border: 1px solid #000000;
+box-sizing: border-box;
+border-radius: 10px;
+font-size: 1.3rem;
+width:15rem;
+display: flex;
+justify-content: center;
+align-items: center;
+max-height:3rem;
+transition: 0.3s;
+position:relative;
+}
+.input__seen > img:hover .input__seen__help {
+  display : flex;
+}
 .input__seen > input,
 .wrapper-right > input,
 .wrapper-right > select {
+  font:inherit;
   text-align: center;
   background: rgba(255, 255, 255, 0.5);
   border: 1px solid #000000;
   box-sizing: border-box;
   border-radius: 10px;
   height: 1em;
-  min-width: 13em;
+  width: 13em;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
     0px 4px 4px rgba(0, 0, 0, 0.25);
   transition: all 0.3s;

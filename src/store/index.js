@@ -63,10 +63,17 @@ export default new Vuex.Store({
     },
     SAVE_USER: (state, payload) => {
       Object.keys(payload).forEach((key) => {
-        if (key!=="_id"){
-        state.user[key] = payload[key];
-        console.log("save user", key);
+        if (key !== "_id") {
+          state.user[key] = payload[key];
+          console.log("save user", key);
         }
+      });
+    },
+    DELETE_USER: (state) => {
+      Object.keys(state.user).forEach((key) => {
+        typeof(state.user[key])==='object'? Object.keys(state.user[key]).forEach(e=>{state.user[key][e]=null}):state.user[key] = null;
+
+        console.log("delete user",key,typeof(state.user[key]));
       });
     },
   },
@@ -75,8 +82,9 @@ export default new Vuex.Store({
       const headers = {
         "Content-Type": "application/json",
       };
-      let  {data}  = await Axios.get(
-        `http://localhost:5000/api/get_auth_user`,{ withCredentials: true },
+      let { data } = await Axios.get(
+        `http://localhost:5000/api/get_auth_user`,
+        { withCredentials: true },
         {
           headers: headers,
         }
@@ -88,7 +96,7 @@ export default new Vuex.Store({
       const headers = {
         "Content-Type": "application/json",
       };
-      let  {data}  = await Axios.get(
+      let { data } = await Axios.get(
         `http://localhost:5000/api/get_user${payload}`,
         {
           headers: headers,

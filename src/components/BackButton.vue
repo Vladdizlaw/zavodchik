@@ -17,7 +17,7 @@ export default {
 <style scoped>
 .registration-title__back {
   font-family: "Amatic SC";
-  font-size: 2.5em;
+  font-size: 3rem;
   font-style: normal;
   font-weight: 700;
   line-height: 45px;
@@ -31,16 +31,16 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 10%;
-  height: 2em;
-   transition: 0.3s;
+  /* width: 10%; */
+  height: 2rem;
+  transition: 0.3s;
 }
 .registration-title__back:hover {
   filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.5))
     drop-shadow(10px 10px 4px rgba(9, 112, 7, 0.75));
 }
 .registration-title__back > img {
-  padding-top: 0.25em;
-  max-height: 2.5em;
+  padding-top: 0.25rem;
+  max-height: 2.5rem;
 }
 </style>
