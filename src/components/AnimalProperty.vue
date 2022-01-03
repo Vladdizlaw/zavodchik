@@ -13,8 +13,8 @@
           <div class="input male">
             <p>Пол искомого животного</p>
             <select v-model="animalProperty.male">
-              <option value="man">мужской </option>
-              <option value="women">женский</option>
+              <option value="мужской">мужской </option>
+              <option value="Женский">женский</option>
             </select>
           </div>
     
@@ -89,12 +89,12 @@ export default {
   data() {
     return {
       animalProperty: {
-        male: "",
-        breed: "",
+        male: null,
+        breed: null,
         startAge: null,
         stopAge: null,
-        awards: "",
-        place: "",
+        awards: null,
+        place: null,
         dateMating: null,
       },
       breedList: [],
@@ -127,11 +127,8 @@ export default {
     submit() {
       //Отправляем в App
       if (
-        !this.animalProperty.breed ||
-        !this.animalProperty.male ||
-        !this.animalProperty.dateMating ||
-        !this.animalProperty.place ||
-        new Date(this.animalProperty.dateMating) < new Date() ||
+        
+        
         Number(this.animalProperty.startAge) >
           Number(this.animalProperty.stopAge)
       ) {

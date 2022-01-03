@@ -1,8 +1,8 @@
 <template>
   <transition name="bounce">
-    <div
+    <div tabindex="0"
       class="modal"
-      tabindex="1"
+      
        @keydown.esc="cancelModal"
       @click="cancelModal"
      

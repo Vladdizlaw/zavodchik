@@ -112,7 +112,7 @@ export default {
  
   methods: {
     сheckPhotos(e) {
-      console.log('check',e)
+      // console.log('check',e)
       if (!e?.target.name) {
         return;
       }
@@ -128,7 +128,7 @@ export default {
       // modal.style.zIndex = "1000";
       // modal.prepend(img);
       this.modalPhoto = true;
-      console.log(this.url);
+      // console.log(this.url);
     },
 
     cancelModal() {

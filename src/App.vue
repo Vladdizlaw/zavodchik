@@ -18,7 +18,8 @@
       </animal-property>
       <map-screen
         :location="user.location"
-        :searchParams="this.searchParams"
+        :searchParams="searchParams"
+        :users="searchUsers"
         @viewDetails="getId"
         v-if="state == 'mapScreen'"
       />
@@ -32,46 +33,53 @@
       />
       <profile-screen
         :user="user"
-        @search="state = 'animalProperty'"
-        @back="back"
+       
         v-if="state == 'profile'"
       >
-      <template #header>
-        <Header >
-          <template #left>
-            <back-button :func="back"/>
-          </template>
-          <template #center>
-            <p>Профиль</p>
-          </template>
-          <template #right>
-            <search-button @back="back" />
-          </template>
-        </Header>
-      </template>
-         <template #footer>
-        <Header >
-          <template #left>
-            <settings-button @back="back"/>
-          </template>
-          <template #center>
-            <trial-block :startTrial="user.animal.startTrial" @pay="pay"/>
-          </template>
-          <template #right>
-            <logout-button @back="logout"/>
-          </template>
-        </Header>
-      </template>
-      </profile-screen>
-       <profile-screen
-        :user="idSelected"
-        @search="state = 'animalProperty'"
-        @back="backSearchResult"
-        v-if="state == 'searchResult'"
-      >
-        <template #footer>
-         
+        <template #header>
+          <Header>
+            <template #left>
+              <back-button :func="back" />
+            </template>
+            <template #center>
+              <p>Профиль</p>
+            </template>
+            <template #right>
+              <search-button @back="back" />
+            </template>
+          </Header>
         </template>
+        <template #footer>
+          <Header>
+            <template #left>
+              <settings-button @back="back" />
+            </template>
+            <template #center>
+              <trial-block :startTrial="user.animal.startTrial" @pay="pay" />
+            </template>
+            <template #right>
+              <logout-button @back="logout" />
+            </template>
+          </Header>
+        </template>
+      </profile-screen>
+      <profile-screen
+        :user="idSelected"
+       
+        v-if="state == 'searchResult'"
+      > 
+         <template #header> 
+            <Header>
+            <template #left>
+              <back-button :func="backSearchResult" />
+            </template>
+            
+            <template #right>
+              <profile-button @back="back" />
+            </template>
+          </Header>
+         </template>
+        <template #footer> footer</template>
       </profile-screen>
       <settings-screen
         :selectedCity="selectedCity"
@@ -95,11 +103,12 @@ import ProfileScreen from "./components/ProfileScreen.vue";
 import SettingsScreen from "./components/SettingsScreen.vue";
 // import ProfileFooter from "./components/ProfileFooter.vue";
 import Header from "./components/Header.vue";
-import BackButton from './components/BackButton.vue';
-import SearchButton from './components/SearchButton.vue';
-import SettingsButton from './components/SettingsButton.vue';
-import TrialBlock from './components/TrialBlock.vue';
-import LogoutButton from './components/LogoutButton.vue';
+import BackButton from "./components/BackButton.vue";
+import SearchButton from "./components/SearchButton.vue";
+import ProfileButton from "./components/ProfileButton.vue";
+import SettingsButton from "./components/SettingsButton.vue";
+import TrialBlock from "./components/TrialBlock.vue";
+import LogoutButton from "./components/LogoutButton.vue";
 // import cookie from "cookie"
 // import store from './store/index.js'
 export default {
@@ -113,6 +122,7 @@ export default {
     ProfileScreen,
     SettingsScreen,
     SettingsButton,
+    ProfileButton,
     Header,
     BackButton,
     SearchButton,
@@ -129,6 +139,7 @@ export default {
       lastEnterTime: null,
       substate: null,
       errorStr: null,
+      searchUsers:null
     };
   },
   computed: {
@@ -157,9 +168,9 @@ export default {
           headers: headers,
         }
       );
-      this.$store.commit('DELETE_USER')
+      this.$store.commit("DELETE_USER");
       this.state = "start";
-      console.log(this.user)
+      // console.log(this.user)
     },
     isAutentificate() {
       const token = document.cookie
@@ -254,16 +265,22 @@ export default {
       this.$store.commit("SAVE_USER_ANIMAL", value);
       this.state = "animalProperty";
     },
-    getAnimalProperty(value) {
+    async getAnimalProperty(value) {
       this.searchParams.animalType = this.user.animal.type;
-      this.searchParams.age = value.animalProperty.age;
+      this.searchParams.startAge = value.animalProperty.startAge;
+      this.searchParams.stopAge = value.animalProperty.stopAge;
       this.searchParams.male = value.animalProperty.male;
       this.searchParams.breed = value.animalProperty.breed;
       this.searchParams.awards = value.animalProperty.awards;
       this.searchParams.place = value.animalProperty.place;
       this.searchParams.dateMating = value.animalProperty.dateMating;
       this.searchParams.id = value.animalProperty.id;
-      // console.log(this.user);
+      const {data} = await axios.get(
+        `http://localhost:5000/api/get_custom_users/${this.searchParams.animalType}/${this.searchParams.startAge}/${this.searchParams.stopAge}/${this.searchParams.male}/${this.searchParams.breed}/${this.searchParams.awards}/${this.searchParams.place}/${this.searchParams.dateMating}/${this.searchParams.id}`
+      );
+      console.log(data);
+      this.searchUsers=data
+      this.idSelected=null
       this.state = "mapScreen";
     },
     getSign() {
@@ -277,21 +294,20 @@ export default {
 
     async getId(value) {
       // console.log(value)
-      if (!this.isAutentificate()){
-        console.log(this.isAutentificate())
-          this.state = "registration";
-          return
+      if (!this.isAutentificate()) {
+        console.log(this.isAutentificate());
+        this.state = "registration";
+        return;
       }
       const { data } = await axios.get(
         `http://localhost:5000/api/get_user${value.id}`
       );
-     
+
       this.idSelected = data;
-      this.state= "searchResult"
-    
+      this.state = "searchResult";
     },
-    backSearchResult(){
-      this.state='mapScreen'
+    backSearchResult() {
+      this.state = "mapScreen";
     },
     async getRegForms(value) {
       // this.$store.commit("SAVE_USER_PROFILE", value.profile);
@@ -334,8 +350,8 @@ export default {
       this.state = "profile";
       console.log("SIGN-----", user);
     },
-    pay(){
-      console.log('pay')
+    pay() {
+      console.log("pay");
     },
   },
   async mounted() {

@@ -52,7 +52,7 @@ import Map from "ol/Map";
 import View from "ol/View";
 import OSM from "ol/source/OSM";
 import TileLayer from "ol/layer/Tile";
-import axios from "axios";
+// import axios from "axios";
 import "ol/ol.css";
 import { fromLonLat } from "ol/proj";
 export default {
@@ -61,10 +61,11 @@ export default {
   props: {
     location: Object,
     searchParams: Object,
+    users:Array,
   },
   data() {
     return {
-      users: [],
+     
 
       clack: false, //aфлаг для отображения деталей на карте
     };
@@ -116,7 +117,7 @@ export default {
   },
   async created() {},
   async mounted() {
-    await this.getUsersData();
+    // await this.getUsersData();
     let projection = fromLonLat(
       //Позиция для центра карты по текущей геопозиции
       [this.location.longitude, this.location.latitude],
@@ -133,7 +134,7 @@ export default {
     const osmSource = new OSM();
     const osmLayer = new TileLayer({ source: osmSource });
     map.addLayer(osmLayer);
-    // console.log('users',this.users);
+    console.log('users',this.users);
     this.users.forEach((user) => {
       console.log("user", user);
       //выводим на карту всех юзеров
@@ -182,19 +183,7 @@ export default {
     downElement(f) {
       f.path[0].style.opacity = 0.2;
     },
-    async getUsersData() {
-      //Получаем данные о юзерах из файла (заглушка)
-      // if (this.searchParams.animalType == "dog") {
-      //   this.users = require("../user_dog.json");
-      // } else {
-      //   this.users = require("../user_cat.json");
-      // }
-      const { data } = await axios.get("http://localhost:5000/api/get_users");
-      // const data1= await data.json()
-      console.log("response", data);
-      this.users = data;
-      // console.log(this.users)
-    },
+    
     viewDetails(data) {
       this.$emit("viewDetails", { id: data });
       // console.log(data);
