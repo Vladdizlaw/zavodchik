@@ -10,9 +10,11 @@
       />
       <animal-property
         @animalProperty="getAnimalProperty"
+        @back="back"
         :animalType="user.animal.type"
         :city="user.profile.city"
         :selectedCity="selectedCity"
+        :isAutentificate="isAutentificate"
         v-if="state == 'animalProperty'"
       >
       </animal-property>
@@ -143,6 +145,16 @@ export default {
     };
   },
   computed: {
+    isAutentificate() {
+      const token = document.cookie
+        ?.split(";")
+        .filter((el) => el.includes("access_token"));
+      // console.log(token[0].split('=')[1])
+      if (!token || token.length <= 0 || token[0].split("=")[1] === "null") {
+        return false;
+      }
+      return true;
+    },
     user() {
       return this.$store.getters.USER;
     },
@@ -172,16 +184,7 @@ export default {
       this.state = "start";
       // console.log(this.user)
     },
-    isAutentificate() {
-      const token = document.cookie
-        ?.split(";")
-        .filter((el) => el.includes("access_token"));
-      // console.log(token[0].split('=')[1])
-      if (!token || token.length <= 0 || token[0].split("=")[1] === "null") {
-        return false;
-      }
-      return true;
-    },
+    
     async getAuthUser() {
       this.$store.dispatch("GET_AUTH_USER");
     },
@@ -294,8 +297,8 @@ export default {
 
     async getId(value) {
       // console.log(value)
-      if (!this.isAutentificate()) {
-        console.log(this.isAutentificate());
+      if (!this.isAutentificate) {
+        // console.log(this.isAutentificate());
         this.state = "registration";
         return;
       }
@@ -355,7 +358,7 @@ export default {
     },
   },
   async mounted() {
-    if (this.isAutentificate()) {
+    if (this.isAutentificate) {
       try {
         console.log("cookie:", document.cookie);
         await this.getAuthUser();
@@ -378,7 +381,7 @@ export default {
 
     // console.log("city", city);
     // const city ='Краснодар'
-    if (!this.isAutentificate()) {
+    if (!this.isAutentificate) {
       const city = await this.getCity();
       this.$store.commit("SAVE_USER_PROFILE", { city: city });
     }

@@ -5,7 +5,15 @@
   >
    
         <div class="animalproperty-fortext">
-          <p>Поиск пары</p>
+          <Header>
+            <template #left>
+              <back-button  :func="back"/>
+            </template>
+            <template #center>
+              <p>Поиск пары</p>
+            </template>
+          </Header>
+          
         </div>
     
       <div class="animalproperty-forinput">
@@ -77,11 +85,15 @@
   </div>
 </template>
 <script>
+import BackButton from './BackButton.vue';
+import Header from "./Header.vue";
 export default {
   name: "AnimalProperty",
+  components:{Header, BackButton},
   //Компонент выбора свойств животного, принимает тип животного (cat,dog) и геопозицию,
   //отдает событие "animalProperty" с обектом собранных данных animalProperty
   props: {
+    isAutentificate: Boolean,
     animalType: String,
     selectedCity: Array,
     city: String,
@@ -140,6 +152,15 @@ export default {
         this.$emit("animalProperty", { animalProperty: this.animalProperty });
       }
     },
+    back() {
+      if (this.isAutentificate){
+        this.$emit('back',{state:'profile'})
+      }else{
+        this.$emit('back',{state:'start'})
+
+      }
+
+    }
   },
 };
 </script>
@@ -183,12 +204,13 @@ export default {
   font-size: 3.2rem;
   line-height: 182px;
   top: 1rem;
+  width: 100%;
   /* left: 50vh; */
   /* bottom: 1em; */
   /* padding-bottom: 1.5em; */
   margin-bottom: -0.5em;
   color: #000000;
-  max-height: 1rem;
+  max-height: 3rem;
 
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
     0px 4px 4px rgba(0, 0, 0, 0.25);

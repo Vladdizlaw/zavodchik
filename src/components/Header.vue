@@ -56,11 +56,12 @@ export default {
 .header__center {
   width: 60%;
   justify-self: center;
-  font-size: 2.5em;
+  font-size: 3rem;
   justify-content: center;
   align-items: center;
   align-content: center;
   text-align: center;
+  text-wrap: none;
 }
 .header__right {
   /* font-size: 1.4em; */
