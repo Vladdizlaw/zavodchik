@@ -22,6 +22,7 @@ export default {
 </script>
 <style scoped>
 .footer-setings {
+  font-size: 2.7rem;
   display: flex;
   justify-content: center;
   align-items: center;

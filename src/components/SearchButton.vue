@@ -24,7 +24,7 @@ export default {
 </script>
 <style scoped>
 .search {
-  font-size: 1.4em;
+  font-size: 3rem;
   display: flex;
   /* width: 5rem; */
   flex-wrap: nowrap;

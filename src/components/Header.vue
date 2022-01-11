@@ -56,7 +56,7 @@ export default {
 .header__center {
   width: 60%;
   justify-self: center;
-  font-size: 3rem;
+  font-size: 3.3rem;
   justify-content: center;
   align-items: center;
   align-content: center;

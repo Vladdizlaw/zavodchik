@@ -3,93 +3,83 @@
     class="animalproperty"
     :class="{ dog: animalType == 'dog', cat: animalType == 'cat' }"
   >
-   
-        <div class="animalproperty-fortext">
-          <Header>
-            <template #left>
-              <back-button  :func="back"/>
-            </template>
-            <template #center>
-              <p>Поиск пары</p>
-            </template>
-          </Header>
-          
-        </div>
-    
-      <div class="animalproperty-forinput">
-       
-          <div class="input male">
-            <p>Пол искомого животного</p>
-            <select v-model="animalProperty.male">
-              <option value="мужской">мужской </option>
-              <option value="Женский">женский</option>
-            </select>
-          </div>
-    
-          <div class="input breed">
-            <p>Порода</p>
+    <div class="animalproperty-fortext">
+      <Header>
+        <template #left>
+          <back-button :func="back" />
+        </template>
+        <template #center>
+          <p>Поиск пары</p>
+        </template>
+      </Header>
+    </div>
 
-            <select v-model="animalProperty.breed" placeholder="порода">
-              <option
-                :value="bred"
-                v-for="(bred, ind) in breedList"
-                :key="ind"
-                >{{ bred }}</option
-              >
-            </select>
-          </div>
-
-        <div class="input age">
-         
-            <p>Возраст</p>
-        
-          <div class="ageinput">
-            <div class="range">
-              <p>OT</p>
-              <input type="number" v-model="animalProperty.startAge" />
-            </div>
-            <div class="range">
-              <p>ДО</p>
-              <input type="number" v-model="animalProperty.stopAge" />
-            </div>
-          </div>
-        </div>
-
-      
-          <div class="input awards">
-            <p>Награды</p>
-            <input type="text" v-model="animalProperty.awards" />
-          </div>
-       
-          <div class="input city">
-            <p>Город</p>
-            <select v-model="animalProperty.place" placeholder="город">
-              <option
-                :value="city"
-                v-for="(city, ind) in selectedCity"
-                :key="ind"
-                >{{ city }}</option
-              >
-            </select>
-          </div>
-       
-          <div class="input mating">
-            <p>Предположительная дата вязки</p>
-            <input type="date" v-model="animalProperty.dateMating" />
-          </div>
-       
-          <button class="btn" @click="submit">Поиск</button>
-      
+    <div class="animalproperty-forinput">
+      <div class="input male">
+        <p>Пол искомого животного</p>
+        <select v-model="animalProperty.male">
+          <option value="мужской">мужской </option>
+          <option value="Женский">женский</option>
+        </select>
       </div>
-    
+
+      <div class="input breed">
+        <p>Порода</p>
+
+        <select v-model="animalProperty.breed" placeholder="порода">
+          <option :value="bred" v-for="(bred, ind) in breedList" :key="ind">{{
+            bred
+          }}</option>
+        </select>
+      </div>
+
+      <div class="input age">
+        <p>Возраст</p>
+
+        <div class="ageinput">
+          <div class="range">
+            <p>OT</p>
+            <input type="number" v-model="animalProperty.startAge" />
+          </div>
+          <div class="range">
+            <p>ДО</p>
+            <input type="number" v-model="animalProperty.stopAge" />
+          </div>
+        </div>
+      </div>
+
+      <div class="input awards">
+        <p>Награды</p>
+        <input type="text" v-model="animalProperty.awards" />
+      </div>
+
+      <div class="input city">
+        <p>Город</p>
+        <select v-model="animalProperty.place" placeholder="город">
+          <option
+            :value="city"
+            v-for="(city, ind) in selectedCity"
+            :key="ind"
+            >{{ city }}</option
+          >
+        </select>
+      </div>
+
+      <div class="input mating">
+        <p>Предположительная дата вязки</p>
+        <input type="date" v-model="animalProperty.dateMating" />
+      </div>
+
+      <button class="btn" @click="submit">Поиск</button>
+    </div>
   </div>
 </template>
 <script>
-import BackButton from './BackButton.vue';
+import BackButton from "./BackButton.vue";
 import Header from "./Header.vue";
 export default {
   name: "AnimalProperty",
-  components:{Header, BackButton},
+  components: { Header, BackButton },
   //Компонент выбора свойств животного, принимает тип животного (cat,dog) и геопозицию,
   //отдает событие "animalProperty" с обектом собранных данных animalProperty
   props: {
@@ -139,12 +129,10 @@ export default {
     submit() {
       //Отправляем в App
       if (
-        
-        
         Number(this.animalProperty.startAge) >
-          Number(this.animalProperty.stopAge)
+        Number(this.animalProperty.stopAge)&& Number(this.animalProperty.stopAge)!==0
       ) {
-        console.log(this.animalProperty);
+        console.log( Number(this.animalProperty.startAge)>Number(this.animalProperty.stopAge));
         return;
       } else {
         // console.log(new Date(this.animalProperty.dateMating),new Date())
@@ -153,14 +141,12 @@ export default {
       }
     },
     back() {
-      if (this.isAutentificate){
-        this.$emit('back',{state:'profile'})
-      }else{
-        this.$emit('back',{state:'start'})
-
+      if (this.isAutentificate) {
+        this.$emit("back", { state: "profile" });
+      } else {
+        this.$emit("back", { state: "start" });
       }
-
-    }
+    },
   },
 };
 </script>
@@ -186,10 +172,10 @@ export default {
 .animalproperty {
   display: flex;
   flex-direction: column;
-  justify-content:center;
+  justify-content: center;
   align-items: center;
- width: 100vw;
- height: 100vh;
+  width: 100vw;
+  height: 100vh;
   position: relative;
 }
 
@@ -217,7 +203,7 @@ export default {
 }
 
 .animalproperty-forinput {
-  min-height:95vh;
+  min-height: 95vh;
   display: flex;
   flex-direction: column;
   width: auto;
@@ -238,14 +224,14 @@ export default {
   line-height: 100px;
   color: #000000;
   margin-top: 5px;
-  height:6rem;
+  height: 6rem;
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
     0px 4px 4px rgba(0, 0, 0, 0.25);
-    /* margin-bottom:0.5rem; */
+  /* margin-bottom:0.5rem; */
 }
-.input>p{
-  margin-top:-1.4rem;
-  margin-bottom:1.4rem;
+.input > p {
+  margin-top: -1.4rem;
+  margin-bottom: 1.4rem;
 }
 .age {
   /* margin-top: 1rem; */
@@ -272,7 +258,6 @@ export default {
 }
 select,
 input {
-  
   margin-top: -3rem;
   appearance: auto;
   background: #ffffff;
@@ -321,7 +306,7 @@ input:hover {
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
     0px 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 8px;
-  width:6rem;
+  width: 6rem;
   height: 1.8rem;
   font-family: Amatic SC;
   font-style: normal;
@@ -333,10 +318,10 @@ input:hover {
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
     0px 4px 4px rgba(0, 0, 0, 0.25);
 }
-.range > input:hover{
- width:6.5rem;
+.range > input:hover {
+  width: 6.5rem;
   height: 1.85rem;
-   font-size: 1.7rem;
+  font-size: 1.7rem;
 }
 @keyframes shake {
   10%,
@@ -392,7 +377,7 @@ option {
 button {
   position: relative;
   /* bottom: 2rem; */
-  margin-top:1rem;
+  margin-top: 1rem;
   width: 8rem;
   height: 4rem;
   border: 1px solid #000000;
@@ -407,7 +392,7 @@ button {
   font-weight: bold;
   font-size: 3rem;
   line-height: 61px;
-background: transparent;
+  background: transparent;
   color: #000000;
 
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
@@ -416,5 +401,4 @@ button:hover {
   box-shadow: 7px 12px;
   animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite;
 }
-
 </style>

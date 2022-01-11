@@ -19,11 +19,11 @@
           <p>Пол:{{ user.animal.male }}</p>
           <p>Порода:{{ user.animal.breed }}</p>
           <p>Город:{{ user.profile.city }}</p>
-          <p>Окрас:{{ user.animal.color }}</p>
-          <p>Награды:{{ user.animal.awards }}</p>
-          <p>Прививки:{{ user.animal.vaccination }}</p>
-          <p>Возможный период случки:{{ user.animal.date }}</p>
-          <p>Условие вязки:{{ user.animal.matingConditions }}</p>
+          <p v-if="user.animal.color">Окрас:{{ user.animal.color }}</p>
+          <p v-if="user.animal.awards">Награды:{{ user.animal.awards }}</p>
+          <p v-if="user.animal.vaccination" >Прививки:{{ user.animal.vaccination }}</p>
+          <p v-if="user.animal.date">Возможный период случки:{{ user.animal.date }}</p>
+          <p v-if="user.animal.matingConditions">Условие вязки:{{ user.animal.matingConditions }}</p>
           <p>
             Контактные данные:{{ user.profile.name }},{{
               user.profile.seenFlags.seenTelFlag ? user.profile.tel : ""
@@ -185,7 +185,7 @@ export default {
 }
 .wrapper {
   font-family: "Amatic SC";
-  font-size: 2.5em;
+  font-size: 2.5rem;
   font-style: normal;
   font-weight: 700;
   line-height: 45px;
@@ -196,7 +196,7 @@ export default {
   transform: matrix(1, 0, 0, 1, 0, 0);
 
   width: 100vw;
-  height: 100vh;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: start;
@@ -375,8 +375,10 @@ export default {
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.75); */
 }
 .footer {
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+  /* margin-top: 1rem; */
+  /* margin-bottom: 1rem; */
+  position: absolute;
+  bottom:0.5rem;
   display: flex;
   width: 100vw;
   height: auto;

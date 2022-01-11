@@ -23,6 +23,7 @@ export default {
 <style scoped>
 .logout__button {
   flex-wrap: nowrap;
+  font-size: 2.7rem;
   /* width: 20%; */
   display: flex;
   justify-content: center;

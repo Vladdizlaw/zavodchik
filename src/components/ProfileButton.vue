@@ -1,6 +1,6 @@
 <template>
   <div class="profile" @click="profile">
-    <p>мой профиль</p>
+    <p>Мой профиль</p>
     <img src="../assets/profile.svg" alt="" />
   </div>
 </template>
