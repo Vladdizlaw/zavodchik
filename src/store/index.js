@@ -6,7 +6,7 @@ export default new Vuex.Store({
   state: {
     user: {
       animal: {
-        type: "",
+        typeAnimal: "",
         male: "",
         age: null,
         breed: "",
@@ -71,9 +71,13 @@ export default new Vuex.Store({
     },
     DELETE_USER: (state) => {
       Object.keys(state.user).forEach((key) => {
-        typeof(state.user[key])==='object'? Object.keys(state.user[key]).forEach(e=>{state.user[key][e]=null}):state.user[key] = null;
+        typeof state.user[key] === "object"
+          ? Object.keys(state.user[key]).forEach((e) => {
+              state.user[key][e] = null;
+            })
+          : (state.user[key] = null);
 
-        console.log("delete user",key,typeof(state.user[key]));
+        console.log("delete user", key, typeof state.user[key]);
       });
     },
   },

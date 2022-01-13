@@ -11,7 +11,7 @@
       <animal-property
         @animalProperty="getAnimalProperty"
         @back="back"
-        :animalType="user.animal.type"
+        :animalType="user.animal.typeAnimal"
         :city="user.profile.city"
         :selectedCity="selectedCity"
         :isAutentificate="isAutentificate"
@@ -269,7 +269,7 @@ export default {
       this.state = "animalProperty";
     },
     async getAnimalProperty(value) {
-      this.searchParams.animalType = this.user.animal.type;
+      this.searchParams.animalType = this.user.animal.typeAnimal;
       this.searchParams.startAge = value.animalProperty.startAge;
       this.searchParams.stopAge = value.animalProperty.stopAge;
       this.searchParams.male = value.animalProperty.male;

@@ -1,7 +1,7 @@
 <template>
   <div
     class="wrapper"
-    :class="{ dog: user.animal.type == 'dog', cat: user.animal.type == 'cat' }"
+    :class="{ dog: user.animal.typeAnimal == 'dog', cat: user.animal.typeAnimal == 'cat' }"
   >
     <transition name="bounce">
       <Modal :flag="modalPhoto" :imageUrl="url" @cancelModal="cancelModal" />

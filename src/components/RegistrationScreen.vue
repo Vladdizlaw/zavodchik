@@ -243,7 +243,7 @@ export default {
        photoAnimal: [],
        photoUrl: [],
       animalForm: {
-        type: null,
+        typeAnimal: null,
         male: null,
         age: 1,
         breed: null,
@@ -270,7 +270,7 @@ export default {
   },
   watch: {
     animalType: function() {
-      this.animalForm.type = this.animalType;
+      this.animalForm.typeAnimal = this.animalType;
       if (this.animalType == "dog") {
         //В зависимости от типа животного подгружаем список пород
         const breed_string = require("!raw-loader!../dog_breed.txt");
@@ -378,7 +378,7 @@ export default {
     },
     getRegistrationAnimal1() {
       let valid = true;
-      if (!this.animalForm.type) {
+      if (!this.animalForm.typeAnimal) {
         valid = false;
         this.errs.type = "Выберите тип животного";
         setTimeout(() => {

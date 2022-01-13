@@ -42,7 +42,7 @@ export default {
   methods: {
     chooseTypeAnimal(value) {
       // console.log(value);
-      this.$emit("animalType", { type: value });
+      this.$emit("animalType", { typeAnimal: value });
     },
     registration() {
       this.$emit("registration", null);
