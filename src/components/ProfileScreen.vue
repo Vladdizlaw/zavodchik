@@ -3,10 +3,14 @@
     class="wrapper"
     :class="{ dog: user.animal.typeAnimal == 'dog', cat: user.animal.typeAnimal == 'cat' }"
   >
-    <transition name="bounce">
-      <Modal :flag="modalPhoto" :imageUrl="url" @cancelModal="cancelModal" />
+   
+      <Modal :flag="modalPhoto"  @cancelModal="cancelModal" >
+        <template #content>
+           <img :src="url"  class="image" alt="" />
+        </template>
+      </Modal>
      
-    </transition>
+   
     <div class="header">
       <slot name="header"></slot>
     </div>
@@ -19,6 +23,7 @@
           <p>Пол:{{ user.animal.male }}</p>
           <p>Порода:{{ user.animal.breed }}</p>
           <p>Город:{{ user.profile.city }}</p>
+          <p v-if="user.profile.hood&&user.profile.seenFlags.seenHoodFlag">Район:{{ user.profile.hood }}</p>
           <p v-if="user.animal.color">Окрас:{{ user.animal.color }}</p>
           <p v-if="user.animal.awards">Награды:{{ user.animal.awards }}</p>
           <p v-if="user.animal.vaccination" >Прививки:{{ user.animal.vaccination }}</p>

@@ -1,7 +1,7 @@
 <template>
   <div
     class="wrapper"
-    :class="{ dog: user.animal.type == 'dog', cat: user.animal.type == 'cat' }"
+    :class="{ dog: user.animal.typeAnimal == 'dog', cat: user.animal.typeAnimal == 'cat' }"
   >
     <div class="header">
       <back-button :func="back" class="backbutton" />
@@ -15,6 +15,7 @@
           <div v-if="state == 'contacts'">
             <p>Контактные данные</p>
           </div>
+          
         </div></kinesis-container
       >
       <div class="header__save" @click="save" v-show="state !== 'start'">
@@ -41,7 +42,7 @@
         </div>
         <div class="wrapper-right">
           <input type="text" v-model="user.profile.name" />
-          <div class="input__seen">
+          <div class="input__seen"  @mouseenter="telMessageShow" @mouseleave="telMessageHide">
             <input
               ref="tel"
               type="tel"
@@ -60,6 +61,9 @@
               @click="seenTel"
               alt=""
             />
+            <div ref="messageTel" class="input__seen__help">
+              <p>{{seenTelFlag?'Другие польователи видят эти данные':'Другие польователи не видят эти данные'}}</p>
+            </div>
           </div>
 
           <input type="text" v-model="user.profile.mail" />
@@ -72,7 +76,7 @@
               >{{ city }}</option
             >
           </select>
-          <div class="input__seen">
+          <div class="input__seen" @mouseenter="hoodMessageShow" @mouseleave="hoodMessageHide">
             <input
               ref="hood"
               type="text"
@@ -91,8 +95,8 @@
               @click="seenHood"
               alt=""
             />
-            <div class="input__seen__help">
-              <p>Другие польователи видят эти данные</p>
+            <div ref="messageHood" class="input__seen__help hood">
+              <p>{{seenHoodFlag?'Другие польователи видят эти данные':'Другие польователи не видят эти данные'}}</p>
             </div>
           </div>
         </div>
@@ -124,9 +128,22 @@ export default {
       state: "start",
       seenTelFlag: true,
       seenHoodFlag: true,
+      seenHoodHelpMessage:'',
     };
   },
   methods: {
+    hoodMessageShow(){
+      this.$refs.messageHood.style.opacity='0.8'
+    },
+    telMessageShow(){
+      this.$refs.messageTel.style.opacity='0.8'
+    },
+     hoodMessageHide(){
+      this.$refs.messageHood.style.opacity='0'
+    },
+    telMessageHide(){
+      this.$refs.messageTel.style.opacity='0'
+    },
     back() {
       console.log(this.user)
       if (this.state == "start") {
@@ -136,7 +153,7 @@ export default {
       }
     },
     exit() {
-      this.$emit("back", { state: "registration", substate: "start" });
+      this.$emit("logout",null);
     },
     contacts() {
       this.state = "contacts";
@@ -152,27 +169,24 @@ export default {
     },
     seenTel() {
       if (this.seenTelFlag) {
-        // this.$refs.tel.style.opacity = "0.5";
+     
         this.seenTelFlag = false;
       } else {
-        // this.$refs.tel.style.backgroundColor='rgba(255, 255, 255, 0.5)'
-        // this.$refs.tel.style.opacity = "1";
+       
         this.seenTelFlag = true;
       }
     },
     seenHood() {
       if (this.seenHoodFlag) {
-        // this.$refs.hood.style.opacity = "0.5";
-        // this.$refs.hood.style.backDropFilter='blur(2px);'
-        // console.log(this.$refs.hood.style);
+      
         this.seenHoodFlag = false;
       } else {
-        // this.$refs.hood.style.filter='none'
-        // this.$refs.hood.style.opacity = "1";
+       
         this.seenHoodFlag = true;
       }
     },
   },
+  
   computed: {},
   mounted() {
    this.seenHoodFlag=this.user.profile.seenFlags?.seenHoodFlag
@@ -180,7 +194,7 @@ export default {
    const div=document.querySelector('.wrapper-left')
    const arrP=div.querySelectorAll('p')
    arrP.forEach(el=>{
-     console.log(el)
+    //  console.log(el)
      el.style.margin=0
    })
   },
@@ -365,23 +379,26 @@ export default {
   position: relative;
 }
 .input__seen__help{
+  margin-left: 0.3rem;
 right:0rem;
  background: rgba(255, 255, 255, 0.5);
 border: 1px solid #000000;
 box-sizing: border-box;
 border-radius: 10px;
 font-size: 1.3rem;
-width:15rem;
+/* width:15rem; */
+padding:0 1rem 0 1rem;
 display: flex;
 justify-content: center;
 align-items: center;
 max-height:3rem;
 transition: 0.3s;
 position:relative;
+opacity:0;
+transition: 0.3s;
+/* visibility: hidden; */
 }
-.input__seen > img:hover .input__seen__help {
-  display : flex;
-}
+
 .input__seen > input,
 .wrapper-right > input,
 .wrapper-right > select {

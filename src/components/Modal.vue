@@ -1,21 +1,21 @@
 <template>
   <transition name="bounce">
-    <div tabindex="0"
+    <div 
       class="modal"
-      
-       @keydown.esc="cancelModal"
+      @keydown.esc="cancelModal"
       @click="cancelModal"
-     
-      v-if="flag"
+      v-show="flag"
     >
-      <img :src="imageUrl"  class="image" alt="" />
+      <div ref="content" class="content"  tabindex="0" autofocus="autofocus" @keydown.esc="cancelModal">
+        <slot name="content"> </slot>
+      </div>
     </div>
   </transition>
 </template>
 <script>
 export default {
   name: "Modal",
-  props: { imageUrl: String, flag: Boolean },
+  props: { flag: Boolean },
   data() {
     return {
       // modalPhoto:false
@@ -26,6 +26,14 @@ export default {
       this.$emit("cancelModal", null);
     },
   },
+  // watch:{
+  //   flag:function(val) {
+  //     if (val===true){
+  //       this.$refs.content.focus()
+  //     }
+  //   console.log(this.$refs.content)
+  //   }
+  // }
 };
 </script>
 <style scoped>
@@ -34,10 +42,6 @@ export default {
   background: rgba(235, 222, 42, 0.863),
     linear-gradient(to bottom, rgba(245, 246, 252, 0.52));
   backdrop-filter: blur(2px);
-  /* backdrop-filter: drop-shadow(4px 4px 10px blue); */
-  /* backdrop-filter: grayscale(30%); */
-  /* opacity: 0.7; */
-  left: 50;
   width: 100vw;
   height: 100vh;
   transition: all 1s;
@@ -46,18 +50,25 @@ export default {
   align-items: center;
   z-index: 1000;
 }
-.image {
-  max-height: 90vh;
-  max-width: 80vw;
-  border: 1px solid black;
-  border-radius: 5px;
+
+.content {
+  transition: all 1s;
+  /* padding: 10px 10px 10px 10px; */
+  height: 80%;
+  max-width: 80%;
+  display: flex;
+  overflow: hidden;
+  border-radius: 10px;
+  /* box-shadow: 8px 8px rgba(64, 65, 63, 0.55); */
+  transition: all 0.4s;
+  box-shadow: 5px 6px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
+    0px 4px 4px rgba(0, 0, 0, 0.25);
 }
+
 .bounce-enter-active {
   animation: bounce-in 0.5s;
 }
-.bounce-leave-active {
-  animation: bounce-in 0.5s reverse;
-}
+
 @keyframes bounce-in {
   0% {
     transform: scale(0);

@@ -87,6 +87,7 @@
         :selectedCity="selectedCity"
         @saveProfile="updateProfile"
         @back="back"
+        @logout="logout"
         :user="user"
         v-if="state == 'settings'"
       />
