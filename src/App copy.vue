@@ -1,21 +1,7 @@
 <template>
   <div class="app">
     <transition name="no-mode-translate-fade" mode="in-out">
-      <router-view 
-      @animalType="getAnimalType" 
-      @animalProperty="getSearchResult"
-      @back="back"
-      @logout="logout" 
-      @sign="getSign" 
-      @registration="getRegistration"
-      @registeredData="getRegForms"
-      @signUp="Sign"
-      @saveProfile="updateProfile"
-      @viewDetails="viewDetails"
-      @myProfile="getMyProfile"
-      >
-      </router-view>
-      <!-- <start-screen
+      <start-screen
         v-if="state == 'start'"
         :selectedCity="selectedCity"
         @animalType="getAnimalType"
@@ -96,23 +82,53 @@
         @logout="logout"
         :user="user"
         v-if="state == 'settings'"
-      /> -->
+      />
     </transition>
   </div>
 </template>
 
 <script>
-
+// import translate from "translate";
 import axios from "axios";
-
-
+// import router from "./router/router.js"
+import StartScreen from "./components/StartScreen.vue";
+import AnimalProperty from "./components/AnimalProperty.vue";
+import MapScreen from "./components/MapScreen.vue";
+import RegistrationScreen from "./components/RegistrationScreen.vue";
+import ProfileScreen from "./components/ProfileScreen.vue";
+import SettingsScreen from "./components/SettingsScreen.vue";
+// import ProfileFooter from "./components/ProfileFooter.vue";
+import Header from "./components/Header.vue";
+import BackButton from "./components/BackButton.vue";
+import SearchButton from "./components/SearchButton.vue";
+import ProfileButton from "./components/ProfileButton.vue";
+import SettingsButton from "./components/SettingsButton.vue";
+import TrialBlock from "./components/TrialBlock.vue";
+import LogoutButton from "./components/LogoutButton.vue";
+// import cookie from "cookie"
+// import store from './store/index.js'
 export default {
   name: "App",
 
+  components: {
+    StartScreen,
+    AnimalProperty,
+    MapScreen,
+    RegistrationScreen,
+    ProfileScreen,
+    SettingsScreen,
+    SettingsButton,
+    ProfileButton,
+    Header,
+    BackButton,
+    SearchButton,
+    TrialBlock,
+    LogoutButton,
+  },
 
   data() {
     return {
-      // state: "start", //CСостояние
+      state: "start", //CСостояние
       searchParams: {},
       autohorized: false,
       idSelected: false,
@@ -127,7 +143,7 @@ export default {
       const token = document.cookie
         ?.split(";")
         .filter((el) => el.includes("access_token"));
-   
+      // console.log(token[0].split('=')[1])
       if (!token || token.length <= 0 || token[0].split("=")[1] === "null") {
         return false;
       }
@@ -147,27 +163,7 @@ export default {
     },
   },
   methods: {
-    back(){
-      console.log(this.$route.name)
-      if (this.isAutentificate&&(this.$route.name=='search'||this.$route.name=='settings')) {
-         this.$router.push({name:"profile",params:{user:this.user,selectedCity:this.selectedCity}})
-      }else if(this.isAutentificate&&this.$route.name=='searchResult'){
-          this.$router.push({name:"map",params:{
-        location:this.user.location,
-        searchParams:this.searchParams,
-        users:this.searchUsers,
-      }});
-      }
-      else{
-        this.$router.go(-1)
-        
-      }
-    },
-    getMyProfile(){
-       this.$router.push({name:"profile",params:{user:this.user,selectedCity:this.selectedCity}});
-    },
     async logout() {
-      console.log('logout')
       const headers = {
         "Content-Type": "application/json",
       };
@@ -179,8 +175,7 @@ export default {
         }
       );
       this.$store.commit("DELETE_USER");
-      this.$router.push({name:"start"})
-      window.location.reload(true)
+      this.state = "start";
       // console.log(this.user)
     },
 
@@ -265,14 +260,9 @@ export default {
     getAnimalType(value) {
       // this.user.animal.animalType = value.animalType;
       this.$store.commit("SAVE_USER_ANIMAL", value);
-      this.$router.push({name:'search', params:{
-                animalType:this.user.animal.typeAnimal,
-        city:this.user.profile.city,
-        selectedCity:this.selectedCity,
-        isAutentificate:this.isAutentificate
-      }});
+      this.state = "animalProperty";
     },
-    async getSearchResult(value) {
+    async getAnimalProperty(value) {
       this.searchParams.animalType = this.user.animal.typeAnimal;
       this.searchParams.startAge = value.animalProperty.startAge;
       this.searchParams.stopAge = value.animalProperty.stopAge;
@@ -288,34 +278,22 @@ export default {
       console.log(data);
       this.searchUsers = data;
       this.idSelected = null;
-      this.$router.push({name:"map",params:{
-        location:this.user.location,
-        searchParams:this.searchParams,
-        users:this.searchUsers,
-      }});
+      this.state = "mapScreen";
     },
     getSign() {
-      // this.substate = "start";
-      // this.state = "registration";
-      this.$router.push({name:'registration',params:{
-        selectedCity:this.selectedCity,
-        city:this.user.profile.city,
-        substate:"start"
-      }})
+      this.substate = "start";
+      this.state = "registration";
     },
     getRegistration() {
-     this.$router.push({name:'registration',params:{
-        selectedCity:this.selectedCity,
-        city:this.user.profile.city,
-        substate:"registrationUser"
-        }})
+      this.substate = "registrationUser";
+      this.state = "registration";
     },
 
-    async viewDetails(value) {
+    async getId(value) {
       // console.log(value)
       if (!this.isAutentificate) {
         // console.log(this.isAutentificate());
-        this.getSign()
+        this.state = "registration";
         return;
       }
       const { data } = await axios.get(
@@ -323,11 +301,11 @@ export default {
       );
 
       this.idSelected = data;
-      this.$router.push({name:"searchResult",params:{user:this.idSelected}}) ;
+      this.state = "searchResult";
     },
-    // backSearchResult() {
-    //   this.state = "mapScreen";
-    // },
+    backSearchResult() {
+      this.state = "mapScreen";
+    },
     async getRegForms(value) {
       this.$store.commit("SAVE_USER", value);
       await this.sendUser();
@@ -338,7 +316,7 @@ export default {
         await this.getUser();
         setTimeout(() => {
           document.cookie = `access_token=${this.user.token}`;
-         this.$router.push({name:"profile",params:{user:this.user,selectedCity:this.selectedCity}})
+          this.state = "profile";
         }, 1000);
       }, 1000);
 
@@ -349,21 +327,20 @@ export default {
       this.$store.commit("SAVE_USER_PROFILE", e.profile);
       await this.updateUser();
     },
-    // back(e) {
-     
-    //   this.state = e.state;
-    //   if (e.substate) {
-    //     this.substate = e.substate;
-    //   }
-    
+    back(e) {
+      // console.log('e')
+
+      this.state = e.state;
+      if (e.substate) {
+        this.substate = e.substate;
+      }
+    },
     async Sign(e) {
       const user = await axios.post("http://localhost:5000/api/login", e);
       this.$store.commit("SAVE_USER", user.data);
       document.cookie = `access_token=${this.user.token}`;
       console.log("from Sign", document.cookie);
-      window.location.reload()
-      this.$router.push({name:"profile",params:{user:this.user,selectedCity:this.selectedCity}})
-      // window.location.reload(true)
+      this.state = "profile";
       console.log("SIGN-----", user);
     },
     pay() {
@@ -371,18 +348,15 @@ export default {
     },
   },
   async mounted() {
-    if(this.$route.name!=='start'){
-    this.$router.push({name:"start"})
-    }
     if (this.isAutentificate) {
       try {
         console.log("cookie:", document.cookie);
         await this.getAuthUser();
         setTimeout(() => {
-          this.$router.push({name:"profile",params:{user:this.user,selectedCity:this.selectedCity}});
+          this.state = "profile";
         }, 1000);
       } catch (e) {
-        console.log("error", e);
+        console.log("errorrre", e);
       }
     }
 
@@ -395,15 +369,16 @@ export default {
     this.lastEnterTime = new Date();
     await this.locateMe();
 
+    // console.log("city", city);
+    // const city ='Краснодар'
     if (!this.isAutentificate) {
-      try{
       const city = await this.getCity();
       this.$store.commit("SAVE_USER_PROFILE", { city: city });
-      } catch(e){
-        console.log(e)
-      }
     }
-   
+    // console.log('start after locate:',this.user);
+    // this.state='settings'
+    //  console.log(this.user.location);
+    //  console.log(this.$refs['app'])
   },
   created() {},
   beforeDestroy() {},

@@ -10,8 +10,8 @@
       "
     >
       <div class="registration-title">
-        <back-button :func="back" />
-        <div class="registration-title__text"><p>Регистрация</p></div>
+        <back-button @back="back" />
+        <div class="registration-title__text" ><p>Регистрация</p></div>
       </div>
       <section class="registration-user" v-if="states.registrationUser.value">
         <div class="user mail">
@@ -165,6 +165,7 @@
       </section>
     </div>
     <section class="regwindow" v-if="states.start.value">
+     
       <div class="forinput">
         <p>ЛОГИН (E-MAIL):</p>
         <input type="text" v-model="login" />
@@ -441,8 +442,11 @@ export default {
       this.sendRegisteredData()
     },
     back() {
+      
       let stateKey = this.getSelfState();
-      if (stateKey == "start") {
+      console.log(stateKey)
+      if (stateKey == "registrationUser") {
+        this.$emit('back',null)
         return;
       }
       this.states[stateKey].value = false;
@@ -453,7 +457,7 @@ export default {
     },
 
     sign() {
-      this.$emit('sign',{mail:this.login,pass:this.password})
+      this.$emit('signUp',{mail:this.login,pass:this.password})
     },
   },
 };

@@ -1,5 +1,5 @@
 <template>
-  <div class="profile" @click="profile">
+  <div class="profile" @click="myProfile">
     <p>Мой профиль</p>
     <img src="../assets/profile.svg" alt="" />
   </div>
@@ -12,8 +12,8 @@ export default {
     return {};
   },
   methods: {
-    profile() {
-      this.$emit("back", { state: "profile" });
+    myProfile() {
+      this.$emit("myProfile", null);
     },
   },
 };

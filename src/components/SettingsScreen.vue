@@ -1,160 +1,285 @@
 <template>
   <div
     class="wrapper"
-    :class="{ dog: user.animal.typeAnimal == 'dog', cat: user.animal.typeAnimal == 'cat' }"
+    :class="{
+      dog: user.animal.typeAnimal == 'dog',
+      cat: user.animal.typeAnimal == 'cat',
+    }"
   >
-    <div class="header">
-      <back-button :func="back" class="backbutton" />
-      <kinesis-container :duration="300">
-        <div class="header__text">
-          <kinesis-element :strength="500" type="rotate">
-            <img src="../assets/setting.svg" alt="" v-if="state == 'start'" />
-          </kinesis-element>
+    <section class="settings-common" v-if="state == 'start'">
+      <Header>
+        <template #left>
+          <back-button @back="back" />
+        </template>
 
-          <p v-if="state == 'start'">Настройка</p>
-          <div v-if="state == 'contacts'">
-            <p>Контактные данные</p>
-          </div>
-          
-        </div></kinesis-container
-      >
-      <div class="header__save" @click="save" v-show="state !== 'start'">
-        <img src="../assets/save.svg" alt="" />
-        <p>Сохранить изменения</p>
-      </div>
-    </div>
-    <div class="main">
-      <div class="main-menu" v-if="state == 'start'">
-        <p @click="contacts">Контактные данные</p>
-        <p>Данные животного</p>
-        <p>Редактировать фото</p>
-        <p>Настроить уведомления</p>
-        <p>Оплата</p>
-      </div>
-      <div class="contacts" v-show="state == 'contacts'">
-        <div class="wrapper-left">
-          <p>Ваше имя</p>
-          <p>Телефон</p>
-          <p>E-mail</p>
-          <p>Пароль</p>
-          <p>Город</p>
-          <p>Адрес (Район/Улица)</p>
-        </div>
-        <div class="wrapper-right">
-          <input type="text" v-model="user.profile.name" />
-          <div class="input__seen"  @mouseenter="telMessageShow" @mouseleave="telMessageHide">
-            <input
-              ref="tel"
-              type="tel"
-              v-phone
-              v-model="user.profile.tel"
-              :class="{ unseen: !seenTelFlag }"
-            />
-            <img
-              src="../assets/seen.svg"
-              @click="seenTel"
-              alt=""
-              v-if="seenTelFlag"
-            /><img
-              src="../assets/unseen.svg"
-              v-if="!seenTelFlag"
-              @click="seenTel"
-              alt=""
-            />
-            <div ref="messageTel" class="input__seen__help">
-              <p>{{seenTelFlag?'Другие польователи видят эти данные':'Другие польователи не видят эти данные'}}</p>
+        <template #center>
+          <kinesis-container :duration="300">
+            <div class="header__text">
+              <kinesis-element :strength="500" type="rotate">
+                <img src="../assets/setting.svg" alt="" />
+              </kinesis-element>
+              <p>Настройка</p>
             </div>
-          </div>
+          </kinesis-container>
+        </template>
+      </Header>
+      <div class="main">
+        <div class="main-menu">
+          <p @click="state = 'contacts'">Контактные данные</p>
+          <p @click="state = 'animal'">Данные животного</p>
+          <p>Редактировать фото</p>
+          <p>Настроить уведомления</p>
+          <p>Оплата</p>
+        </div>
+      </div>
 
-          <input type="text" v-model="user.profile.mail" />
-          <input type="text" v-model="user.profile.pass" />
-          <select v-model="user.profile.city">
-            <option
-              :value="city"
-              v-for="(city, ind) in selectedCity"
-              :key="ind"
-              >{{ city }}</option
+      <div class="footer">
+        <Header>
+          <template #left>
+            <support-button />
+          </template>
+          <template #right>
+            <logout-button @logout="logout" />
+          </template>
+        </Header>
+      </div>
+    </section>
+    <section class="settings-contacts" v-show="state == 'contacts'">
+      <Header>
+        <template #left>
+          <back-button @back="back" />
+        </template>
+
+        <template #center>
+          <kinesis-container :duration="300">
+            <div class="header__text">
+              <p>Контактные данные</p>
+            </div>
+          </kinesis-container>
+        </template>
+        <template #right>
+          <save-changes-button @saveProfile="save" />
+        </template>
+      </Header>
+      <div class="main">
+        <div class="contacts">
+          <div class="wrapper-left">
+            <p>Ваше имя</p>
+            <p>Телефон</p>
+            <p>E-mail</p>
+            <p>Пароль</p>
+            <p>Город</p>
+            <p>Адрес (Район/Улица)</p>
+          </div>
+          <div class="wrapper-right">
+            <input type="text" v-model="user.profile.name" />
+            <div
+              class="input__seen"
+              @mouseenter="telMessageShow"
+              @mouseleave="telMessageHide"
             >
-          </select>
-          <div class="input__seen" @mouseenter="hoodMessageShow" @mouseleave="hoodMessageHide">
-            <input
-              ref="hood"
-              type="text"
-              v-model="user.profile.hood"
-              :class="{ unseen: !seenHoodFlag }"
-            />
-            <img
-              src="../assets/seen.svg"
-              v-if="seenHoodFlag"
-              @click="seenHood"
-              alt=""
-            />
-            <img
-              src="../assets/unseen.svg"
-              v-if="!seenHoodFlag"
-              @click="seenHood"
-              alt=""
-            />
-            <div ref="messageHood" class="input__seen__help hood">
-              <p>{{seenHoodFlag?'Другие польователи видят эти данные':'Другие польователи не видят эти данные'}}</p>
+              <input
+                ref="tel"
+                type="tel"
+                v-phone
+                v-model="user.profile.tel"
+                :class="{ unseen: !seenTelFlag }"
+              />
+              <img
+                src="../assets/seen.svg"
+                @click="seenTel"
+                alt=""
+                v-if="seenTelFlag"
+              /><img
+                src="../assets/unseen.svg"
+                v-if="!seenTelFlag"
+                @click="seenTel"
+                alt=""
+              />
+              <div ref="messageTel" class="input__seen__help">
+                <p>
+                  {{
+                    seenTelFlag
+                      ? "Другие польователи видят эти данные"
+                      : "Другие польователи не видят эти данные"
+                  }}
+                </p>
+              </div>
+            </div>
+
+            <input type="text" v-model="user.profile.mail" />
+            <input type="text" v-model="user.profile.pass" />
+            <select v-model="user.profile.city">
+              <option
+                :value="city"
+                v-for="(city, ind) in selectedCity"
+                :key="ind"
+                >{{ city }}</option
+              >
+            </select>
+            <div
+              class="input__seen"
+              @mouseenter="hoodMessageShow"
+              @mouseleave="hoodMessageHide"
+            >
+              <input
+                ref="hood"
+                type="text"
+                v-model="user.profile.hood"
+                :class="{ unseen: !seenHoodFlag }"
+              />
+              <img
+                src="../assets/seen.svg"
+                v-if="seenHoodFlag"
+                @click="seenHood"
+                alt=""
+              />
+              <img
+                src="../assets/unseen.svg"
+                v-if="!seenHoodFlag"
+                @click="seenHood"
+                alt=""
+              />
+              <div ref="messageHood" class="input__seen__help hood">
+                <p>
+                  {{
+                    seenHoodFlag
+                      ? "Другие польователи видят эти данные"
+                      : "Другие польователи не видят эти данные"
+                  }}
+                </p>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-    <div class="footer">
-      <div class="footer-support">
-        <img src="../assets/support.svg" alt="" />
-        <p>Поддержка</p>
+
+      <div class="footer">
+        <Header>
+          <template #left>
+            <support-button />
+          </template>
+          <template #right>
+            <logout-button @logout="logout" />
+          </template>
+        </Header>
       </div>
-      <div class="footer-time"></div>
-      <div class="footer-exit" @click="exit">
-        <p>Выйти из аккаунта</p>
-        <img src="../assets/exit.svg" alt="" />
+    </section>
+    <section class="settings-animal" v-if="state == 'animal'">
+      <Header>
+        <template #left>
+          <back-button :func="back" />
+        </template>
+
+        <template #center>
+          <kinesis-container :duration="300">
+            <div class="header__text">
+              <p>Данные животного</p>
+            </div>
+          </kinesis-container>
+        </template>
+        <template #right>
+          <save-changes-button @saveProfile="save" />
+        </template>
+      </Header>
+      <div class="main">
+        <div class="wrapper-left">
+          <div class="animal__input">
+            <p>Вид</p>
+            <select v-model="user.animal.typeAnimal">
+              <option value="cat">Кошка </option>
+              <option value="dog">Собака</option>
+            </select>
+          </div>
+          <div class="animal__input">
+            <p>Пол</p>
+            <select v-model="user.animal.male">
+              <option value="мужской">мужской </option>
+              <option value="Женский">Женский</option>
+            </select>
+          </div>
+          <div class="animal__input">
+            <p>Возраст</p>
+            <input type="number" v-model="user.animal.age" />
+          </div>
+          <div class="animal__input">
+            <p>Кличка</p>
+            <input type="text" v-model="user.animal.name" />
+          </div>
+          <div class="animal__input">
+            <p>Прививки</p>
+            <input type="text" v-model="user.animal.vacination" />
+          </div>
+          <div class="animal__input">
+            <p>Возможный период случки</p>
+             <input type="date" v-model="user.animal.dateMating" />
+          </div>
+        </div>
+        <div class="wrapper-right"></div>
       </div>
-    </div>
+      <div class="footer">
+        <Header>
+          <template #left>
+            <support-button />
+          </template>
+          <template #right>
+            <logout-button @logout="logout" />
+          </template>
+        </Header>
+      </div>
+    </section>
   </div>
 </template>
 <script>
-//  import { nextTick } from 'vue/types/umd';
-// import {KinesisContainer, KinesisElement} from 'vue-kinesis'
+import Header from "./Header.vue";
 import BackButton from "./BackButton.vue";
+import SaveChangesButton from "./SaveChangesButton.vue";
+import SupportButton from "./SupportButton.vue";
+import LogoutButton from "./LogoutButton.vue";
 export default {
   name: "SettingsScreen",
-  components: { BackButton },
+  components: {
+    Header,
+    BackButton,
+    SaveChangesButton,
+    SupportButton,
+    LogoutButton,
+  },
   props: { user: Object, selectedCity: Array },
   data() {
     return {
       state: "start",
       seenTelFlag: true,
       seenHoodFlag: true,
-      seenHoodHelpMessage:'',
+      seenHoodHelpMessage: "",
     };
   },
   methods: {
-    hoodMessageShow(){
-      this.$refs.messageHood.style.opacity='0.8'
+    logout() {
+      this.$emit("logout", null);
     },
-    telMessageShow(){
-      this.$refs.messageTel.style.opacity='0.8'
+    hoodMessageShow() {
+      this.$refs.messageHood.style.opacity = "0.8";
     },
-     hoodMessageHide(){
-      this.$refs.messageHood.style.opacity='0'
+    telMessageShow() {
+      this.$refs.messageTel.style.opacity = "0.8";
     },
-    telMessageHide(){
-      this.$refs.messageTel.style.opacity='0'
+    hoodMessageHide() {
+      this.$refs.messageHood.style.opacity = "0";
     },
+    telMessageHide() {
+      this.$refs.messageTel.style.opacity = "0";
+    },
+   
     back() {
-      console.log(this.user)
+      console.log(this.state);
       if (this.state == "start") {
-        this.$emit("back", { state: "profile" });
+        this.$emit("back",null);
       } else {
         this.state = "start";
       }
     },
-    exit() {
-      this.$emit("logout",null);
-    },
+
     contacts() {
       this.state = "contacts";
       // console.log(this.state);
@@ -169,34 +294,24 @@ export default {
     },
     seenTel() {
       if (this.seenTelFlag) {
-     
         this.seenTelFlag = false;
       } else {
-       
         this.seenTelFlag = true;
       }
     },
     seenHood() {
       if (this.seenHoodFlag) {
-      
         this.seenHoodFlag = false;
       } else {
-       
         this.seenHoodFlag = true;
       }
     },
   },
-  
+
   computed: {},
   mounted() {
-   this.seenHoodFlag=this.user.profile.seenFlags?.seenHoodFlag
-   this.seenTelFlag=this.user.profile.seenFlags?.seenTelFlag
-   const div=document.querySelector('.wrapper-left')
-   const arrP=div.querySelectorAll('p')
-   arrP.forEach(el=>{
-    //  console.log(el)
-     el.style.margin=0
-   })
+    this.seenHoodFlag = this.user.profile.seenFlags?.seenHoodFlag;
+    this.seenTelFlag = this.user.profile.seenFlags?.seenTelFlag;
   },
 };
 </script>
@@ -218,11 +333,11 @@ export default {
 }
 .wrapper {
   font-family: "Amatic SC";
-  font-size: 2.5em;
+  font-size: 2.5rem;
   font-style: normal;
   font-weight: 700;
   line-height: 45px;
-  letter-spacing: 0em;
+  letter-spacing: 0rem;
   text-align: left;
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
     0px 4px 4px rgba(0, 0, 0, 0.25);
@@ -235,51 +350,32 @@ export default {
   align-items: start;
   justify-content: start;
 }
-.header {
-  width: 100vw;
-  height: 2em;
-  display: flex;
-  align-items: center;
-  margin-top: 1em;
-  position: relative;
-}
+
 .header__text {
   position: relative;
-  left: 27vw;
-  width: 26vw;
+
   justify-self: center;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.8em;
+  /* font-size: 1.8em; */
   flex-wrap: nowrap;
 }
-.header__save {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  width: 19%;
-  position: absolute;
-  right: 0;
-}
+
 .header__text > img {
   height: 1em;
   margin-right: 0.2em;
 }
-.backbutton {
-  font-size: 1.25em;
-  max-width: 20%;
-}
+
 .main {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100vw;
   height: 70vh;
- 
 }
-.main-menu { 
-  padding-top: 5rem;
+.main-menu {
+  padding-top: 4rem;
   max-height: 80%;
   display: flex;
   flex-direction: column;
@@ -287,11 +383,11 @@ export default {
   justify-content: space-around;
   line-height: 81px;
   font-size: 1.2em;
-  transition: all 0.3s;
-   cursor:pointer;
+  transition: all 0.4s;
+  cursor: pointer;
 }
-.main-menu > p{
-  margin-top:-3rem;
+.main-menu > p {
+  margin-top: -3rem;
 }
 .main-menu > p:hover {
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.5),
@@ -299,48 +395,18 @@ export default {
   font-size: 1.1em;
 }
 .footer {
-  margin-top: 1em;
-  margin-bottom: 0.5em;
+  /* margin-top: 1rem; */
+  /* margin-bottom: 0.5rem; */
   display: flex;
   width: 100vw;
   height: auto;
   justify-content: space-around;
+  align-items: center;
   flex-wrap: nowrap;
   position: absolute;
-  bottom:0rem;
+  bottom: 0rem;
 }
-.footer-support {
-  display: flex;
-  justify-content: center;
-  min-width: 10rem;
-  margin-left: 0.3em;
-   align-items: center;
-}
-.footer-time {
-  display: flex;
-  min-width: 68%;
-  justify-content: center;
-  gap: 1em;
-  font-size: 0.7em;
-}
-.footer-exit {
-  flex-wrap: nowrap;
-  width: 22%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.footer-exit > img {
-  height: 0.9em;
-  margin-top: 0.1em;
-  margin-left: 0.2em;
-}
-.footer-exit:hover,
-.header__save:hover,
-.footer-support:hover {
-  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.5))
-    drop-shadow(10px 10px 4px rgba(9, 112, 7, 0.75));
-}
+
 .contacts {
   display: flex;
   height: 90%;
@@ -349,60 +415,90 @@ export default {
   width: 100vw;
 }
 .wrapper-left {
-  padding-left: 1em;
+  /* padding-top: 1.8rem; */
+  margin-left: 5rem;
   display: flex;
-  width: 35%;
-  min-height: 100%;
+  min-width: 30%;
+  height: 100%;
   flex-direction: column;
   justify-content: space-around;
   align-items: start;
 }
-.wrapper-left > p{
-  margin-top:-20px;
-}
+
 .wrapper-right {
   display: flex;
-  width: 70%;
-  min-height: 100%;
+  max-width: 70%;
+  height: 100%;
   flex-direction: column;
   justify-content: space-around;
   align-items: start;
 }
+.contacts > .wrapper-left > p {
+  margin-top: -0rem;
+}
+.animal__input {
+  margin-top: -2.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 4rem;
+  width:40vw;
+}
+.animal__input > select,
+.animal__input > input {
+  font: inherit;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid #000000;
+  box-sizing: border-box;
+  border-radius: 10px;
+  height: 2.8rem;
+  width: 25rem;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
+    0px 4px 4px rgba(0, 0, 0, 0.25);
+  transition: all 0.3s;
+}
+.animal__input > input[type="date"]{
+   width: 13.5rem;
+}
 .input__seen > img {
+  margin-top: -1.3rem;
   /* display: flex; */
-  padding-left: 0.2em;
-  width: 1.1em;
+  padding-left: 0.2rem;
+  width: 2.5rem;
   /* filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.75)); */
 }
-.input__seen{
-  display:flex;
+.input__seen {
+  display: flex;
   position: relative;
 }
-.input__seen__help{
+.input__seen__help {
+  margin-top: -1.1rem;
   margin-left: 0.3rem;
-right:0rem;
- background: rgba(255, 255, 255, 0.5);
-border: 1px solid #000000;
-box-sizing: border-box;
-border-radius: 10px;
-font-size: 1.3rem;
-/* width:15rem; */
-padding:0 1rem 0 1rem;
-display: flex;
-justify-content: center;
-align-items: center;
-max-height:3rem;
-transition: 0.3s;
-position:relative;
-opacity:0;
-transition: 0.3s;
-/* visibility: hidden; */
+  right: 0rem;
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid #000000;
+  box-sizing: border-box;
+  border-radius: 10px;
+  font-size: 1.3rem;
+  /* width:15rem; */
+  padding: 0 1rem 0 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-height: 3rem;
+  transition: 0.3s;
+  position: relative;
+  opacity: 0;
+  transition: 0.3s;
+  /* visibility: hidden; */
 }
 
 .input__seen > input,
 .wrapper-right > input,
 .wrapper-right > select {
-  font:inherit;
+  margin-top: -1rem;
+  font: inherit;
   text-align: center;
   background: rgba(255, 255, 255, 0.5);
   border: 1px solid #000000;
@@ -413,7 +509,7 @@ transition: 0.3s;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
     0px 4px 4px rgba(0, 0, 0, 0.25);
   transition: all 0.3s;
-  font-size:inherit ;
+  font-size: inherit;
 }
 input:hover,
 select:hover {

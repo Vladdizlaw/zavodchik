@@ -1,5 +1,5 @@
 <template>
-     <div class="registration-title__back" @click="func">
+     <div class="backbutton" @click="$emit('back',null)">
           <img src="../assets/back.svg" />
           <p>Назад</p>
         </div>
@@ -7,15 +7,12 @@
 <script>
 export default {
     name:'BackButton',
-    props:{
-        func:Function
-    },
-   
+    
     
 }
 </script>
 <style scoped>
-.registration-title__back {
+.backbutton {
   font-family: "Amatic SC";
   font-size: 3rem;
   font-style: normal;
@@ -32,15 +29,19 @@ export default {
   justify-content: center;
   align-items: center;
   /* width: 10%; */
-  height: 2rem;
+  /* height: 2rem; */
   transition: 0.3s;
 }
-.registration-title__back:hover {
+.backbutton:hover {
   filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.5))
     drop-shadow(10px 10px 4px rgba(9, 112, 7, 0.75));
 }
-.registration-title__back > img {
+.backbutton > img {
   padding-top: 0.25rem;
   max-height: 2.5rem;
+}
+.backbutton :active {
+  filter: drop-shadow(0px 4px 4px rgba(39, 33, 33, 0.5))
+    drop-shadow(10px 10px 4px rgba(10, 73, 10, 0.75));
 }
 </style>

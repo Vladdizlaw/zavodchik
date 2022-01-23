@@ -1,5 +1,5 @@
 <template>
-     <div class="logout__button" @click="search">
+     <div class="logout__button" @click="logout">
       <p>Выйти из аккаунта</p>
       <img src="../assets/exit.svg" alt="" />
     </div>
@@ -14,8 +14,8 @@ export default {
         
     },
     methods:{
-      search() {
-      this.$emit("back", { state: "animalProperty" });
+      logout() {
+      this.$emit("logout",null);
     },   
     }
 }

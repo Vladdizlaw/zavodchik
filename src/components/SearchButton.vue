@@ -17,7 +17,7 @@ export default {
     },
     methods:{
     search() {
-      this.$emit("back", { state: "animalProperty" });
+      this.$emit("search",null);
     },
     }
 }

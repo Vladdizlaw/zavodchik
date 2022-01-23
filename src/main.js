@@ -1,13 +1,16 @@
 import Vue from "vue";
 import App from "./App.vue";
 import VueKinesis from "vue-kinesis";
+import VueRouter from 'vue-router'
+import router from "./router/routes.js"
 
 import Vuex from "vuex";
 import store from './store/index.js'
 Vue.config.productionTip = false;
 Vue.use(VueKinesis);
+Vue.use(VueRouter)
 new Vue({
-  store,
+  store,router,
   render: (h) => h(App),
 }).$mount("#app");
 
@@ -54,6 +57,6 @@ Vue.directive("phone", {
     };
   },
 });
-Vue.use(VueKinesis);
+// Vue.use(VueKinesis);
 Vue.use(Vuex);
 

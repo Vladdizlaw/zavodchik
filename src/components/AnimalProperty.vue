@@ -6,7 +6,7 @@
     <div class="animalproperty-fortext">
       <Header>
         <template #left>
-          <back-button :func="back" />
+          <back-button @back="back" />
         </template>
         <template #center>
           <p>Поиск пары</p>
@@ -28,7 +28,7 @@
 
         <select v-model="animalProperty.breed" placeholder="порода">
           <option :value="bred" v-for="(bred, ind) in breedList" :key="ind">{{
-            bred
+            bred 
           }}</option>
         </select>
       </div>
@@ -141,10 +141,12 @@ export default {
       }
     },
     back() {
-      if (this.isAutentificate) {
-        this.$emit("back", { state: "profile" });
-      } else {
-        this.$emit("back", { state: "start" });
+     
+      if (!this.isAutentificate) {
+        this.$router.push({name:'start'});
+      } else { 
+        console.log('from back isAutentificate')
+        this.$emit("back", null);
       }
     },
   },

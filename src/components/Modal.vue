@@ -2,11 +2,11 @@
   <transition name="bounce">
     <div 
       class="modal"
-      @keydown.esc="cancelModal"
+     
       @click="cancelModal"
       v-show="flag"
     >
-      <div ref="content" class="content"  tabindex="0" autofocus="autofocus" @keydown.esc="cancelModal">
+      <div ref="content" class="content"  >
         <slot name="content"> </slot>
       </div>
     </div>
@@ -24,16 +24,19 @@ export default {
   methods: {
     cancelModal() {
       this.$emit("cancelModal", null);
+      // this.flag=false
     },
+    cancelEsc(e){
+       e.key=='Escape'?this.cancelModal():null
+    }
   },
-  // watch:{
-  //   flag:function(val) {
-  //     if (val===true){
-  //       this.$refs.content.focus()
-  //     }
-  //   console.log(this.$refs.content)
-  //   }
-  // }
+  mounted(){
+    document.addEventListener('keydown',this.cancelEsc)
+  },
+  beforeDestroy(){
+    document.removeEventListener('keydown',this.cancelEsc)
+  }
+  
 };
 </script>
 <style scoped>

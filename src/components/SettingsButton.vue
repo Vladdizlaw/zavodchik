@@ -15,7 +15,7 @@ export default {
     },
     methods:{
          settings() {
-      this.$emit("back", { state: "settings" });
+      this.$emit('settings',null)
     },
     }
 }
@@ -28,9 +28,12 @@ export default {
   align-items: center;
   transition: 0.3s;
   cursor: pointer;
+  
 }
 .roll{
-  transition: 0.3s;
+  height:3.7rem;
+  transition: 0.4s;
+  margin-right: -0.5rem;
 }
 
 

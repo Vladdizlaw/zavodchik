@@ -32,7 +32,7 @@
 // import {KinesisContainer, KinesisElement} from 'vue-kinesis'
 export default {
   name: "StartScreen",
-  props: {},
+ 
 
   data() {
     return {
@@ -51,6 +51,9 @@ export default {
       this.$emit("sign", null);
     },
   },
+  mounted(){
+    
+  }
 };
 </script>
 
