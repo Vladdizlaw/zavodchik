@@ -388,6 +388,7 @@ export default {
   width: 100vw;
   height: auto;
   justify-content: space-around;
+  align-items: center;
   flex-wrap: nowrap;
 }
 </style>

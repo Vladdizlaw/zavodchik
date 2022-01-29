@@ -1,7 +1,7 @@
 <template>
 <div>
   <div class="savebutton" @click="save">
-    <img src="../assets/save.svg"  />
+    <img src="../assets/save.svg"/>
     <p>Сохранить изменения</p>
   </div>
 </div>
@@ -32,8 +32,12 @@ export default {
   cursor: pointer;
   
 }
-.savebutton :hover{
+.savebutton:hover img{
   filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.5))
+    drop-shadow(10px 10px 4px rgba(9, 112, 7, 0.75));
+}
+.savebutton:hover {
+    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.5))
     drop-shadow(10px 10px 4px rgba(9, 112, 7, 0.75));
 }
 .savebutton :active {

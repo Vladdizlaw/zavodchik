@@ -36,7 +36,7 @@ export default new Vuex.Store({
         tel: "",
         name: "",
         pass: "",
-        city: "",
+        city: null,
         id: "",
         hood: "",
         seenFlags: { seenHoodFlag: true, seenTelFlag: true },

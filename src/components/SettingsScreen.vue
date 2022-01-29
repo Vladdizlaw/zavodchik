@@ -27,8 +27,8 @@
         <div class="main-menu">
           <p @click="state = 'contacts'">Контактные данные</p>
           <p @click="state = 'animal'">Данные животного</p>
-          <p>Редактировать фото</p>
-          <p>Настроить уведомления</p>
+         
+          <p @click="state = 'noticed'">Настроить уведомления</p>
           <p>Оплата</p>
         </div>
       </div>
@@ -168,7 +168,7 @@
     <section class="settings-animal" v-if="state == 'animal'">
       <Header>
         <template #left>
-          <back-button :func="back" />
+          <back-button @back="back" />
         </template>
 
         <template #center>
@@ -183,7 +183,7 @@
         </template>
       </Header>
       <div class="main">
-        <div class="wrapper-left">
+        <div class="wrapper-left__animal">
           <div class="animal__input">
             <p>Вид</p>
             <select v-model="user.animal.typeAnimal">
@@ -208,14 +208,58 @@
           </div>
           <div class="animal__input">
             <p>Прививки</p>
-            <input type="text" v-model="user.animal.vacination" />
+            <input type="text" v-model="user.animal.vaccination" />
           </div>
           <div class="animal__input">
             <p>Возможный период случки</p>
              <input type="date" v-model="user.animal.dateMating" />
           </div>
         </div>
-        <div class="wrapper-right"></div>
+        <div class="wrapper-right__animal">
+          <div class="animal__input">
+            <p>Окрас</p>
+            <input type="text" v-model="user.animal.color" />
+          </div>
+          <div class="animal__input">
+            <p>Награды</p>
+            <input type="text" v-model="user.animal.awards" />
+          </div>
+          <div class="animal__input">
+            <p>Условия вязки</p>
+            <input type="text" v-model="user.animal.matingConditions" />
+          </div>
+        </div>
+      </div>
+      <div class="footer">
+        <Header>
+          <template #left>
+            <support-button />
+          </template>
+          <template #right>
+            <logout-button @logout="logout" />
+          </template>
+        </Header>
+      </div>
+    </section>
+    <section class="settings-noticed" v-if="state == 'noticed'">
+      <Header>
+        <template #left>
+          <back-button @back="back" />
+        </template>
+
+        <template #center>
+          <kinesis-container :duration="300">
+            <div class="header__text">
+              <p>Настройка уведомлений</p>
+            </div>
+          </kinesis-container>
+        </template>
+        <template #right>
+          <save-changes-button @saveProfile="save" />
+        </template>
+      </Header>
+      <div class="main">
+       
       </div>
       <div class="footer">
         <Header>
@@ -315,7 +359,7 @@ export default {
   },
 };
 </script>
-<style scoped>
+<style lang="scss" scoped>
 .unseen {
   opacity: 0.5;
 }
@@ -414,24 +458,39 @@ export default {
   align-items: center;
   width: 100vw;
 }
-.wrapper-left {
-  /* padding-top: 1.8rem; */
-  margin-left: 5rem;
-  display: flex;
-  min-width: 30%;
-  height: 100%;
-  flex-direction: column;
+%flex-type{
+   display: flex;
+   flex-direction: column;
   justify-content: space-around;
   align-items: start;
 }
+.wrapper-left {
+  @extend %flex-type;
+  /* padding-top: 1.8rem; */
+  margin-left: 5rem;
+  
+  min-width: 30%;
+  height: 100%;
+  
+  &__animal {
+    margin-left: 5rem;
+    height: 100%;
+    @extend %flex-type;
+    width:50%;
+  }
+}
 
 .wrapper-right {
-  display: flex;
+   @extend %flex-type;
+  
   max-width: 70%;
   height: 100%;
-  flex-direction: column;
-  justify-content: space-around;
-  align-items: start;
+ 
+  &__animal {
+     @extend %flex-type;
+     height: 100%;
+    width:50%;
+  }
 }
 .contacts > .wrapper-left > p {
   margin-top: -0rem;

@@ -1,5 +1,5 @@
 <template>
-   <profile-screen :user="this.user" >
+   <profile-screen :user="showedUser" >
         <template #header>
            <Header>
             <template #left>
@@ -11,7 +11,9 @@
             </template>
           </Header>
         </template>
-           <template #footer> footer</template>
+           <template #footer> 
+             <profiles-switcher @previous="previousProfile" @next="nextProfile" :typeAnimal="showedUser.animal.typeAnimal"/>
+           </template>
       </profile-screen>
  
 </template>
@@ -21,17 +23,20 @@ import Header from "./Header.vue"
 import ProfileButton from "./ProfileButton.vue"
 // import SettingsButton from "./SettingsButton.vue";
 import BackButton from "./BackButton.vue";
-// import LogoutButton from "./LogoutButton.vue";
+import ProfilesSwitcher from "./ProfilesSwitcher.vue";
 // import TrialBlock from "./TrialBlock.vue";
 export default {
   name: "ProfileUserScreen",
-  components:{ProfileScreen,Header,ProfileButton,BackButton},
+  components:{ProfileScreen,Header,ProfileButton,BackButton,ProfilesSwitcher},
   props: {
     user:{type:Object, require:true},
+    users:Array
    
   },
   data() {
     return {
+      showedUser:null,
+      indexInUsers:null
      
     };
   },
@@ -42,23 +47,37 @@ export default {
    },
    myProfile(){
      this.$emit('myProfile',null)
+   },
+   nextProfile(){
+     this.getUserIndex()
+     this.showedUser=this.users[this.indexInUsers>=this.users.length-1?0:this.indexInUsers+1]
+     console.log('next')
+   },
+   previousProfile(){
+     this.getUserIndex()
+     this.showedUser=this.users[this.indexInUsers<=0?this.users.length-1:this.indexInUsers-1]
+      console.log('previous')
+   },
+   getUserIndex(){
+     this.users.forEach((el,ind)=>{
+       if (el.id==this.showedUser.id){
+       console.log(ind)
+         this.indexInUsers=ind
+       }
+
+     })
    }
    
-  //  settings() {
-  //     this.$router.push({name:'settings', params:{user:this.user,selectedCity:this.selectedCity}})
-  //   },
-  //   toSearchScreen(){
-  //     this.$router.push({name:'search',params:{
-  //       animalType:this.user.animal.typeAnimal,
-  //       city:this.user.profile.city,
-  //       selectedCity:this.selectedCity,
-  //       isAutentificate:true,
-  //     }})
-  //   }
+  
   },
   computed: {
    
   },
+  mounted(){
+  this.showedUser=this.user
+   console.log( this.showedUser)
+
+  }
 };
 </script>
 <style scoped>
@@ -80,7 +99,7 @@ export default {
   font-style: normal;
   font-weight: 700;
   line-height: 45px;
-  letter-spacing: 0em;
+  letter-spacing: 0rem;
   text-align: left;
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
     0px 4px 4px rgba(0, 0, 0, 0.25);

@@ -1,114 +1,29 @@
 <template>
   <div class="app">
     <transition name="no-mode-translate-fade" mode="in-out">
-      <router-view 
-      @animalType="getAnimalType" 
-      @animalProperty="getSearchResult"
-      @back="back"
-      @logout="logout" 
-      @sign="getSign" 
-      @registration="getRegistration"
-      @registeredData="getRegForms"
-      @signUp="Sign"
-      @saveProfile="updateProfile"
-      @viewDetails="viewDetails"
-      @myProfile="getMyProfile"
-      >
-      </router-view>
-      <!-- <start-screen
-        v-if="state == 'start'"
-        :selectedCity="selectedCity"
+      <router-view
         @animalType="getAnimalType"
-        @sign="getSign"
-        @registration="getRegistration"
-      />
-      <animal-property
-        @animalProperty="getAnimalProperty"
-        @back="back"
-        :animalType="user.animal.typeAnimal"
-        :city="user.profile.city"
-        :selectedCity="selectedCity"
-        :isAutentificate="isAutentificate"
-        v-if="state == 'animalProperty'"
-      >
-      </animal-property>
-      <map-screen
-        :location="user.location"
-        :searchParams="searchParams"
-        :users="searchUsers"
-        @viewDetails="getId"
-        v-if="state == 'mapScreen'"
-      />
-      <registration-screen
-        :selectedCity="selectedCity"
-        :city="user.profile.city"
-        :substate="substate"
-        v-if="state == 'registration'"
-        @registeredData="getRegForms"
-        @sign="Sign"
-      />
-      <profile-screen :user="user" v-if="state == 'profile'">
-        <template #header>
-          <Header>
-            <template #left>
-              <back-button :func="back" />
-            </template>
-            <template #center>
-              <p>Профиль</p>
-            </template>
-            <template #right>
-              <search-button @back="back" />
-            </template>
-          </Header>
-        </template>
-        <template #footer>
-          <Header>
-            <template #left>
-              <settings-button @back="back" />
-            </template>
-            <template #center>
-              <trial-block :startTrial="user.animal.startTrial" @pay="pay" />
-            </template>
-            <template #right>
-              <logout-button @logout="logout" />
-            </template>
-          </Header>
-        </template>
-      </profile-screen>
-      <profile-screen :user="idSelected" v-if="state == 'searchResult'">
-        <template #header>
-          <Header>
-            <template #left>
-              <back-button :func="backSearchResult" />
-            </template>
-
-            <template #right>
-              <profile-button @back="back" />
-            </template>
-          </Header>
-        </template>
-        <template #footer> footer</template>
-      </profile-screen>
-      <settings-screen
-        :selectedCity="selectedCity"
-        @saveProfile="updateProfile"
+        @animalProperty="getSearchResult"
         @back="back"
         @logout="logout"
-        :user="user"
-        v-if="state == 'settings'"
-      /> -->
+        @sign="getSign"
+        @registration="getRegistration"
+        @registeredData="getRegForms"
+        @signUp="Sign"
+        @saveProfile="updateProfile"
+        @viewDetails="viewDetails"
+        @myProfile="getMyProfile"
+      >
+      </router-view>
     </transition>
   </div>
 </template>
 
 <script>
-
 import axios from "axios";
-
 
 export default {
   name: "App",
-
 
   data() {
     return {
@@ -127,10 +42,12 @@ export default {
       const token = document.cookie
         ?.split(";")
         .filter((el) => el.includes("access_token"));
-   
+
       if (!token || token.length <= 0 || token[0].split("=")[1] === "null") {
+        console.log('autentificate false')
         return false;
       }
+      console.log('autentificate true')
       return true;
     },
     user() {
@@ -147,27 +64,37 @@ export default {
     },
   },
   methods: {
-    back(){
-      console.log(this.$route.name)
-      if (this.isAutentificate&&(this.$route.name=='search'||this.$route.name=='settings')) {
-         this.$router.push({name:"profile",params:{user:this.user,selectedCity:this.selectedCity}})
-      }else if(this.isAutentificate&&this.$route.name=='searchResult'){
-          this.$router.push({name:"map",params:{
-        location:this.user.location,
-        searchParams:this.searchParams,
-        users:this.searchUsers,
-      }});
-      }
-      else{
-        this.$router.go(-1)
-        
+    back() {
+      console.log(this.$route.name);
+      if (
+       (this.isAutentificate ||this.autohorized)&&
+        (this.$route.name == "search" || this.$route.name == "settings")
+      ) {
+        this.$router.push({
+          name: "profile",
+          params: { user: this.user, selectedCity: this.selectedCity },
+        });
+      } else if ((this.isAutentificate||this.autohorized) && this.$route.name == "searchResult") {
+        this.$router.push({
+          name: "map",
+          params: {
+            location: this.user.location,
+            searchParams: this.searchParams,
+            users: this.searchUsers,
+          },
+        });
+      } else {
+        this.$router.go(-1);
       }
     },
-    getMyProfile(){
-       this.$router.push({name:"profile",params:{user:this.user,selectedCity:this.selectedCity}});
+    getMyProfile() {
+      this.$router.push({
+        name: "profile",
+        params: { user: this.user, selectedCity: this.selectedCity },
+      });
     },
     async logout() {
-      console.log('logout')
+      console.log("logout");
       const headers = {
         "Content-Type": "application/json",
       };
@@ -179,8 +106,8 @@ export default {
         }
       );
       this.$store.commit("DELETE_USER");
-      this.$router.push({name:"start"})
-      window.location.reload(true)
+      this.$router.push({ name: "start" });
+      window.location.reload(true);
       // console.log(this.user)
     },
 
@@ -265,12 +192,15 @@ export default {
     getAnimalType(value) {
       // this.user.animal.animalType = value.animalType;
       this.$store.commit("SAVE_USER_ANIMAL", value);
-      this.$router.push({name:'search', params:{
-                animalType:this.user.animal.typeAnimal,
-        city:this.user.profile.city,
-        selectedCity:this.selectedCity,
-        isAutentificate:this.isAutentificate
-      }});
+      this.$router.push({
+        name: "search",
+        params: {
+          animalType: this.user.animal.typeAnimal,
+          city: this.user.profile.city,
+          selectedCity: this.selectedCity,
+          isAutentificate: this.isAutentificate,
+        },
+      });
     },
     async getSearchResult(value) {
       this.searchParams.animalType = this.user.animal.typeAnimal;
@@ -288,46 +218,57 @@ export default {
       console.log(data);
       this.searchUsers = data;
       this.idSelected = null;
-      this.$router.push({name:"map",params:{
-        location:this.user.location,
-        searchParams:this.searchParams,
-        users:this.searchUsers,
-      }});
+      this.$router.push({
+        name: "map",
+        params: {
+          location: this.user.location,
+          searchParams: this.searchParams,
+          users: this.searchUsers,
+        },
+      });
     },
     getSign() {
-      // this.substate = "start";
-      // this.state = "registration";
-      this.$router.push({name:'registration',params:{
-        selectedCity:this.selectedCity,
-        city:this.user.profile.city,
-        substate:"start"
-      }})
+     
+      this.$router.push({
+        name: "registration",
+        params: {
+          selectedCity: this.selectedCity,
+          city: this.user.profile.city,
+          substate: "start",
+        },
+      });
     },
     getRegistration() {
-     this.$router.push({name:'registration',params:{
-        selectedCity:this.selectedCity,
-        city:this.user.profile.city,
-        substate:"registrationUser"
-        }})
+      this.$router.push({
+        name: "registration",
+        params: {
+          selectedCity: this.selectedCity,
+          city: this.user.profile.city,
+          substate: "registrationUser",
+        },
+      });
     },
 
     async viewDetails(value) {
-      // console.log(value)
-      if (!this.isAutentificate) {
-        // console.log(this.isAutentificate());
-        this.getSign()
-        return;
-      }
-      const { data } = await axios.get(
+    
+      if (this.isAutentificate||this.autohorized) {
+         const { data } = await axios.get(
         `http://localhost:5000/api/get_user${value.id}`
       );
 
       this.idSelected = data;
-      this.$router.push({name:"searchResult",params:{user:this.idSelected}}) ;
+      this.$router.push({
+        name: "searchResult",
+        params: { user: this.idSelected ,users:this.searchUsers},
+      });
+      }else{
+        
+        this.getSign();
+        return;
+      }
+     
     },
-    // backSearchResult() {
-    //   this.state = "mapScreen";
-    // },
+
     async getRegForms(value) {
       this.$store.commit("SAVE_USER", value);
       await this.sendUser();
@@ -338,7 +279,11 @@ export default {
         await this.getUser();
         setTimeout(() => {
           document.cookie = `access_token=${this.user.token}`;
-         this.$router.push({name:"profile",params:{user:this.user,selectedCity:this.selectedCity}})
+          this.autohorized=true
+          this.$router.push({
+            name: "profile",
+            params: { user: this.user, selectedCity: this.selectedCity },
+          });
         }, 1000);
       }, 1000);
 
@@ -349,20 +294,18 @@ export default {
       this.$store.commit("SAVE_USER_PROFILE", e.profile);
       await this.updateUser();
     },
-    // back(e) {
-     
-    //   this.state = e.state;
-    //   if (e.substate) {
-    //     this.substate = e.substate;
-    //   }
     
     async Sign(e) {
       const user = await axios.post("http://localhost:5000/api/login", e);
       this.$store.commit("SAVE_USER", user.data);
       document.cookie = `access_token=${this.user.token}`;
       console.log("from Sign", document.cookie);
-      window.location.reload()
-      this.$router.push({name:"profile",params:{user:this.user,selectedCity:this.selectedCity}})
+      // window.location.reload(true);
+      this.autohorized=true
+      this.$router.push({
+        name: "profile",
+        params: { user: this.user, selectedCity: this.selectedCity },
+      });
       // window.location.reload(true)
       console.log("SIGN-----", user);
     },
@@ -371,15 +314,18 @@ export default {
     },
   },
   async mounted() {
-    if(this.$route.name!=='start'){
-    this.$router.push({name:"start"})
+    if (this.$route.name !== "start") {
+      this.$router.push({ name: "start" });
     }
-    if (this.isAutentificate) {
+    if (this.isAutentificate||this.autohorized) {
       try {
         console.log("cookie:", document.cookie);
         await this.getAuthUser();
         setTimeout(() => {
-          this.$router.push({name:"profile",params:{user:this.user,selectedCity:this.selectedCity}});
+          this.$router.push({
+            name: "profile",
+            params: { user: this.user, selectedCity: this.selectedCity },
+          });
         }, 1000);
       } catch (e) {
         console.log("error", e);
@@ -396,24 +342,25 @@ export default {
     await this.locateMe();
 
     if (!this.isAutentificate) {
-      try{
-      const city = await this.getCity();
-      this.$store.commit("SAVE_USER_PROFILE", { city: city });
-      } catch(e){
-        console.log(e)
+      try {
+        const city = await this.getCity();
+        this.$store.commit("SAVE_USER_PROFILE", { city: city });
+      } catch (e) {
+        console.log(e);
       }
     }
-   
   },
   created() {},
   beforeDestroy() {},
 };
 </script>
-<style scoped>
+<style lang="scss" scoped>
 @import url("https://fonts.googleapis.com/css2?family=Amatic+SC:wght@700&display=swap");
 * {
   padding: 0px;
   margin: 0px;
+  box-sizing: border-box;
+
 }
 html {
   overflow-y: hidden !important;
@@ -441,8 +388,7 @@ body {
 ::-webkit-scrollbar {
   width: 0;
   background: transparent;
-}
-html {
-  overflow-y: hidden !important;
-}
+} 
+
 </style>
+
