@@ -27,7 +27,7 @@
         <div class="main-menu">
           <p @click="state = 'contacts'">Контактные данные</p>
           <p @click="state = 'animal'">Данные животного</p>
-         
+
           <p @click="state = 'noticed'">Настроить уведомления</p>
           <p>Оплата</p>
         </div>
@@ -212,7 +212,7 @@
           </div>
           <div class="animal__input">
             <p>Возможный период случки</p>
-             <input type="date" v-model="user.animal.dateMating" />
+            <input type="date" v-model="user.animal.dateMating" />
           </div>
         </div>
         <div class="wrapper-right__animal">
@@ -258,8 +258,70 @@
           <save-changes-button @saveProfile="save" />
         </template>
       </Header>
-      <div class="main">
-       
+      <div class="main_noticed">
+        <div class="wrapper-left_noticed">
+          <div class="personal_data">
+            <div
+              class="personal_data_checkbox"
+              @click="noticeBreed.value = !(noticeBreed.value)"
+              :class="{ checked: noticeBreed.value }"
+            ></div>
+            <div class="personal_data_text">
+              <p>Уведомлять о новых пользователях такой же породы</p>
+            </div>
+          </div>
+          <div class="personal_data_inner" :class="{enabled:noticeBreed.value}">
+            <div
+              class="personal_data_checkbox"
+              @click="noticeBreed.value?noticeBreed.mail = !noticeBreed.mail:null"
+              :class="{ checked: noticeBreed.mail }"
+            ></div>
+            <div class="personal_data_text">
+              <p>По e-mail</p>
+            </div>
+          </div><div class="personal_data_inner" :class="{enabled:noticeBreed.value}">
+            <div
+              class="personal_data_checkbox"
+              @click="noticeBreed.value?noticeBreed.push = !noticeBreed.push:null"
+              :class="{ checked: noticeBreed.push }"
+            ></div>
+            <div class="personal_data_text">
+              <p>С помощью push-уведомлений</p>
+            </div>
+          </div>
+
+        </div>
+        <div class="wrapper-right_noticed">
+           <div class="personal_data">
+            <div
+              class="personal_data_checkbox"
+              @click="noticeMatingDate.value = !(noticeMatingDate.value)"
+              :class="{ checked: noticeMatingDate.value }"
+            ></div>
+            <div class="personal_data_text">
+              <div><p>Уведомлять о новых периодах для случки</p></div>
+            </div>
+          </div>
+          <div class="personal_data_inner" :class="{enabled:noticeMatingDate.value}">
+            <div
+              class="personal_data_checkbox"
+              @click="noticeMatingDate.value?noticeMatingDate.mail = !noticeMatingDate.mail:null"
+              :class="{ checked: noticeMatingDate.mail }"
+            ></div>
+            <div class="personal_data_text">
+              <div><p>По e-mail</p></div>
+            </div>
+          </div><div class="personal_data_inner" :class="{enabled:noticeMatingDate.value}">
+            <div
+              class="personal_data_checkbox"
+              @click="noticeMatingDate.value?noticeMatingDate.push = !noticeMatingDate.push:null"
+              :class="{ checked:noticeMatingDate.push }"
+            ></div>
+            <div class="personal_data_text">
+              <div><p>С помощью push-уведомлений</p></div>
+            </div>
+            </div>
+        </div>
       </div>
       <div class="footer">
         <Header>
@@ -296,6 +358,8 @@ export default {
       seenTelFlag: true,
       seenHoodFlag: true,
       seenHoodHelpMessage: "",
+      noticeBreed: {value:false,mail:false,push:false},
+      noticeMatingDate: {value:false,mail:false,push:false},
     };
   },
   methods: {
@@ -314,11 +378,11 @@ export default {
     telMessageHide() {
       this.$refs.messageTel.style.opacity = "0";
     },
-   
+
     back() {
       console.log(this.state);
       if (this.state == "start") {
-        this.$emit("back",null);
+        this.$emit("back", null);
       } else {
         this.state = "start";
       }
@@ -351,6 +415,20 @@ export default {
       }
     },
   },
+  watch:{
+    'noticeBreed.value'(val){
+      if (!val){
+      this.noticeBreed.mail=false
+      this.noticeBreed.push=false
+    }
+  },
+  'noticeMatingDate.value'(val){
+      if (!val){
+      this.noticeMatingDate.mail=false
+      this.noticeMatingDate.push=false
+    }
+  },
+  },
 
   computed: {},
   mounted() {
@@ -360,6 +438,13 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+%flex-type {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: start;
+}
+
 .unseen {
   opacity: 0.5;
 }
@@ -417,6 +502,14 @@ export default {
   align-items: center;
   width: 100vw;
   height: 70vh;
+  &_noticed {
+    @extend %flex-type;
+    align-items: center;
+    justify-content: space-between;
+    max-height: 80vh;
+    width: 100vw;
+    position: relative;
+  }
 }
 .main-menu {
   padding-top: 4rem;
@@ -458,38 +551,48 @@ export default {
   align-items: center;
   width: 100vw;
 }
-%flex-type{
-   display: flex;
-   flex-direction: column;
-  justify-content: space-around;
-  align-items: start;
-}
+
 .wrapper-left {
   @extend %flex-type;
   /* padding-top: 1.8rem; */
   margin-left: 5rem;
-  
+
   min-width: 30%;
   height: 100%;
-  
+
   &__animal {
     margin-left: 5rem;
     height: 100%;
     @extend %flex-type;
-    width:50%;
+    width: 50%;
+  }
+  &_noticed {
+    @extend %flex-type;
+    align-items: center;
+    justify-content: space-between ;
+    max-height: 50%;
+    width: 100%;
   }
 }
 
 .wrapper-right {
-   @extend %flex-type;
-  
+  @extend %flex-type;
+
   max-width: 70%;
   height: 100%;
- 
+
   &__animal {
-     @extend %flex-type;
-     height: 100%;
-    width:50%;
+    @extend %flex-type;
+    // gap:6.5rem;
+    justify-content: space-around;
+    height: 100%;
+    width: 50%;
+  }
+  &_noticed {
+    @extend %flex-type;
+    align-items: center;
+    max-height: 50%;
+    width: 100%;
   }
 }
 .contacts > .wrapper-left > p {
@@ -501,7 +604,7 @@ export default {
   justify-content: space-between;
   align-items: center;
   gap: 4rem;
-  width:40vw;
+  width: 40vw;
 }
 .animal__input > select,
 .animal__input > input {
@@ -517,8 +620,8 @@ export default {
     0px 4px 4px rgba(0, 0, 0, 0.25);
   transition: all 0.3s;
 }
-.animal__input > input[type="date"]{
-   width: 13.5rem;
+.animal__input > input[type="date"] {
+  width: 13.5rem;
 }
 .input__seen > img {
   margin-top: -1.3rem;
@@ -579,5 +682,61 @@ option {
   display: flex;
   justify-content: center;
   text-align: center;
+}
+.personal_data {
+  // margin-top:2rem;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: start;
+  gap: 1rem;
+  flex-wrap: nowrap;
+  width: 45%;
+  &_inner {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: start;
+    gap: 1rem;
+    margin-left:5rem;
+    width: 29%;
+    flex-wrap: nowrap;
+    opacity: 0.6;
+  }
+}
+
+.personal_data_checkbox {
+  margin-top: 2rem;
+  width: 1em;
+  height: 1em;
+  background: #ffffff;
+  opacity: 0.5;
+  border: 1px solid #000000;
+  // box-sizing: border-box;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
+    0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 10px;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.personal_data_checkbox:hover {
+  width: 1.1em;
+  height: 1.1em;
+}
+.personal_data_text {
+  // width: 9em;
+  display: flex;
+  // position: relative;
+  height:5.5rem;
+}
+
+.checked {
+  background: url("../assets/checked.svg");
+  background-position: center;
+  background-size: 90%;
+  background-repeat: no-repeat;
+}
+.enabled{
+  opacity: 1;
 }
 </style>

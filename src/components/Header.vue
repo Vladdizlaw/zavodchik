@@ -35,7 +35,7 @@ export default {
 </script>
 <style scoped>
 .header {
-  min-width: 100%;
+  width: 100%;
   /* max-height: 3rem; */
   display: flex;
   justify-content: center;

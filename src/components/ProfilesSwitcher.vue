@@ -37,7 +37,7 @@ export default {
     },
   },
   mounted() {
-    console.log("switcher:", this.typeAnimal);
+    // console.log("switcher:", this.typeAnimal);
   },
 };
 </script>

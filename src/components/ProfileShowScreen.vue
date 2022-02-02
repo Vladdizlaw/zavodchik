@@ -73,9 +73,9 @@ export default {
   computed: {
    
   },
-  mounted(){
+  beforeMount(){
   this.showedUser=this.user
-   console.log( this.showedUser)
+   console.log('showedUser' ,this.showedUser)
 
   }
 };

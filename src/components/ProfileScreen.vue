@@ -1,66 +1,75 @@
 <template>
   <div
     class="wrapper"
-    :class="{ dog: user.animal.typeAnimal == 'dog', cat: user.animal.typeAnimal == 'cat' }"
+    :class="{
+      dog: this.user&&this.user.animal.typeAnimal == 'dog',
+      cat:this.user&&this.user.animal.typeAnimal == 'cat',
+    }"
   >
-   
-      <Modal :flag="modalPhoto"  @cancelModal="cancelModal" >
-        <template #content>
-           <img :src="url"  class="image" alt="" />
-        </template>
-      </Modal>
-     
-   
+    <Modal :flag="modalPhoto" @cancelModal="cancelModal">
+      <template #content>
+        <img :src="url" class="image" alt="" />
+      </template>
+    </Modal>
+
     <div class="header">
       <slot name="header"></slot>
     </div>
     <div class="main">
       <div class="main-left">
         <div class="main-left__name">
-          <p>{{ user.animal.name }}, {{ user.animal.age }} {{ pluralize }}</p>
+          <p>{{ user?user.animal.name:null }}, {{ user?user.animal.age:null }} {{ pluralize }}</p>
         </div>
         <div class="main-left__data">
-          <p>Пол:{{ user.animal.male }}</p>
-          <p>Порода:{{ user.animal.breed }}</p>
-          <p>Город:{{ user.profile.city }}</p>
-          <p v-if="user.profile.hood&&user.profile.seenFlags.seenHoodFlag">Район:{{ user.profile.hood }}</p>
-          <p v-if="user.animal.color">Окрас:{{ user.animal.color }}</p>
-          <p v-if="user.animal.awards">Награды:{{ user.animal.awards }}</p>
-          <p v-if="user.animal.vaccination" >Прививки:{{ user.animal.vaccination }}</p>
-          <p v-if="user.animal.date">Возможный период случки:{{ user.animal.date }}</p>
-          <p v-if="user.animal.matingConditions">Условие вязки:{{ user.animal.matingConditions }}</p>
+          <p>Пол:{{ user?user.animal.male:null }}</p>
+          <p>Порода:{{ user?user.animal.breed:null }}</p>
+          <p>Город:{{ user?user.profile.city:null }}</p>
+          <p v-if="user&&user.profile.hood && user.profile.seenFlags.seenHoodFlag">
+            Район:{{ user?user.profile.hood:null }}
+          </p>
+          <p v-if="user&&user.animal.color">Окрас:{{ user.animal.color }}</p>
+          <p v-if="user&&user.animal.awards">Награды:{{ user.animal.awards }}</p>
+          <p v-if="user&&user.animal.vaccination">
+            Прививки:{{ user.animal.vaccination }}
+          </p>
+          <p v-if="user&&user.animal.dateMating">
+            Возможный период случки:{{ user.animal.dateMating }}
+          </p>
+          <p v-if="user&&user.animal.matingConditions">
+            Условие вязки:{{ user.animal.matingConditions }}
+          </p>
           <p>
-            Контактные данные:{{ user.profile.name }},{{
-              user.profile.seenFlags.seenTelFlag ? user.profile.tel : ""
+            Контактные данные:{{ user?user.profile.name:null }},{{
+              user&&user.profile.seenFlags.seenTelFlag ? user.profile.tel : ""
             }}
-            {{ user.profile.mail }}
+            {{ user?user.profile.mail:null }}
           </p>
         </div>
       </div>
-      <div class="main-right" v-show="urls" >
+      <div class="main-right" v-show="urls">
         <div class="main-right__photos" @click="сheckPhotos($event)">
           <div class="photo__LU">
-            <div class="LU__UP photo" v-show="urls[0]" >
-              <img :src="urls[0]" name="0" />
+            <div class="LU__UP photo" v-show="urls&&urls[0]">
+              <img :src="urls?urls[0]:null" name="0" v-show="urls&&urls[0]" />
             </div>
             <div class="LU__DOWN">
               <div class="LU__DOWN_left">
                 <div class="LU__DOWN_left_1 photo">
-                  <img :src="urls[6]" alt="" name="6" v-show="urls[6]" />
+                  <img :src="urls?urls[6]:null" alt="" name="6" v-show="urls&&urls[6]" />
                 </div>
                 <div class="LU__DOWN_left_2 photo">
-                  <img :src="urls[8]" alt="" name="8" v-show="urls[8]" />
+                  <img :src="urls?urls[8]:null" alt="" name="8" v-show="urls&&urls[8]" />
                 </div>
                 <div class="LU__DOWN_left_3 photo">
-                  <img :src="urls[10]" name="10" v-show="urls[10]" />
+                  <img :src="urls?urls[10]:null" name="10" v-show="urls&&urls[10]" />
                 </div>
               </div>
               <div class="LU__DOWN_right">
                 <div class="LU__DOWN_right_1 photo">
-                  <img :src="urls[2]" name="2" alt="" v-show="urls[2]" />
+                  <img :src="urls?urls[2]:null" name="2" alt="" v-show="urls&&urls[2]" />
                 </div>
                 <div class="LU__DOWN_right_2 photo">
-                  <img :src="urls[4]" name="4" alt="" v-show="urls[4]" />
+                  <img :src="urls?urls[4]:null" name="4" alt="" v-show="urls&&urls[4]" />
                 </div>
               </div>
             </div>
@@ -70,26 +79,26 @@
             <div class="RU__UP">
               <div class="RU__UP_left">
                 <div class="RU__UP_left_1 photo">
-                  <img :src="urls[3]" name="3" alt="" v-show="urls[3]" />
+                  <img :src="urls?urls[3]:null" name="3" alt="" v-show="urls&&urls[3]" />
                 </div>
                 <div class="RU__UP_left_2 photo">
-                  <img :src="urls[5]" name="5" alt="" v-show="urls[5]" />
+                  <img :src="urls?urls[5]:null" name="5" alt="" v-show="urls&&urls[5]" />
                 </div>
               </div>
               <div class="RU__UP_right">
                 <div class="RU__UP_right_1 photo">
-                  <img :src="urls[7]" name="7" alt="" v-show="urls[7]" />
+                  <img :src="urls?urls[7]:null" name="7" alt="" v-show="urls&&urls[7]" />
                 </div>
                 <div class="RU__UP_right_2 photo">
-                  <img :src="urls[9]" name="9" alt="" v-show="urls[9]" />
+                  <img :src="urls?urls[9]:null" name="9" alt="" v-show="urls&&urls[9]" />
                 </div>
                 <div class="RU__UP_right_3 photo">
-                  <img :src="urls[11]" name="11" alt="" v-show="urls[11]" />
+                  <img :src="urls?urls[11]:null" name="11" alt="" v-show="urls&&urls[11]" />
                 </div>
               </div>
             </div>
             <div class="RU__DOWN photo">
-              <img :src="urls[1]" name="1" alt="" v-show="urls[1]" />
+              <img :src="urls?urls[1]:null" name="1" alt="" v-show="urls&&urls[1]" />
             </div>
           </div>
         </div>
@@ -104,9 +113,9 @@
 import Modal from "./Modal.vue";
 export default {
   name: "ProfileScreen",
-  components:{Modal},
+  components: { Modal },
   props: {
-    user: Object,
+    user: {type:Object,require:true}
   },
   data() {
     return {
@@ -114,46 +123,29 @@ export default {
       modalPhoto: false,
     };
   },
- 
+
   methods: {
     сheckPhotos(e) {
       // console.log('check',e)
-      if (!e?.target.name) {
+      if (!e?.target?.name) {
         return;
       }
-      // const modal = this.$refs.modal;
 
-      // const img = document.createElement("img");
-      // img.style.height = "90vh";
-      // img.style.maxWidth = "80vw";
-      // img.style.border = "1px solid black";
-      // img.style.borderRadius = "5px";
-      // console.log(e.target.name)
       this.url = this.urls[e.target.name];
-      // modal.style.zIndex = "1000";
-      // modal.prepend(img);
+
       this.modalPhoto = true;
-      // console.log(this.url);
     },
 
     cancelModal() {
-      // const modal = this.$refs.modal;
-      // const img = modal.getElementsByTagName("img");
-
-      // //  console.log(img)
-
       this.modalPhoto = false;
-      // Array.from(img).forEach((el) => {
-      //   el.remove();
-      // });
     },
   },
   computed: {
     pluralize() {
       let res;
-      if (this.user.animal.age>1&&this.user.animal.age<5) {
+      if (this.user?.animal?.age > 1 && this.user?.animal?.age < 5) {
         res = "года";
-      } else if (this.user.animal.age == 1) {
+      } else if (this.user?.animal?.age == 1) {
         res = "год";
       } else {
         res = "лет";
@@ -162,11 +154,11 @@ export default {
     },
 
     urls() {
-      if (!this.user.photoUrl?.length) {
+      if (!this.user?.photoUrl?.length) {
         return null;
       }
       const urls = [];
-      this.user.photoUrl?.forEach((u) => {
+      this.user?.photoUrl?.forEach((u) => {
         urls.push("http://localhost:5000/" + u);
       });
 
@@ -222,7 +214,7 @@ export default {
 .main {
   display: flex;
   width: 90vw;
-  max-height: 65vh;
+  height: 65vh;
   justify-content: start;
   align-items: center;
 }
@@ -383,7 +375,7 @@ export default {
   /* margin-top: 1rem; */
   /* margin-bottom: 1rem; */
   position: absolute;
-  bottom:0.5rem;
+  bottom: 0.5rem;
   display: flex;
   width: 100vw;
   height: auto;

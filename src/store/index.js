@@ -6,11 +6,11 @@ export default new Vuex.Store({
   state: {
     user: {
       animal: {
-        typeAnimal: "",
-        male: "",
+        typeAnimal: null,
+        male: null,
         age: null,
-        breed: "",
-        name: "",
+        breed: null,
+        name: null,
         dateMating: null,
         awards: null,
         vaccination: null,

@@ -44,10 +44,10 @@ export default {
         .filter((el) => el.includes("access_token"));
 
       if (!token || token.length <= 0 || token[0].split("=")[1] === "null") {
-        console.log('autentificate false')
+       
         return false;
       }
-      console.log('autentificate true')
+    
       return true;
     },
     user() {
@@ -119,7 +119,7 @@ export default {
       //  const headers={
       // 'Content-Type': 'multipart/form-data'}
       const PhotoArray = [...this.user.photoAnimal];
-      console.log(PhotoArray);
+      // console.log(PhotoArray);
       let formData = new FormData();
       PhotoArray.forEach((photo, ind) => {
         formData.append(`file[${ind}]`, photo);
@@ -314,19 +314,19 @@ export default {
     },
   },
   async mounted() {
-    if (this.$route.name !== "start") {
-      this.$router.push({ name: "start" });
-    }
+    
     if (this.isAutentificate||this.autohorized) {
       try {
         console.log("cookie:", document.cookie);
         await this.getAuthUser();
+        console.log('user get from server')
         setTimeout(() => {
+          console.log('rout to profile')
           this.$router.push({
             name: "profile",
             params: { user: this.user, selectedCity: this.selectedCity },
           });
-        }, 1000);
+        }, 500);
       } catch (e) {
         console.log("error", e);
       }
@@ -350,8 +350,12 @@ export default {
       }
     }
   },
-  created() {},
-  beforeDestroy() {},
+  created() {
+    if (this.$route.name !== "start") {
+      this.$router.push({ name: "start" });
+    }
+  },
+  
 };
 </script>
 <style lang="scss" scoped>

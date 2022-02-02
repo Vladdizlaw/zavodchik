@@ -17,7 +17,7 @@
               <settings-button @settings="settings"/>
             </template>
             <template #center>
-              <trial-block :startTrial="user.animal.startTrial" />
+              <trial-block :startTrial="user?user.animal.startTrial:null" />
             </template>
             <template #right>
               <logout-button  @logout="logout"/>
@@ -30,7 +30,6 @@
 <script>
 import ProfileScreen from "./ProfileScreen.vue";
 import Header from "./Header.vue"
-
 import SettingsButton from "./SettingsButton.vue";
 import SearchButton from "./SearchButton.vue";
 import LogoutButton from "./LogoutButton.vue";
@@ -39,8 +38,8 @@ export default {
   name: "ProfileUserScreen",
   components:{ProfileScreen,SettingsButton,SearchButton,TrialBlock,LogoutButton,Header},
   props: {
-    user:{type:Object, require:true},
-    selectedCity:{type:Array, require:true}
+    user:Object,
+    selectedCity:Array, 
   },
   data() {
     return {
