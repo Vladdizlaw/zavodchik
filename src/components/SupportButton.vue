@@ -1,5 +1,5 @@
 <template>
-  <div class="supportbutton">
+  <div class="supportbutton" @click="callSupport">
     <img src="../assets/support.svg" alt="" />
     <p>Поддержка</p>
   </div>

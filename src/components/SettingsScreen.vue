@@ -6,6 +6,19 @@
       cat: user.animal.typeAnimal == 'cat',
     }"
   >
+    <Modal ref="supportModal">
+      <template #content>
+        <div class="modal-warning">
+          <p class="modal-warning_title">Опишите суть проблемы</p>
+          <textarea
+            class="modal-warning_input"
+            type="textarea"
+            v-model="msgToSupport"
+          ></textarea>
+          <button class="modal-warning_button" @click="sendToSupport">отправить в поддержку</button>
+        </div>
+      </template>
+    </Modal>
     <section class="settings-common" v-if="state == 'start'">
       <Header>
         <template #left>
@@ -36,7 +49,7 @@
       <div class="footer">
         <Header>
           <template #left>
-            <support-button />
+            <support-button @support="getSupportWindow" />
           </template>
           <template #right>
             <logout-button @logout="logout" />
@@ -157,7 +170,7 @@
       <div class="footer">
         <Header>
           <template #left>
-            <support-button />
+            <support-button @support="getSupportWindow" />
           </template>
           <template #right>
             <logout-button @logout="logout" />
@@ -233,7 +246,7 @@
       <div class="footer">
         <Header>
           <template #left>
-            <support-button />
+            <support-button @support="getSupportWindow" />
           </template>
           <template #right>
             <logout-button @logout="logout" />
@@ -263,70 +276,99 @@
           <div class="personal_data">
             <div
               class="personal_data_checkbox"
-              @click="noticeBreed.value = !(noticeBreed.value)"
+              @click="noticeBreed.value = !noticeBreed.value"
               :class="{ checked: noticeBreed.value }"
             ></div>
             <div class="personal_data_text">
               <p>Уведомлять о новых пользователях такой же породы</p>
             </div>
           </div>
-          <div class="personal_data_inner" :class="{enabled:noticeBreed.value}">
+          <div
+            class="personal_data_inner"
+            :class="{ enabled: noticeBreed.value }"
+          >
             <div
               class="personal_data_checkbox"
-              @click="noticeBreed.value?noticeBreed.mail = !noticeBreed.mail:null"
+              @click="
+                noticeBreed.value
+                  ? (noticeBreed.mail = !noticeBreed.mail)
+                  : null
+              "
               :class="{ checked: noticeBreed.mail }"
             ></div>
             <div class="personal_data_text">
               <p>По e-mail</p>
             </div>
-          </div><div class="personal_data_inner" :class="{enabled:noticeBreed.value}">
+          </div>
+          <div
+            class="personal_data_inner"
+            :class="{ enabled: noticeBreed.value }"
+          >
             <div
               class="personal_data_checkbox"
-              @click="noticeBreed.value?noticeBreed.push = !noticeBreed.push:null"
+              @click="
+                noticeBreed.value
+                  ? (noticeBreed.push = !noticeBreed.push)
+                  : null
+              "
               :class="{ checked: noticeBreed.push }"
             ></div>
             <div class="personal_data_text">
               <p>С помощью push-уведомлений</p>
             </div>
           </div>
-
         </div>
         <div class="wrapper-right_noticed">
-           <div class="personal_data">
+          <div class="personal_data">
             <div
               class="personal_data_checkbox"
-              @click="noticeMatingDate.value = !(noticeMatingDate.value)"
+              @click="noticeMatingDate.value = !noticeMatingDate.value"
               :class="{ checked: noticeMatingDate.value }"
             ></div>
             <div class="personal_data_text">
               <div><p>Уведомлять о новых периодах для случки</p></div>
             </div>
           </div>
-          <div class="personal_data_inner" :class="{enabled:noticeMatingDate.value}">
+          <div
+            class="personal_data_inner"
+            :class="{ enabled: noticeMatingDate.value }"
+          >
             <div
               class="personal_data_checkbox"
-              @click="noticeMatingDate.value?noticeMatingDate.mail = !noticeMatingDate.mail:null"
+              @click="
+                noticeMatingDate.value
+                  ? (noticeMatingDate.mail = !noticeMatingDate.mail)
+                  : null
+              "
               :class="{ checked: noticeMatingDate.mail }"
             ></div>
             <div class="personal_data_text">
               <div><p>По e-mail</p></div>
             </div>
-          </div><div class="personal_data_inner" :class="{enabled:noticeMatingDate.value}">
+          </div>
+          <div
+            class="personal_data_inner"
+            :class="{ enabled: noticeMatingDate.value }"
+          >
             <div
               class="personal_data_checkbox"
-              @click="noticeMatingDate.value?noticeMatingDate.push = !noticeMatingDate.push:null"
-              :class="{ checked:noticeMatingDate.push }"
+              @click="
+                noticeMatingDate.value
+                  ? (noticeMatingDate.push = !noticeMatingDate.push)
+                  : null
+              "
+              :class="{ checked: noticeMatingDate.push }"
             ></div>
             <div class="personal_data_text">
               <div><p>С помощью push-уведомлений</p></div>
             </div>
-            </div>
+          </div>
         </div>
       </div>
       <div class="footer">
         <Header>
           <template #left>
-            <support-button />
+            <support-button @support="getSupportWindow" />
           </template>
           <template #right>
             <logout-button @logout="logout" />
@@ -342,6 +384,7 @@ import BackButton from "./BackButton.vue";
 import SaveChangesButton from "./SaveChangesButton.vue";
 import SupportButton from "./SupportButton.vue";
 import LogoutButton from "./LogoutButton.vue";
+import Modal from "./Modal.vue";
 export default {
   name: "SettingsScreen",
   components: {
@@ -350,6 +393,7 @@ export default {
     SaveChangesButton,
     SupportButton,
     LogoutButton,
+    Modal,
   },
   props: { user: Object, selectedCity: Array },
   data() {
@@ -358,11 +402,19 @@ export default {
       seenTelFlag: true,
       seenHoodFlag: true,
       seenHoodHelpMessage: "",
-      noticeBreed: {value:false,mail:false,push:false},
-      noticeMatingDate: {value:false,mail:false,push:false},
+      noticeBreed: { value: false, mail: false, push: false },
+      noticeMatingDate: { value: false, mail: false, push: false },
+      msgToSupport: "",
     };
   },
   methods: {
+    sendToSupport(){
+
+    },
+    getSupportWindow() {
+      this.msgToSupport = "";
+      this.$refs.supportModal.openModal();
+    },
     logout() {
       this.$emit("logout", null);
     },
@@ -415,23 +467,25 @@ export default {
       }
     },
   },
-  watch:{
-    'noticeBreed.value'(val){
-      if (!val){
-      this.noticeBreed.mail=false
-      this.noticeBreed.push=false
-    }
-  },
-  'noticeMatingDate.value'(val){
-      if (!val){
-      this.noticeMatingDate.mail=false
-      this.noticeMatingDate.push=false
-    }
-  },
+  watch: {
+    "noticeBreed.value"(val) {
+      if (!val) {
+        this.noticeBreed.mail = false;
+        this.noticeBreed.push = false;
+      }
+    },
+    "noticeMatingDate.value"(val) {
+      if (!val) {
+        this.noticeMatingDate.mail = false;
+        this.noticeMatingDate.push = false;
+      }
+    },
   },
 
   computed: {},
   mounted() {
+    this.noticeBreed = this.user?.noticeBreed;
+    this.noticeMatingDate = this.user?.noticeMatingDate;
     this.seenHoodFlag = this.user.profile.seenFlags?.seenHoodFlag;
     this.seenTelFlag = this.user.profile.seenFlags?.seenTelFlag;
   },
@@ -569,7 +623,7 @@ export default {
   &_noticed {
     @extend %flex-type;
     align-items: center;
-    justify-content: space-between ;
+    justify-content: space-between;
     max-height: 50%;
     width: 100%;
   }
@@ -698,7 +752,7 @@ option {
     align-items: center;
     justify-content: start;
     gap: 1rem;
-    margin-left:5rem;
+    margin-left: 5rem;
     width: 29%;
     flex-wrap: nowrap;
     opacity: 0.6;
@@ -727,7 +781,7 @@ option {
   // width: 9em;
   display: flex;
   // position: relative;
-  height:5.5rem;
+  height: 5.5rem;
 }
 
 .checked {
@@ -736,7 +790,51 @@ option {
   background-size: 90%;
   background-repeat: no-repeat;
 }
-.enabled{
+.enabled {
   opacity: 1;
+}
+.modal-warning {
+  width: 50vw;
+  height: 100%;
+  border: 1px solid black;
+  @extend %flex-type;
+  align-items: center;
+  background: url("../assets/cover1.png");
+  background-position: center;
+  background-size: cover;
+  overflow: hidden;
+
+  &_input {
+    width: 70%;
+    height: 55%;
+    border-radius: 5px;
+    font-size: 1.5rem;
+    padding: 0.5rem 0.5rem 0.5rem 0.5rem;
+  }
+  &_button {
+    width: 10rem; 
+    background-image:  url("../assets/cover_dog.png");
+    border: 1px solid #000000;
+    box-sizing: border-box;
+    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))
+      drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))
+      drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+    border-radius: 25px 0px;
+    transform: matrix(1, 0, 0, 1, 0, 0);
+    font-family: Amatic SC;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 1.5rem;
+   
+    &:hover {
+      filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.5))
+        drop-shadow(10px 10px 4px rgba(9, 112, 7, 0.75));
+    }
+    &:active{
+       filter: drop-shadow(0px 4px 4px rgba(39, 33, 33, 0.5))
+        drop-shadow(10px 10px 4px rgba(4, 24, 4, 0.75));
+
+    }
+  }
 }
 </style>

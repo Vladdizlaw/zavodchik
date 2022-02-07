@@ -1,12 +1,7 @@
 <template>
   <transition name="bounce">
-    <div 
-      class="modal"
-     
-      @click="cancelModal"
-      v-show="flag"
-    >
-      <div ref="content" class="content"  >
+    <div class="modal" @click="cancelModal($event)" v-show="isOpen">
+      <div ref="content" class="content">
         <slot name="content"> </slot>
       </div>
     </div>
@@ -15,28 +10,58 @@
 <script>
 export default {
   name: "Modal",
-  props: { flag: Boolean },
+  // props: { flag: Boolean },
   data() {
     return {
-      // modalPhoto:false
+      isOpen: false,
     };
   },
+  modalController: null,
   methods: {
-    cancelModal() {
-      this.$emit("cancelModal", null);
-      // this.flag=false
+    openModal() {
+      let resolve;
+      let reject;
+
+      const promiseModal = new Promise((ok, cancel) => {
+        resolve = ok;
+        reject = cancel;
+      });
+      this.$options.modalController = { resolve, reject };
+      this.isOpen = true;
+      console.log(this.$options.modalController)
+      return promiseModal;
     },
-    cancelEsc(e){
-       e.key=='Escape'?this.cancelModal():null
-    }
+    cancelModal(e) {
+      let res=e.path.filter(el=>el.classList=="content")
+
+      console.log(res)
+      if (res.length!==0) {
+        
+        return
+      } else {
+        console.log(e.path)
+        this.$options.modalController.resolve(false);
+        this.isOpen = false;
+      }
+    },
+    cancelEsc(e) {
+      if (e.key == "Escape") {
+        this.$options.modalController.resolve(false);
+        this.isOpen = false;
+      }
+    },
+    confirm() {
+      console.log('modal confirm')
+      this.$options.modalController.resolve(true);
+      this.isOpen = false;
+    },
   },
-  mounted(){
-    document.addEventListener('keydown',this.cancelEsc)
+  mounted() {
+    document.addEventListener("keydown", this.cancelEsc);
   },
-  beforeDestroy(){
-    document.removeEventListener('keydown',this.cancelEsc)
-  }
-  
+  beforeDestroy() {
+    document.removeEventListener("keydown", this.cancelEsc);
+  },
 };
 </script>
 <style scoped>

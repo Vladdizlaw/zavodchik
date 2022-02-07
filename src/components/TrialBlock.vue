@@ -23,7 +23,7 @@ export default {
     lastTrialTime() {
       const timestampNow = Date.now();
       let result = Math.round(
-        (this.startTrial?.dateEnd - timestampNow) / 5184000
+        (this.startTrial?.dateEnd - timestampNow) / 86_400_000 
       );
       return result;
     },
@@ -44,7 +44,7 @@ export default {
     width:6rem;
   border: 1px solid #000000;
   box-sizing: border-box;
-   transition: 0.3s;
+  transition: 0.3s;
   border-radius: 15px 0px;
   padding: 0 1em 0 1em;
   background: transparent;

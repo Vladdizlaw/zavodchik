@@ -2,11 +2,11 @@
   <div
     class="wrapper"
     :class="{
-      dog: this.user&&this.user.animal.typeAnimal == 'dog',
-      cat:this.user&&this.user.animal.typeAnimal == 'cat',
+      dog: this.user && this.user.animal.typeAnimal == 'dog',
+      cat: this.user && this.user.animal.typeAnimal == 'cat',
     }"
   >
-    <Modal :flag="modalPhoto" @cancelModal="cancelModal">
+    <Modal ref="modal">
       <template #content>
         <img :src="url" class="image" alt="" />
       </template>
@@ -18,58 +18,95 @@
     <div class="main">
       <div class="main-left">
         <div class="main-left__name">
-          <p>{{ user?user.animal.name:null }}, {{ user?user.animal.age:null }} {{ pluralize }}</p>
+          <p>
+            {{ user ? user.animal.name : null }},
+            {{ user ? user.animal.age : null }} {{ pluralize }}
+          </p>
         </div>
         <div class="main-left__data">
-          <p>Пол:{{ user?user.animal.male:null }}</p>
-          <p>Порода:{{ user?user.animal.breed:null }}</p>
-          <p>Город:{{ user?user.profile.city:null }}</p>
-          <p v-if="user&&user.profile.hood && user.profile.seenFlags.seenHoodFlag">
-            Район:{{ user?user.profile.hood:null }}
+          <p>Пол:{{ user ? user.animal.male : null }}</p>
+          <p>Порода:{{ user ? user.animal.breed : null }}</p>
+          <p>Город:{{ user ? user.profile.city : null }}</p>
+          <p
+            v-if="
+              user && user.profile.hood && user.profile.seenFlags.seenHoodFlag
+            "
+          >
+            Район:{{ user ? user.profile.hood : null }}
           </p>
-          <p v-if="user&&user.animal.color">Окрас:{{ user.animal.color }}</p>
-          <p v-if="user&&user.animal.awards">Награды:{{ user.animal.awards }}</p>
-          <p v-if="user&&user.animal.vaccination">
+          <p v-if="user && user.animal.color">Окрас:{{ user.animal.color }}</p>
+          <p v-if="user && user.animal.awards">
+            Награды:{{ user.animal.awards }}
+          </p>
+          <p v-if="user && user.animal.vaccination">
             Прививки:{{ user.animal.vaccination }}
           </p>
-          <p v-if="user&&user.animal.dateMating">
+          <p v-if="user && user.animal.dateMating">
             Возможный период случки:{{ user.animal.dateMating }}
           </p>
-          <p v-if="user&&user.animal.matingConditions">
+          <p v-if="user && user.animal.matingConditions">
             Условие вязки:{{ user.animal.matingConditions }}
           </p>
           <p>
-            Контактные данные:{{ user?user.profile.name:null }},{{
-              user&&user.profile.seenFlags.seenTelFlag ? user.profile.tel : ""
+            Контактные данные:{{ user ? user.profile.name : null }},{{
+              user && user.profile.seenFlags.seenTelFlag ? user.profile.tel : ""
             }}
-            {{ user?user.profile.mail:null }}
+            {{ user ? user.profile.mail : null }}
           </p>
         </div>
       </div>
       <div class="main-right" v-show="urls">
         <div class="main-right__photos" @click="сheckPhotos($event)">
           <div class="photo__LU">
-            <div class="LU__UP photo" v-show="urls&&urls[0]">
-              <img :src="urls?urls[0]:null" name="0" v-show="urls&&urls[0]" />
+            <div class="LU__UP photo" v-show="urls && urls[0]">
+              <img
+                :src="urls ? urls[0] : null"
+                name="0"
+                v-show="urls && urls[0]"
+              />
             </div>
             <div class="LU__DOWN">
               <div class="LU__DOWN_left">
                 <div class="LU__DOWN_left_1 photo">
-                  <img :src="urls?urls[6]:null" alt="" name="6" v-show="urls&&urls[6]" />
+                  <img
+                    :src="urls ? urls[6] : null"
+                    alt=""
+                    name="6"
+                    v-show="urls && urls[6]"
+                  />
                 </div>
                 <div class="LU__DOWN_left_2 photo">
-                  <img :src="urls?urls[8]:null" alt="" name="8" v-show="urls&&urls[8]" />
+                  <img
+                    :src="urls ? urls[8] : null"
+                    alt=""
+                    name="8"
+                    v-show="urls && urls[8]"
+                  />
                 </div>
                 <div class="LU__DOWN_left_3 photo">
-                  <img :src="urls?urls[10]:null" name="10" v-show="urls&&urls[10]" />
+                  <img
+                    :src="urls ? urls[10] : null"
+                    name="10"
+                    v-show="urls && urls[10]"
+                  />
                 </div>
               </div>
               <div class="LU__DOWN_right">
                 <div class="LU__DOWN_right_1 photo">
-                  <img :src="urls?urls[2]:null" name="2" alt="" v-show="urls&&urls[2]" />
+                  <img
+                    :src="urls ? urls[2] : null"
+                    name="2"
+                    alt=""
+                    v-show="urls && urls[2]"
+                  />
                 </div>
                 <div class="LU__DOWN_right_2 photo">
-                  <img :src="urls?urls[4]:null" name="4" alt="" v-show="urls&&urls[4]" />
+                  <img
+                    :src="urls ? urls[4] : null"
+                    name="4"
+                    alt=""
+                    v-show="urls && urls[4]"
+                  />
                 </div>
               </div>
             </div>
@@ -79,26 +116,56 @@
             <div class="RU__UP">
               <div class="RU__UP_left">
                 <div class="RU__UP_left_1 photo">
-                  <img :src="urls?urls[3]:null" name="3" alt="" v-show="urls&&urls[3]" />
+                  <img
+                    :src="urls ? urls[3] : null"
+                    name="3"
+                    alt=""
+                    v-show="urls && urls[3]"
+                  />
                 </div>
                 <div class="RU__UP_left_2 photo">
-                  <img :src="urls?urls[5]:null" name="5" alt="" v-show="urls&&urls[5]" />
+                  <img
+                    :src="urls ? urls[5] : null"
+                    name="5"
+                    alt=""
+                    v-show="urls && urls[5]"
+                  />
                 </div>
               </div>
               <div class="RU__UP_right">
                 <div class="RU__UP_right_1 photo">
-                  <img :src="urls?urls[7]:null" name="7" alt="" v-show="urls&&urls[7]" />
+                  <img
+                    :src="urls ? urls[7] : null"
+                    name="7"
+                    alt=""
+                    v-show="urls && urls[7]"
+                  />
                 </div>
                 <div class="RU__UP_right_2 photo">
-                  <img :src="urls?urls[9]:null" name="9" alt="" v-show="urls&&urls[9]" />
+                  <img
+                    :src="urls ? urls[9] : null"
+                    name="9"
+                    alt=""
+                    v-show="urls && urls[9]"
+                  />
                 </div>
                 <div class="RU__UP_right_3 photo">
-                  <img :src="urls?urls[11]:null" name="11" alt="" v-show="urls&&urls[11]" />
+                  <img
+                    :src="urls ? urls[11] : null"
+                    name="11"
+                    alt=""
+                    v-show="urls && urls[11]"
+                  />
                 </div>
               </div>
             </div>
             <div class="RU__DOWN photo">
-              <img :src="urls?urls[1]:null" name="1" alt="" v-show="urls&&urls[1]" />
+              <img
+                :src="urls ? urls[1] : null"
+                name="1"
+                alt=""
+                v-show="urls && urls[1]"
+              />
             </div>
           </div>
         </div>
@@ -115,17 +182,17 @@ export default {
   name: "ProfileScreen",
   components: { Modal },
   props: {
-    user: {type:Object,require:true}
+    user: { type: Object, require: true },
   },
   data() {
     return {
       url: null,
-      modalPhoto: false,
+      // modalPhoto: false,
     };
   },
 
   methods: {
-    сheckPhotos(e) {
+    async сheckPhotos(e) {
       // console.log('check',e)
       if (!e?.target?.name) {
         return;
@@ -133,11 +200,11 @@ export default {
 
       this.url = this.urls[e.target.name];
 
-      this.modalPhoto = true;
+      await this.$refs.modal.openModal();
     },
 
     cancelModal() {
-      this.modalPhoto = false;
+      this.$refs.modal.closeModal();
     },
   },
   computed: {

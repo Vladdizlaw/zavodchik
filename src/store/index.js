@@ -16,9 +16,7 @@ export default new Vuex.Store({
         vaccination: null,
         color: null,
         matingConditions: null,
-
         licenseAgreement: false,
-
         startTrial: {
           value: false,
           date: null,
@@ -29,6 +27,9 @@ export default new Vuex.Store({
       id: null,
       location: null,
       token: null,
+      noticeBreed: {value:false,mail:false,push:false},
+      noticeMatingDate: {value:false,mail:false,push:false},
+
       photoAnimal: [],
       photoUrl: [],
       profile: {
