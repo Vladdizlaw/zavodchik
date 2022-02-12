@@ -409,6 +409,8 @@ export default {
   },
   methods: {
     sendToSupport(){
+      console.log(this.msgToSupport)
+      this.$refs.supportModal.confirm();
 
     },
     getSupportWindow() {

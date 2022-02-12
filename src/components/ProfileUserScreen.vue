@@ -34,6 +34,7 @@ import SettingsButton from "./SettingsButton.vue";
 import SearchButton from "./SearchButton.vue";
 import LogoutButton from "./LogoutButton.vue";
 import TrialBlock from "./TrialBlock.vue";
+import { sendPush, requestPermissionNotification } from "../api.js";
 export default {
   name: "ProfileUserScreen",
   components:{ProfileScreen,SettingsButton,SearchButton,TrialBlock,LogoutButton,Header},
@@ -67,6 +68,11 @@ export default {
   computed: {
    
   },  
+  async mounted(){
+     await requestPermissionNotification()
+        await sendPush()
+
+  }
 };
 </script>
 <style scoped>
