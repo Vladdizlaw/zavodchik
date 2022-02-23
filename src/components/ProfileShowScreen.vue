@@ -1,5 +1,19 @@
 <template>
   <profile-screen :user="showedUser">
+    <template #modalAnother>
+      <Modal ref="modalChat">
+        <template #content>
+          <chat-modal
+            ref="chat"
+            :name="showedUser.profile.name"
+            :idOpponent="showedUser.profile.id"
+            :chat="chatCurrent"
+            :idSelf="userSelf.profile.id"
+            @sendMessage="sendToShowedUser"
+          />
+        </template>
+      </Modal>
+    </template>
     <template #header>
       <Header>
         <template #left>
@@ -11,12 +25,15 @@
         </template>
       </Header>
     </template>
+
     <template #footer>
       <profiles-switcher
         @previous="previousProfile"
         @next="nextProfile"
+        @clickCenter="openChat"
         :typeAnimal="showedUser.animal.typeAnimal"
-      />
+      >
+      </profiles-switcher>
     </template>
   </profile-screen>
 </template>
@@ -27,7 +44,9 @@ import ProfileButton from "./ProfileButton.vue";
 // import SettingsButton from "./SettingsButton.vue";
 import BackButton from "./BackButton.vue";
 import ProfilesSwitcher from "./ProfilesSwitcher.vue";
-
+import Modal from "./Modal.vue";
+import ChatModal from "./ChatModal.vue";
+import Axios from "axios";
 // import TrialBlock from "./TrialBlock.vue";
 export default {
   name: "ProfileUserScreen",
@@ -37,19 +56,86 @@ export default {
     ProfileButton,
     BackButton,
     ProfilesSwitcher,
+    Modal,
+    ChatModal,
   },
   props: {
     user: { type: Object, require: true },
-    users: Array,
+    users: { type: Array },
+    userSelf: { type: Object },
   },
   data() {
     return {
       showedUser: null,
       indexInUsers: null,
+      chatsData: [],
+      chatCurrent: null,
+      idCurrentChat: null,
     };
   },
 
   methods: {
+    async openChat() {
+      const headers = {
+        "Content-Type": "application/json",
+      };
+      this.$refs.chat.clearScreen()
+      const idChat = `${this.userSelf.profile.id}#${this.showedUser.profile.id}`;
+
+      if (this.userSelf.chats.includes(idChat)) {
+        console.log("cht found", idChat);
+        const { data } = await Axios.post(
+          `http://localhost:5000/api/chat/get_chat/`,
+          { chatId: idChat },
+          {
+            headers: headers,
+          }
+        );
+        this.idCurrentChat = idChat;
+        this.chatCurrent = data;
+        console.log("userchat in self", this.chatCurrent);
+      } else {
+        console.log(
+          `cht not found ${this.userSelf.profile.id}#${this.showedUser.profile.id}`
+        );
+        const { data } = await Axios.get(
+          `http://localhost:5000/api/chat/create_chat/${this.userSelf.profile.id}/${this.showedUser.profile.id}`,
+          {
+            headers: headers,
+          }
+        );
+        this.idCurrentChat = data.chatId;
+        this.chatCurrent = data;
+      }
+      console.log("chatCurrent", this.chatCurrent);
+      this.$refs.modalChat.openModal();
+    },
+    async sendToShowedUser(value) {
+      const headers = {
+        "Content-Type": "application/json",
+      };
+
+      await Axios.post(
+        `http://localhost:5000/api/chat/post_message`,
+        {
+          chatId: this.idCurrentChat,
+          author: this.userSelf.profile.id,
+          msg: value.msg,
+        },
+        {
+          headers: headers,
+        }
+      );
+      let payload = this.userSelf.chats;
+      payload.push(this.idCurrentChat);
+      payload = [...new Set(payload)];
+      console.log("adding to user", payload);
+
+      this.$store.commit("SAVE_USER", { chats: payload });
+      this.$emit("updateUser", payload);
+     
+      
+    },
     back() {
       this.$emit("back", null);
     },
@@ -80,13 +166,21 @@ export default {
     },
   },
   computed: {},
-  beforeMount() {
+  async beforeMount() {
     this.showedUser = this.user;
     console.log("showedUser", this.showedUser);
+    
   },
 };
 </script>
-<style scoped>
+<style lang="scss" scoped>
+%flex-type {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: start;
+}
+
 .dog {
   background: url("../assets/cover_dog_acc.svg"), url("../assets/cover_dog.png");
   background-position: center, center;

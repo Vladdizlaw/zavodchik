@@ -13,6 +13,7 @@
         @saveProfile="updateProfile"
         @viewDetails="viewDetails"
         @myProfile="getMyProfile"
+        @updateUser="updateUser"
       >
       </router-view>
     </transition>
@@ -20,14 +21,15 @@
 </template>
 
 <script>
+//import Pusher from  'pusher'
 import axios from "axios";
-import {requestPermissionNotification} from "./api.js"
+import { requestPermissionNotification } from "./api.js";
 export default {
   name: "App",
 
   data() {
     return {
-      // state: "start", //CСостояние
+      pusher: null,
       searchParams: {},
       autohorized: false,
       idSelected: false,
@@ -35,7 +37,7 @@ export default {
       substate: null,
       errorStr: null,
       searchUsers: null,
-      permissionNotify:null,
+      permissionNotify: null,
     };
   },
   computed: {
@@ -97,7 +99,7 @@ export default {
       });
     },
     async logout() {
-          const headers = {
+      const headers = {
         "Content-Type": "application/json",
       };
       await axios.get(
@@ -142,6 +144,7 @@ export default {
       this.$store.dispatch("POST_USER", this.user);
     },
     async updateUser() {
+      console.log('userupdated',this.user)
       this.$store.dispatch("UPDATE_USER", this.user);
     },
     async getLocation() {
@@ -208,7 +211,7 @@ export default {
       const { data } = await axios.get(
         `http://localhost:5000/api/get_custom_users/${this.searchParams.animalType}/${this.searchParams.startAge}/${this.searchParams.stopAge}/${this.searchParams.male}/${this.searchParams.breed}/${this.searchParams.awards}/${this.searchParams.place}/${this.searchParams.dateMating}/${this.searchParams.id}`
       );
-      console.log('searchparams id', this.searchParams.id)
+      console.log("searchparams id", this.searchParams.id);
       console.log(data);
       this.searchUsers = data;
       this.idSelected = null;
@@ -251,7 +254,7 @@ export default {
         this.idSelected = data;
         this.$router.push({
           name: "searchResult",
-          params: { user: this.idSelected, users: this.searchUsers },
+          params: { user: this.idSelected, users: this.searchUsers,userSelf:this.user},
         });
       } else {
         this.getSign();
@@ -302,31 +305,49 @@ export default {
     pay() {
       console.log("pay");
     },
-    requestPermission(){
-      
-    }
+    // requestPermission() {},
+    async postMessageToChat(msg) {
+      const headers = {
+        "Content-Type": "application/json",
+      };
+      let { data } = await axios.post(
+        `http://localhost:5000/api/message`,
+        { from: this.user.profile.id, to: "someone", msg: msg },
+        {
+          headers: headers,
+        }
+      );
+      console.log(data);
+    },
   },
+
   async mounted() {
-    this.permissionNotify=await requestPermissionNotification()
-    
-    
-    console.log(this.permissionNotify)
+    this.permissionNotify = await requestPermissionNotification();
+
+    console.log("permission", this.permissionNotify);
 
     if (this.isAutentificate || this.autohorized) {
       try {
-        
         // await sendPush()
 
         console.log("cookie:", document.cookie);
         await this.getAuthUser();
         console.log("user get from server");
+
         setTimeout(async () => {
+
+        //   this.pusher = this.$pusher.subscribe("chat");
+        //   this.pusher.bind("message", (data) => {
+        //     console.log("message channel", data);
+        //   });
+        //   await this.postMessageToChat("Hallo");
+        //   console.log("pusher", this.pusher);
+
           console.log("rout to profile");
           this.$router.push({
             name: "profile",
             params: { user: this.user, selectedCity: this.selectedCity },
           });
-         
         }, 500);
       } catch (e) {
         console.log("error", e);
@@ -344,7 +365,6 @@ export default {
 
     if (!this.isAutentificate) {
       try {
-        
         const city = await this.getCity();
         this.$store.commit("SAVE_USER_PROFILE", { city: city });
       } catch (e) {

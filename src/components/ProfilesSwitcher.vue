@@ -6,9 +6,11 @@
     </div>
     <kinesis-container :duration="300" :perspective="10000">
       <kinesis-element :strength="5" type="depth">
+        <slot></slot> 
         <div
           class="center"
           :class="{ dog: typeAnimal == 'dog', cat: typeAnimal == 'cat' }"
+          @click="clickCenter"
         ></div>
       </kinesis-element>
     </kinesis-container>
@@ -35,6 +37,9 @@ export default {
     getNextProfile() {
       this.$emit("next", null);
     },
+    clickCenter(){
+      this.$emit('clickCenter',null) 
+    }
   },
   mounted() {
     // console.log("switcher:", this.typeAnimal);

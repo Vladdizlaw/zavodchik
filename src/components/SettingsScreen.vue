@@ -805,6 +805,9 @@ option {
   background-position: center;
   background-size: cover;
   overflow: hidden;
+  filter: drop-shadow(0px 10px 10px rgba(0, 0, 0, 0.25))
+      drop-shadow(0px 10px 10px rgba(0, 0, 0, 0.25))
+      drop-shadow(0px 10px 10px rgba(0, 0, 0, 0.25));
 
   &_input {
     width: 70%;
@@ -812,6 +815,9 @@ option {
     border-radius: 5px;
     font-size: 1.5rem;
     padding: 0.5rem 0.5rem 0.5rem 0.5rem;
+    filter: drop-shadow(0px 10px 10px rgba(0, 0, 0, 0.25))
+      drop-shadow(0px 10px 10px rgba(0, 0, 0, 0.25))
+      drop-shadow(0px 10px 10px rgba(0, 0, 0, 0.25));
   }
   &_button {
     width: 10rem; 

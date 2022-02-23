@@ -3,12 +3,18 @@ import App from "./App.vue";
 import VueKinesis from "vue-kinesis";
 import VueRouter from 'vue-router'
 import router from "./router/routes.js"
-
+import pusher from "vue-pusher"
 import Vuex from "vuex";
 import store from './store/index.js'
 Vue.config.productionTip = false;
 Vue.use(VueKinesis);
 Vue.use(VueRouter)
+Vue.use((pusher),{api_key:
+  '0a57b58d03d02819ad2b', options:{
+    cluster: 'eu'
+}
+
+})
 new Vue({
   store,router,
   render: (h) => h(App),

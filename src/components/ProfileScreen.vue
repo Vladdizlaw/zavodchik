@@ -11,11 +11,12 @@
         <img :src="url" class="image" alt="" />
       </template>
     </Modal>
-
+ <slot name="modalAnother"></slot>
     <div class="header">
       <slot name="header"></slot>
     </div>
     <div class="main">
+     
       <div class="main-left">
         <div class="main-left__name">
           <p>

@@ -46,7 +46,7 @@ export default {
     },
     cancelEsc(e) {
       if (e.key == "Escape") {
-        this.$options.modalController.resolve(false);
+        this.$options.modalController?.resolve(false);
         this.isOpen = false;
       }
     },
