@@ -23,7 +23,7 @@
 <script>
 //import Pusher from  'pusher'
 import axios from "axios";
-import { requestPermissionNotification } from "./api.js";
+import { requestPermissionNotification, sendPush ,getPushSubscription} from "./api.js";
 export default {
   name: "App",
 
@@ -38,6 +38,7 @@ export default {
       errorStr: null,
       searchUsers: null,
       permissionNotify: null,
+      subscriptionPush:null,
     };
   },
   computed: {
@@ -333,15 +334,16 @@ export default {
         console.log("cookie:", document.cookie);
         await this.getAuthUser();
         console.log("user get from server");
-
+        this.subscriptionPush= await getPushSubscription()
         setTimeout(async () => {
 
-        //   this.pusher = this.$pusher.subscribe("chat");
-        //   this.pusher.bind("message", (data) => {
-        //     console.log("message channel", data);
-        //   });
-        //   await this.postMessageToChat("Hallo");
-        //   console.log("pusher", this.pusher);
+          this.pusher = this.$pusher.subscribe(`${this.user.profile.id}`);
+          this.pusher.bind("message",async  (data) => {
+            console.log("pusher",data); 
+           await sendPush(this.subscriptionPush,data.message);
+          });
+          // await this.postMessageToChat("Hallo");
+          // console.log("pusher", this.pusher);
 
           console.log("rout to profile");
           this.$router.push({

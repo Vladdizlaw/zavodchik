@@ -10,6 +10,7 @@
             :chat="chatCurrent"
             :idSelf="userSelf.profile.id"
             @sendMessage="sendToShowedUser"
+           
           />
         </template>
       </Modal>
@@ -31,6 +32,7 @@
         @previous="previousProfile"
         @next="nextProfile"
         @clickCenter="openChat"
+       
         :typeAnimal="showedUser.animal.typeAnimal"
       >
       </profiles-switcher>
@@ -47,6 +49,7 @@ import ProfilesSwitcher from "./ProfilesSwitcher.vue";
 import Modal from "./Modal.vue";
 import ChatModal from "./ChatModal.vue";
 import Axios from "axios";
+// import  sendPush from "../api.js"
 // import TrialBlock from "./TrialBlock.vue";
 export default {
   name: "ProfileUserScreen",
@@ -75,6 +78,22 @@ export default {
   },
 
   methods: {
+    async updateChat(e){
+        console.log('chat updated',e.chatId) 
+        const headers = {
+       
+        "Content-Type": "application/json",
+      };
+       const { data } = await Axios.post(
+          `http://localhost:5000/api/chat/get_chat/`,
+          { chatId: e.chatId },
+          {
+            headers: headers,
+          }
+        );
+        
+        this.chatCurrent = data;
+    },
     async openChat() {
       const headers = {
         "Content-Type": "application/json",
@@ -111,21 +130,42 @@ export default {
       this.$refs.modalChat.openModal();
     },
     async sendToShowedUser(value) {
+
+     ///////// 
+     {
       const headers = {
         "Content-Type": "application/json",
       };
-
-      await Axios.post(
-        `http://localhost:5000/api/chat/post_message`,
-        {
-          chatId: this.idCurrentChat,
-          author: this.userSelf.profile.id,
-          msg: value.msg,
-        },
+      let { data } = await Axios.post(
+        `http://localhost:5000/api/message`,
+        { from: this.userSelf.id, to:this.showedUser.id, msg: value.msg },
         {
           headers: headers,
         }
       );
+      
+      console.log(data);
+    //////////////
+
+     }
+ 
+
+      const headers = {
+        "Content-Type": "application/json",
+      };
+      const messageData= {
+          chatId: this.idCurrentChat,
+          author: this.userSelf.profile.id,
+          msg: value.msg,
+        }
+      await Axios.post(
+        `http://localhost:5000/api/chat/post_message`,
+         messageData,
+        {
+          headers: headers,
+        }
+      );
+      // await sendPush( messageData)
       let payload = this.userSelf.chats;
       payload.push(this.idCurrentChat);
       payload = [...new Set(payload)];

@@ -1,14 +1,14 @@
 // import axios from 'axios'
-export function registerServiceWorker() {
-  navigator.serviceWorker.register("/sw.js").then(
-    function(registration) {
-      console.log("ServiceWorker registration successful", registration);
-    },
-    function(err) {
-      console.log("ServiceWorker registration failed: ", err);
-    }
-  );
-}
+// export function registerServiceWorker() {
+//   navigator.serviceWorker.register("/sw.js").then(
+//     function(registration) {
+//       console.log("ServiceWorker registration successful", registration);
+//     },
+//     function(err) {
+//       console.log("ServiceWorker registration failed: ", err);
+//     }
+//   );
+// }
 export async function requestPermissionNotification() {
   const permisionResult = await Notification.requestPermission()
   // console.log('permission',permisionResult)
@@ -59,9 +59,21 @@ export async function subscribeUserToPush() {
 //   }
 //   return outputArray;
 // }
-export async function sendPush() {
+export async function sendPush(subscription,msg) {
     // Register Service Worker
-    const publicVapidKey='BEPqvuktWmX8TmOryua_KvfXb9lLTwV4CwMwSsTBYiet0qnkAYC4Se8R-zFq9_YWUGjKlhjsjiKO96yURd6h1Jc'
+  
+    await fetch("http://localhost:5000/api/subscribe", {
+      method: "POST",
+      body: JSON.stringify({subs:subscription,msg:msg}),
+      headers: {
+        "content-type": "application/json"
+      }
+    });
+    // console.log("Push Sent...",JSON.stringify({subs:subscription,msg:msg}));
+}
+
+export async function getPushSubscription(){
+  const publicVapidKey='BEPqvuktWmX8TmOryua_KvfXb9lLTwV4CwMwSsTBYiet0qnkAYC4Se8R-zFq9_YWUGjKlhjsjiKO96yURd6h1Jc'
     console.log("Registering service worker...");
     const register = await navigator.serviceWorker.register("/sw.js", {
       scope: "/"
@@ -69,7 +81,7 @@ export async function sendPush() {
     console.log("Service Worker Registered...");
   
     // Register Push
-    console.log("Registering Push...");
+    console.log("Registering Push...")
     const subscription = await register.pushManager.subscribe({
       userVisibleOnly: true,
       applicationServerKey:publicVapidKey
@@ -78,14 +90,5 @@ export async function sendPush() {
   
     // Send Push Notification
     console.log("Sending Push...");
-    await fetch("http://localhost:5000/api/subscribe", {
-      method: "POST",
-      body: JSON.stringify(subscription),
-      headers: {
-        "content-type": "application/json"
-      }
-    });
-    console.log("Push Sent...");
+    return subscription
 }
-
-

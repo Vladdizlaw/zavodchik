@@ -8,7 +8,7 @@
         type="text"
         v-model="message"
         @keyup.enter="sendToShowedUser"
-      >
+      />
       <button class="modal-chat__manage_button" @click="sendToShowedUser">
         отправить
       </button>
@@ -16,43 +16,49 @@
   </div>
 </template>
 <script>
-
-
+// import axios from "axios"
 export default {
   name: "ChatModal",
   props: { name: String, idOpponent: String, chat: Object, idSelf: String },
   data() {
     return {
       message: "",
-      
+      interval: null,
     };
   },
-  watch:{
-    chat(val){
-      console.log('chat modified',val.messages)
-      if (val.messages?.length>0){
-        val.messages.forEach((msg)=>{
-          if (msg.author==this.idSelf){
-          this.createSelfMessage(msg.value)
+  watch: {
+    chat(val) {
+      clearInterval(this.interval);
+      console.log("chat modified", val.messages);
+      if (val.messages?.length > 0) {
+        val.messages.forEach((msg) => {
+          if (msg.author == this.idSelf) {
+            this.createSelfMessage(msg.value);
           }
-          if(msg.author==this.idOpponent){
-             this.createOpponentMessage(msg.value)
+          if (msg.author == this.idOpponent) {
+            this.createOpponentMessage(msg.value);
           }
-        })
+        });
       }
-    }
+     
+    },
   },
   methods: {
-    clearScreen(){
-       const oldMessages=this.$refs.chatScreen.querySelectorAll('div')
-    console.log("nodeList",oldMessages)
-    if (oldMessages.length>0){
-    oldMessages.forEach(msg=>{
-      this.$refs.chatScreen.removeChild(msg)
-    })
-    }
+     
+    updateChat() {
+      this.$emit("updateChat", { chatId: this.chat.chatId });
     },
-    createOpponentMessage(messData){
+    clearScreen() {
+       clearInterval(this.interval);
+      const oldMessages = this.$refs.chatScreen.querySelectorAll("div");
+      console.log("nodeList", oldMessages);
+      if (oldMessages.length > 0) {
+        oldMessages.forEach((msg) => {
+          this.$refs.chatScreen.removeChild(msg);
+        });
+      }
+    },
+    createOpponentMessage(messData) {
       const div = document.createElement("div");
       const p = document.createElement("p");
       p.append(messData);
@@ -73,15 +79,16 @@ export default {
       align-self: end;
       filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))
       drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))
-      drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));`
-    
+      drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));`;
+
       this.$refs.chatScreen.insertAdjacentElement("beforeend", div);
       this.$refs.chatScreen.scrollTo(
         0,
-        this.$refs.chatScreen.offsetHeight * 100)
+        this.$refs.chatScreen.offsetHeight * 100
+      );
     },
-    createSelfMessage(messData){
- const div = document.createElement("div");
+    createSelfMessage(messData) {
+      const div = document.createElement("div");
       const p = document.createElement("p");
       p.append(messData);
       div.append(p);
@@ -102,39 +109,34 @@ export default {
       background: radial-gradient(769.35% 1360.9% at 49% 151%, #F5F0A2 0%, rgba(245, 240, 162, 0.447059) 32.94%, rgba(149, 198, 113, 0.517647) 65.1%, #95C671 100%);
       filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))
       drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))
-      drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));`
-    
+      drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));`;
+
       this.$refs.chatScreen.insertAdjacentElement("beforeend", div);
       this.$refs.chatScreen.scrollTo(
         0,
         this.$refs.chatScreen.offsetHeight * 100
       );
     },
-    sendToShowedUser() {
+    async sendToShowedUser() {
       if (!this.message) {
         return;
       }
-      this.createSelfMessage(this.message)
+      this.createSelfMessage(this.message);
+      // await this.postMessageToChat(this.message)
       this.$emit("sendMessage", { to: this.id, msg: this.message });
       this.message = "";
     },
   },
   mounted() {
-    // let { data } = await Axios.get(
-    //     `http://localhost:5000/api/chat/get_auth_user`,
-    //     { withCredentials: true },
-    //     {
-    //       headers: headers,
-    //     }
-    //   );
-    // this.clearScreen()
-    document.addEventListener
-    console.log('chat',this.chat)
+    clearInterval(this.interval);
+    document.addEventListener;
+    console.log("chat", this.chat);
     this.$refs.chatScreen.scrollTo(0, this.$refs.chatScreen.offsetHeight * 100);
   },
-  beforeDestroy() {
-    this.clearScreen()
-  }
+  beforeUnMount() {
+    clearInterval(this.interval);
+    this.clearScreen();
+  },
 };
 </script>
 <style lang="scss" scoped>
@@ -166,15 +168,14 @@ export default {
     height: 75%;
     border-radius: 10px;
     background-color: white;
-    
+
     overflow: auto;
     padding: 0.5rem 1rem 0.5rem 1rem;
-   
+
     gap: 0.5rem;
     filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))
       drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))
       drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
-   
   }
   &__manage {
     @extend %flex-type;
@@ -195,7 +196,7 @@ export default {
         drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
     }
     &_button {
-      width: 10rem;
+      max-width: 10rem;
       background-image: url("../assets/cover_dog.png");
       min-height: 3rem;
       border: 1px solid #000000;
@@ -208,11 +209,14 @@ export default {
       font-family: Amatic SC;
       font-style: normal;
       font-weight: bold;
-      font-size: 1.5rem;
+      font-size: 2rem;
+      transition: 0.3s;
+      cursor: pointer;
 
       &:hover {
         filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.5))
           drop-shadow(10px 10px 4px rgba(9, 112, 7, 0.75));
+        font-size: 2.5rem;
       }
       &:active {
         filter: drop-shadow(0px 4px 4px rgba(39, 33, 33, 0.5))
@@ -220,5 +224,10 @@ export default {
       }
     }
   }
+}
+.message:hover {
+  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.5))
+    drop-shadow(10px 10px 4px rgba(9, 112, 7, 0.75));
+  font-size: 3rem;
 }
 </style>

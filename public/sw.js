@@ -5,12 +5,9 @@ self.addEventListener("push",async e => {
   console.log("Push Recieved...",data);
   try{
    await  self.registration.showNotification(data.title, {
-        body: "Welcome to Zavodchick"})
+        body: data.body})
     
-  // self.registration.showNotification(data.title, {
-  //   body: "Notified by Traversy Media!",
-    
-  // 
+  
   console.log('done with notification')
 }catch(e){
   console.log(e)
