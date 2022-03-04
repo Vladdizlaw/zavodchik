@@ -35,6 +35,10 @@ export default {
     chat(val) {
       console.log("chat modified", val.messages);
       if (val.messages?.length > 0) {
+        if (val.messages?.length>100){
+          val.messages=val.messages.slice(-100)
+          console.log("chat more than 100", val.messages)
+        }
         val.messages.forEach((msg) => {
           if (msg.author == this.idSelf) {
             this.createSelfMessage(msg.value);
@@ -46,10 +50,13 @@ export default {
       }
     },
     incommingMessage(val){
-      console.log('incomming messs',val)
-      if (val.from==this.idOpponent){
-        this.createOpponentMessage(val.message);
-      }
+      console.log('incomming messs chat modal',val)
+      // if (val.from==this.idOpponent){
+        if (this.chat?.messages[this.chat.messages.length-1]!=val.message){
+          this.createOpponentMessage(val.message);
+        }
+       
+      // }
     }
    
   },
@@ -138,7 +145,7 @@ export default {
   },
   mounted() {
     
-    document.addEventListener;
+   
    
     this.$refs.chatScreen.scrollTo(0, this.$refs.chatScreen.offsetHeight * 100);
   },

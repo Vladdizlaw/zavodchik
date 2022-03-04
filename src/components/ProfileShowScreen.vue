@@ -11,7 +11,6 @@
             :idSelf="userSelf.profile.id"
             :incommingMessage="incommingMessageToChat"
             @sendMessage="sendToShowedUser"
-           
           />
         </template>
       </Modal>
@@ -21,7 +20,11 @@
         <template #left>
           <back-button @back="back" />
         </template>
-
+        <template #center>
+          <p class="newmessage" v-show="newMessage" @click="startChat">
+            Новое сообщение
+          </p>
+        </template>
         <template #right>
           <profile-button @myProfile="myProfile" />
         </template>
@@ -33,7 +36,6 @@
         @previous="previousProfile"
         @next="nextProfile"
         @clickCenter="openChat"
-       
         :typeAnimal="showedUser.animal.typeAnimal"
       >
       </profiles-switcher>
@@ -64,103 +66,106 @@ export default {
     ChatModal,
   },
   props: {
-    pusher:{type:Object},
+    pusher: { type: Object },
     user: { type: Object, require: true },
     users: { type: Array },
     userSelf: { type: Object },
   },
   data() {
     return {
-      incommingMessage:null,
-      incommingMessageToChat:null,
+      incommingMessage: null,
+      incommingMessageToChat: null,
       showedUser: null,
       indexInUsers: null,
-      chatsData: [],
+      newMessage: false,
       chatCurrent: null,
       idCurrentChat: null,
-      opponentUser:{name:null,id:null}
+      opponentUser: { name: null, id: null },
     };
   },
- 
 
   methods: {
-   
     async openChat(idChat) {
-      console.log('idChat',idChat)
-      if (!idChat){
-        console.log('not IdChat')
-        idChat= `${this.userSelf.profile.id}#${this.showedUser.profile.id}`
-        this.opponentUser.name=this.showedUser.profile.name
-        this.opponentUser.id=this.showedUser.profile.id
+      // this.chatCurrent=null
+      // console.log("idChat", idChat);
+      if (!idChat) {
+        console.log("not IdChat");
+        idChat = `${this.userSelf.profile.id}#${this.showedUser.profile.id}`;
+        this.opponentUser.name = this.showedUser.profile.name;
+        this.opponentUser.id = this.showedUser.profile.id;
       }
-      
+
       const headers = {
         "Content-Type": "application/json",
       };
-      this.$refs.chat.clearScreen()
-    
+     
 
-      if (this.userSelf.chats.includes(idChat)) {
-        console.log("cht found", idChat);
-        const { data } = await Axios.post(
-          `http://localhost:5000/api/chat/get_chat/`,
-          { chatId: idChat },
-          {
-            headers: headers,
-          }
-        );
-        this.idCurrentChat = idChat;
-        this.chatCurrent = data;
-        console.log("userchat in self", this.chatCurrent);
-      } else {
-        console.log(
-          `cht not found ${idChat}`
-        );
-        const idChatPart=idChat.split('#')
-        const { data } = await Axios.get(
-          `http://localhost:5000/api/chat/create_chat/${idChatPart[0]}/${idChatPart[1]}`,
-          {
-            headers: headers,
-          }
-        );
-        this.idCurrentChat = data.chatId;
-        this.chatCurrent = data;
-      }
-      console.log("chatCurrent", this.chatCurrent);
-      this.$refs.modalChat.openModal();
-    },
-    async sendToShowedUser(value) {
+      // if (this.userSelf.chats.includes(idChat)) {
+      //   console.log("cht found", idChat);
+      //   const { data } = await Axios.post(
+      //     `http://localhost:5000/api/chat/get_chat/`,
+      //     { chatId: idChat },
+      //     {
+      //       headers: headers,
+      //     }
+      //   );
+      //   this.idCurrentChat = idChat;
+      //   this.chatCurrent = data;
 
-     ///////// 
-     {
-      const headers = {
-        "Content-Type": "application/json",
-      };
-      let { data } = await Axios.post(
-        `http://localhost:5000/api/message`,
-        { from: this.userSelf.profile.id, to: value.to, name:this.userSelf.profile.name, msg: value.msg },
+      //   console.log("userchat in self", this.chatCurrent);
+      // } else {
+      //   console.log(
+      //     `cht not found ${idChat}`
+      //   );
+      const idChatPart = idChat.split("#");
+      const { data } = await Axios.get(
+        `http://localhost:5000/api/chat/create_chat/${idChatPart[0]}/${idChatPart[1]}`,
         {
           headers: headers,
         }
       );
-      
-      console.log(data);
-    //////////////
+      this.idCurrentChat = data.chatId;
+     this.chatCurrent = data;
+      // }
+      console.log("chatCurrent", this.chatCurrent);
+       this.$refs.chat.clearScreen();
+      this.$refs.modalChat.openModal();
+       
+    },
+    async sendToShowedUser(value) {
+      /////////
+      {
+        const headers = {
+          "Content-Type": "application/json",
+        };
+        let { data } = await Axios.post(
+          `http://localhost:5000/api/message`,
+          {
+            from: this.userSelf.profile.id,
+            to: value.to,
+            name: this.userSelf.profile.name,
+            msg: value.msg,
+          },
+          {
+            headers: headers,
+          }
+        );
 
-     }
- 
+        console.log(data);
+        //////////////
+      }
 
       const headers = {
         "Content-Type": "application/json",
       };
-      const messageData= {
-          chatId: this.idCurrentChat,
-          author: this.userSelf.profile.id,
-          msg: value.msg,
-        }
+      const messageData = {
+        chatId: this.idCurrentChat,
+        author: this.userSelf.profile.id,
+        msg: value.msg,
+      };
       await Axios.post(
         `http://localhost:5000/api/chat/post_message`,
-         messageData,
+        messageData,
         {
           headers: headers,
         }
@@ -173,8 +178,6 @@ export default {
 
       this.$store.commit("SAVE_USER", { chats: payload });
       this.$emit("updateUser", payload);
-     
-      
     },
     back() {
       this.$emit("back", null);
@@ -204,50 +207,65 @@ export default {
         }
       });
     },
-  },
-   watch:{
-    pusherMessage(val){
-      console.log('profile pushermessage',val)
+    async startChat() {
+      const val = this.incommingMessage;
+      this.opponentUser.name = val.name;
+      this.opponentUser.id = val.from;
+      this.incommingMessageToChat = this.incommingMessage;
+      await this.openChat(`${this.userSelf.profile.id}#${val.from}`);
+     
+      
+      
+       console.log('start Chat',this.chatCurrent)
+      this.newMessage = false;
      
     },
-    async incommingMessage(val){
-      console.log("incomming",val)
-     
-      if(this.$refs.modalChat.isOpen===false){
-        await this.openChat(`${this.userSelf.profile.id}#${val.from}`)
-        this.incommingMessageToChat=val
-       this.opponentUser.name=val.name
-      this.opponentUser.id=val.from
-       
-      } 
-       else if(this.$refs.modalChat.isOpen===true&&this.opponentUser.id!=val.from){
-          this.opponentUser.name=val.name
-      this.opponentUser.id=val.from
-      this.chat
-        this.$refs.modalChat.confirm()
-        await this.openChat(`${this.userSelf.profile.id}#${val.from}`)
-         this.incommingMessageToChat=val
-        
-      }else{
-         this.incommingMessageToChat=val
-      }
-      console.log("incomming", val);
-    }
+  },
+  watch: {
+    // async incommingMessage(val){
+    //   console.log("incomming",val)
+    //   if(this.$refs.modalChat.isOpen===false){
+    //     await this.openChat(`${this.userSelf.profile.id}#${val.from}`)
+    //     this.incommingMessageToChat=val
+    //    this.opponentUser.name=val.name
+    //   this.opponentUser.id=val.from
+    //   }
+    //    else if(this.$refs.modalChat.isOpen===true&&this.opponentUser.id!=val.from){
+    //       this.opponentUser.name=val.name
+    //   this.opponentUser.id=val.from
+    //   this.chat
+    //     this.$refs.modalChat.confirm()
+    //     await this.openChat(`${this.userSelf.profile.id}#${val.from}`)
+    //      this.incommingMessageToChat=val
+    //   }else{
+    //      this.incommingMessageToChat=val
+    //   }
+    //   console.log("incomming", val);
+    // }
   },
   computed: {},
   async beforeMount() {
     this.showedUser = this.user;
-     this.opponentUser.name=this.showedUser.profile.name
-      this.opponentUser.id=this.showedUser.profile.id
-   
-     this.pusher.bind("message", async (data) => {
-            console.log('data incomming',data)
-            
-            this.incommingMessage = data;
-            
-            // await sendPush(this.subscriptionPush, data.message);
-          });
-    
+    this.opponentUser.name = this.showedUser.profile.name;
+    this.opponentUser.id = this.showedUser.profile.id;
+
+    this.pusher.bind("message", async (data) => {
+      console.log("data incomming", data);
+      if (
+        (this.$refs?.modalChat?.isOpen === false )||
+        (this.$refs?.modalChat?.isOpen === true &&
+          this.opponentUser.id != data.from)
+      ) {
+        this.newMessage = true;
+        this.incommingMessage = data;
+      }  if (
+        this.$refs?.modalChat?.isOpen === true &&
+        this.opponentUser.id == data.from
+      ) {
+        this.incommingMessageToChat = data;
+      }
+      // await sendPush(this.subscriptionPush, data.message);
+    });
   },
 };
 </script>
@@ -465,5 +483,36 @@ export default {
   height: auto;
   justify-content: space-around;
   flex-wrap: nowrap;
+}
+@keyframes shake {
+  10%,
+  90% {
+    transform: translate3d(-1px, 0, 0);
+  }
+
+  20%,
+  80% {
+    transform: translate3d(2px, 0, 0);
+  }
+
+  30%,
+  50%,
+  70% {
+    transform: translate3d(-4px, 0, 0);
+  }
+
+  40%,
+  60% {
+    transform: translate3d(4px, 0, 0);
+  }
+}
+.newmessage {
+  animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite;
+  cursor: pointer;
+  transition: 0.3s;
+  &:hover {
+    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.5))
+      drop-shadow(10px 10px 4px rgba(9, 112, 7, 0.75));
+  }
 }
 </style>
