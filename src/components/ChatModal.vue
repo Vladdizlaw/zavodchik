@@ -1,6 +1,10 @@
 <template>
   <div class="modal-chat">
-    <p class="modal-chat_title">Чат с {{ name }}</p>
+    <div class="modal-chat_title">
+      <slot name="title">
+    <p >Чат с {{ name }}</p>
+    </slot>
+    </div>
     <div ref="chatScreen" class="modal-chat_screen"></div>
     <div class="modal-chat__manage">
       <input
@@ -175,7 +179,12 @@ export default {
   filter: drop-shadow(0px 10px 10px rgba(0, 0, 0, 0.25))
     drop-shadow(0px 10px 10px rgba(0, 0, 0, 0.25))
     drop-shadow(0px 10px 10px rgba(0, 0, 0, 0.25));
+  &_title {
 
+    display:inline-flex;
+    gap:1rem;
+    padding:1rem 0 1rem 0;
+  }
   &_screen {
     display: flex;
     flex-direction: column;

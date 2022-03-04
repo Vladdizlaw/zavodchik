@@ -356,7 +356,7 @@ export default {
           console.log(typeof this.pusher);
           this.$router.push({
             name: "profile",
-            params: { user: this.user, selectedCity: this.selectedCity },
+            params: { pusher: this.pusher, user: this.user, selectedCity: this.selectedCity },
           });
         }, 500);
       } catch (e) {
