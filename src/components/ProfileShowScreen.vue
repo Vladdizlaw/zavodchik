@@ -5,10 +5,11 @@
         <template #content>
           <chat-modal
             ref="chat"
-            :name="showedUser.profile.name"
-            :idOpponent="showedUser.profile.id"
+            :name="opponentUser.name"
+            :idOpponent="opponentUser.id"
             :chat="chatCurrent"
             :idSelf="userSelf.profile.id"
+            :incommingMessage="incommingMessageToChat"
             @sendMessage="sendToShowedUser"
            
           />
@@ -63,43 +64,41 @@ export default {
     ChatModal,
   },
   props: {
+    pusher:{type:Object},
     user: { type: Object, require: true },
     users: { type: Array },
     userSelf: { type: Object },
   },
   data() {
     return {
+      incommingMessage:null,
+      incommingMessageToChat:null,
       showedUser: null,
       indexInUsers: null,
       chatsData: [],
       chatCurrent: null,
       idCurrentChat: null,
+      opponentUser:{name:null,id:null}
     };
   },
+ 
 
   methods: {
-    async updateChat(e){
-        console.log('chat updated',e.chatId) 
-        const headers = {
-       
-        "Content-Type": "application/json",
-      };
-       const { data } = await Axios.post(
-          `http://localhost:5000/api/chat/get_chat/`,
-          { chatId: e.chatId },
-          {
-            headers: headers,
-          }
-        );
-        
-        this.chatCurrent = data;
-    },
-    async openChat() {
+   
+    async openChat(idChat) {
+      console.log('idChat',idChat)
+      if (!idChat){
+        console.log('not IdChat')
+        idChat= `${this.userSelf.profile.id}#${this.showedUser.profile.id}`
+        this.opponentUser.name=this.showedUser.profile.name
+        this.opponentUser.id=this.showedUser.profile.id
+      }
+      
       const headers = {
         "Content-Type": "application/json",
       };
       this.$refs.chat.clearScreen()
-      const idChat = `${this.userSelf.profile.id}#${this.showedUser.profile.id}`;
+    
 
       if (this.userSelf.chats.includes(idChat)) {
         console.log("cht found", idChat);
@@ -115,10 +114,11 @@ export default {
         console.log("userchat in self", this.chatCurrent);
       } else {
         console.log(
-          `cht not found ${this.userSelf.profile.id}#${this.showedUser.profile.id}`
+          `cht not found ${idChat}`
         );
+        const idChatPart=idChat.split('#')
         const { data } = await Axios.get(
-          `http://localhost:5000/api/chat/create_chat/${this.userSelf.profile.id}/${this.showedUser.profile.id}`,
+          `http://localhost:5000/api/chat/create_chat/${idChatPart[0]}/${idChatPart[1]}`,
           {
             headers: headers,
           }
@@ -138,7 +138,7 @@ export default {
       };
       let { data } = await Axios.post(
         `http://localhost:5000/api/message`,
-        { from: this.userSelf.id, to:this.showedUser.id, msg: value.msg },
+        { from: this.userSelf.profile.id, to: value.to, name:this.userSelf.profile.name, msg: value.msg },
         {
           headers: headers,
         }
@@ -205,10 +205,48 @@ export default {
       });
     },
   },
+   watch:{
+    pusherMessage(val){
+      console.log('profile pushermessage',val)
+     
+    },
+    async incommingMessage(val){
+      console.log("incomming",val)
+     
+      if(this.$refs.modalChat.isOpen===false){
+        await this.openChat(`${this.userSelf.profile.id}#${val.from}`)
+        this.incommingMessageToChat=val
+       this.opponentUser.name=val.name
+      this.opponentUser.id=val.from
+       
+      } 
+       else if(this.$refs.modalChat.isOpen===true&&this.opponentUser.id!=val.from){
+          this.opponentUser.name=val.name
+      this.opponentUser.id=val.from
+      this.chat
+        this.$refs.modalChat.confirm()
+        await this.openChat(`${this.userSelf.profile.id}#${val.from}`)
+         this.incommingMessageToChat=val
+        
+      }else{
+         this.incommingMessageToChat=val
+      }
+      console.log("incomming", val);
+    }
+  },
   computed: {},
   async beforeMount() {
     this.showedUser = this.user;
-    console.log("showedUser", this.showedUser);
+     this.opponentUser.name=this.showedUser.profile.name
+      this.opponentUser.id=this.showedUser.profile.id
+   
+     this.pusher.bind("message", async (data) => {
+            console.log('data incomming',data)
+            
+            this.incommingMessage = data;
+            
+            // await sendPush(this.subscriptionPush, data.message);
+          });
     
   },
 };

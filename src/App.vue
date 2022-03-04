@@ -23,7 +23,11 @@
 <script>
 //import Pusher from  'pusher'
 import axios from "axios";
-import { requestPermissionNotification, sendPush ,getPushSubscription} from "./api.js";
+import {
+  requestPermissionNotification,
+  // sendPush,
+  getPushSubscription,
+} from "./api.js";
 export default {
   name: "App",
 
@@ -38,7 +42,8 @@ export default {
       errorStr: null,
       searchUsers: null,
       permissionNotify: null,
-      subscriptionPush:null,
+      subscriptionPush: null,
+      pusherMessage: null,
     };
   },
   computed: {
@@ -145,7 +150,7 @@ export default {
       this.$store.dispatch("POST_USER", this.user);
     },
     async updateUser() {
-      console.log('userupdated',this.user)
+      console.log("userupdated", this.user);
       this.$store.dispatch("UPDATE_USER", this.user);
     },
     async getLocation() {
@@ -255,7 +260,12 @@ export default {
         this.idSelected = data;
         this.$router.push({
           name: "searchResult",
-          params: { user: this.idSelected, users: this.searchUsers,userSelf:this.user},
+          params: {
+            pusher: this.pusher,
+            user: this.idSelected,
+            users: this.searchUsers,
+            userSelf: this.user,
+          },
         });
       } else {
         this.getSign();
@@ -334,18 +344,16 @@ export default {
         console.log("cookie:", document.cookie);
         await this.getAuthUser();
         console.log("user get from server");
-        this.subscriptionPush= await getPushSubscription()
+        this.subscriptionPush = await getPushSubscription();
         setTimeout(async () => {
-
           this.pusher = this.$pusher.subscribe(`${this.user.profile.id}`);
-          this.pusher.bind("message",async  (data) => {
-            console.log("pusher",data); 
-           await sendPush(this.subscriptionPush,data.message);
-          });
-          // await this.postMessageToChat("Hallo");
-          // console.log("pusher", this.pusher);
+          // this.pusher.bind("message", async (data) => {
+          //   this.pusherMessage = data;
+          //   console.log("pusher this", this.pusherMessage);
+          //   await sendPush(this.subscriptionPush, data.message);
+          // });
 
-          console.log("rout to profile");
+          console.log(typeof this.pusher);
           this.$router.push({
             name: "profile",
             params: { user: this.user, selectedCity: this.selectedCity },

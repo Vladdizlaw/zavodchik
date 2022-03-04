@@ -19,16 +19,20 @@
 // import axios from "axios"
 export default {
   name: "ChatModal",
-  props: { name: String, idOpponent: String, chat: Object, idSelf: String },
+  props: {
+    name: String,
+    idOpponent: String,
+    chat: Object,
+    idSelf: String,
+    incommingMessage:Object,
+  },
   data() {
     return {
       message: "",
-      interval: null,
     };
   },
   watch: {
     chat(val) {
-      clearInterval(this.interval);
       console.log("chat modified", val.messages);
       if (val.messages?.length > 0) {
         val.messages.forEach((msg) => {
@@ -40,18 +44,20 @@ export default {
           }
         });
       }
-     
     },
+    incommingMessage(val){
+      console.log('incomming messs',val)
+      if (val.from==this.idOpponent){
+        this.createOpponentMessage(val.message);
+      }
+    }
+   
   },
   methods: {
-     
-    updateChat() {
-      this.$emit("updateChat", { chatId: this.chat.chatId });
-    },
+   
     clearScreen() {
-       clearInterval(this.interval);
       const oldMessages = this.$refs.chatScreen.querySelectorAll("div");
-      console.log("nodeList", oldMessages);
+      // console.log("nodeList", oldMessages);
       if (oldMessages.length > 0) {
         oldMessages.forEach((msg) => {
           this.$refs.chatScreen.removeChild(msg);
@@ -65,9 +71,10 @@ export default {
       div.append(p);
       div.classList.add("message");
       div.style.cssText = ` box-sizing:content-box;
-      padding: 0.2rem 0.5rem 0.2rem 0.5rem;
+      padding: 0.2rem 1.5rem 0.2rem 1.5rem;
       border-radius:10px 10px 0px 10px;
-      font-size: 2rem;
+      font:inherit;
+      font-size: 3rem;
       border: 1px solid #000000;
       width:fit-content;
       height:auto;
@@ -97,7 +104,8 @@ export default {
       box-sizing:content-box;
       padding: 0.2rem 0.5rem 0.2rem 0.5rem;
       border-radius:10px 10px 10px 0px;
-      font-size: 2rem;
+      font-size: 3rem;
+      font:inherit;
       border: 1px solid #000000;
       width:fit-content;
       height:auto;
@@ -122,19 +130,20 @@ export default {
         return;
       }
       this.createSelfMessage(this.message);
+      
       // await this.postMessageToChat(this.message)
-      this.$emit("sendMessage", { to: this.id, msg: this.message });
+      this.$emit("sendMessage", { to: this.idOpponent, msg: this.message });
       this.message = "";
     },
   },
   mounted() {
-    clearInterval(this.interval);
+    
     document.addEventListener;
-    console.log("chat", this.chat);
+   
     this.$refs.chatScreen.scrollTo(0, this.$refs.chatScreen.offsetHeight * 100);
   },
   beforeUnMount() {
-    clearInterval(this.interval);
+  
     this.clearScreen();
   },
 };
