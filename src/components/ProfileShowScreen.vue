@@ -21,9 +21,12 @@
           <back-button @back="back" />
         </template>
         <template #center>
-          <p class="newmessage" v-show="newMessage" @click="startChat">
-            Новое сообщение
-          </p>
+          <div class="notice_block" v-show="newMessage" @click="startChat">
+            <img src="../assets/message.svg" alt="" />
+            <p>
+              Новое сообщение
+            </p>
+          </div>
         </template>
         <template #right>
           <profile-button @myProfile="myProfile" />
@@ -98,7 +101,6 @@ export default {
       const headers = {
         "Content-Type": "application/json",
       };
-     
 
       // if (this.userSelf.chats.includes(idChat)) {
       //   console.log("cht found", idChat);
@@ -125,12 +127,11 @@ export default {
         }
       );
       this.idCurrentChat = data.chatId;
-     this.chatCurrent = data;
+      this.chatCurrent = data;
       // }
       console.log("chatCurrent", this.chatCurrent);
-       this.$refs.chat.clearScreen();
+      this.$refs.chat.clearScreen();
       this.$refs.modalChat.openModal();
-       
     },
     async sendToShowedUser(value) {
       /////////
@@ -213,36 +214,12 @@ export default {
       this.opponentUser.id = val.from;
       this.incommingMessageToChat = this.incommingMessage;
       await this.openChat(`${this.userSelf.profile.id}#${val.from}`);
-     
-      
-      
-       console.log('start Chat',this.chatCurrent)
+
+      console.log("start Chat", this.chatCurrent);
       this.newMessage = false;
-     
     },
   },
-  watch: {
-    // async incommingMessage(val){
-    //   console.log("incomming",val)
-    //   if(this.$refs.modalChat.isOpen===false){
-    //     await this.openChat(`${this.userSelf.profile.id}#${val.from}`)
-    //     this.incommingMessageToChat=val
-    //    this.opponentUser.name=val.name
-    //   this.opponentUser.id=val.from
-    //   }
-    //    else if(this.$refs.modalChat.isOpen===true&&this.opponentUser.id!=val.from){
-    //       this.opponentUser.name=val.name
-    //   this.opponentUser.id=val.from
-    //   this.chat
-    //     this.$refs.modalChat.confirm()
-    //     await this.openChat(`${this.userSelf.profile.id}#${val.from}`)
-    //      this.incommingMessageToChat=val
-    //   }else{
-    //      this.incommingMessageToChat=val
-    //   }
-    //   console.log("incomming", val);
-    // }
-  },
+  watch: {},
   computed: {},
   async beforeMount() {
     this.showedUser = this.user;
@@ -252,13 +229,14 @@ export default {
     this.pusher.bind("message", async (data) => {
       console.log("data incomming", data);
       if (
-        (this.$refs?.modalChat?.isOpen === false )||
+        this.$refs?.modalChat?.isOpen === false ||
         (this.$refs?.modalChat?.isOpen === true &&
           this.opponentUser.id != data.from)
       ) {
         this.newMessage = true;
         this.incommingMessage = data;
-      }  if (
+      }
+      if (
         this.$refs?.modalChat?.isOpen === true &&
         this.opponentUser.id == data.from
       ) {
@@ -506,13 +484,23 @@ export default {
     transform: translate3d(4px, 0, 0);
   }
 }
-.newmessage {
+.notice_block {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
   animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite;
   cursor: pointer;
+  // position: absolute;
+  
   transition: 0.3s;
+  margin-left: 1rem;
+
   &:hover {
     filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.5))
       drop-shadow(10px 10px 4px rgba(9, 112, 7, 0.75));
+  }
+  img {
+    margin-top: 0.3rem;
   }
 }
 </style>

@@ -8,6 +8,7 @@
     <div ref="chatScreen" class="modal-chat_screen"></div>
     <div class="modal-chat__manage">
       <input
+        autofocus
         class="modal-chat__manage_input"
         type="text"
         v-model="message"
@@ -113,7 +114,7 @@ export default {
       div.classList.add("message");
       div.style.cssText = ` 
       box-sizing:content-box;
-      padding: 0.2rem 0.5rem 0.2rem 0.5rem;
+     padding: 0.2rem 1.5rem 0.2rem 1.5rem;
       border-radius:10px 10px 10px 0px;
       font-size: 3rem;
       font:inherit;
