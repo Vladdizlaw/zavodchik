@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div class="notice_block" v-show="newMessage" @click="startChat">
+    <div class="notice_block" v-show="newMessage || messageBuffer.length > 0" @click="startChat">
       <img src="../assets/message.svg" alt="" />
-      <p>
+      <p>{{messageBuffer.length}}
         Новое сообщение
       </p>
     </div>
@@ -71,8 +71,7 @@ export default {
       if (!idChat) {
         console.log("not IdChat");
         idChat = `${this.userSelf.profile.id}#${this.opponentUser.profile.id}`;
-        // this.opponentUser.name = this.showedUser.profile.name;
-        // this.opponentUser.id = this.showedUser.profile.id;
+       
       }
 
       const headers = {
@@ -95,7 +94,7 @@ export default {
     },
     async sendToShowedUser(value) {
       /////////
-      {
+      
         const headers = {
           "Content-Type": "application/json",
         };
@@ -114,11 +113,9 @@ export default {
 
         console.log(data);
         //////////////
-      }
+      
 
-      const headers = {
-        "Content-Type": "application/json",
-      };
+    
       const messageData = {
         chatId: this.idCurrentChat,
         author: this.userSelf.profile.id,
@@ -141,10 +138,10 @@ export default {
       this.$emit("updateUser", payload);
     },
     async startChat() {
-      const val = this.incommingMessage;
+      const val =  this.messageBuffer.shift();
       this.opponentUser.name = val.name;
       this.opponentUser.id = val.from;
-      this.incommingMessageToChat = this.incommingMessage;
+      this.incommingMessageToChat = val;
       await this.openChat(`${this.userSelf.profile.id}#${val.from}`);
 
       console.log("start Chat", this.chatCurrent);
@@ -157,10 +154,13 @@ export default {
     // this.opponentUser.id = this.showedUser.profile.id;
 
     this.pusher.bind("message", async (msg) => {
+     
+      if (msg.from!=this.opponentUser.id){
       const { data } = await Axios.get(
         `http://localhost:5000/api/get_user${msg.from}`
       );
       this.opponentUser = data;
+      }
       console.log("data incomming", msg);
       if (
         this.$refs?.modalChat?.isOpen === false ||
@@ -168,7 +168,9 @@ export default {
           this.opponentUser?.id != msg.from)
       ) {
         this.newMessage = true;
-        this.incommingMessage = msg;
+       
+         this.messageBuffer.push(msg) 
+         this.incommingMessage = msg;
       }
       if (
         this.$refs?.modalChat?.isOpen === true &&

@@ -80,7 +80,7 @@ export default {
       ) {
         this.$router.push({
           name: "profile",
-          params: { user: this.user, selectedCity: this.selectedCity },
+          params: { user: this.user, selectedCity: this.selectedCity,pusher:this.pusher },
         });
       } else if (
         (this.isAutentificate || this.autohorized) &&

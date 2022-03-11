@@ -168,23 +168,28 @@ export default {
   align-items: start;
 }
 .modal-chat {
-  width: 70vw;
+  width: 60vw;
   height: 100%;
   border: 1px solid black;
   @extend %flex-type;
   align-items: center;
-  background: url("../assets/cover1.png");
-  background-position: center;
-  background-size: cover;
-  overflow: hidden;
-  filter: drop-shadow(0px 10px 10px rgba(0, 0, 0, 0.25))
-    drop-shadow(0px 10px 10px rgba(0, 0, 0, 0.25))
-    drop-shadow(0px 10px 10px rgba(0, 0, 0, 0.25));
+  // background: url("../assets/cover1.png");
+  // background-position: center;
+  // background-size: cover;
+  // overflow: hidden;
+  // filter: drop-shadow(0px 10px 10px rgba(0, 0, 0, 0.25))
+  //   drop-shadow(0px 10px 10px rgba(0, 0, 0, 0.25))
+  //   drop-shadow(0px 10px 10px rgba(0, 0, 0, 0.25));
+  background: #F6F2AC;
+/* 1 */
+
+box-shadow: 10px 20px 30px rgba(0, 0, 0, 0.25);
+border-radius: 20px;
   &_title {
 
     display:inline-flex;
     gap:1rem;
-    padding:1rem 0 1rem 0;
+    padding:0.5rem 0 0.5rem 0;
   }
   &_screen {
     display: flex;

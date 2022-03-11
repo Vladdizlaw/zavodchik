@@ -40,7 +40,7 @@
         <div class="main-menu">
           <p @click="state = 'contacts'">Контактные данные</p>
           <p @click="state = 'animal'">Данные животного</p>
-
+          <p @click="state = 'chats'">Мои чаты</p>
           <p @click="state = 'noticed'">Настроить уведомления</p>
           <p>Оплата</p>
         </div>
@@ -376,6 +376,38 @@
         </Header>
       </div>
     </section>
+     <section class="settings-chats" v-if="state == 'chats'">
+      <Header>
+        <template #left>
+          <back-button @back="back" />
+        </template>
+
+        <template #center>
+          <kinesis-container :duration="300">
+            <div class="header__text">
+              <p>Мои чаты</p>
+            </div>
+          </kinesis-container>
+        </template>
+        <template #right>
+          <save-changes-button @saveProfile="save" />
+        </template>
+      </Header>
+      <div class="main">
+      <chats-screen :selfUser="user" :pusher="pusher"/>
+      </div>
+      <div class="footer">
+        <Header>
+          <template #left>
+            <support-button @support="getSupportWindow" />
+          </template>
+          <template #right>
+            <logout-button @logout="logout" />
+          </template>
+        </Header>
+      </div>
+
+     </section>
   </div>
 </template>
 <script>
@@ -385,6 +417,7 @@ import SaveChangesButton from "./SaveChangesButton.vue";
 import SupportButton from "./SupportButton.vue";
 import LogoutButton from "./LogoutButton.vue";
 import Modal from "./Modal.vue";
+import ChatsScreen from './ChatsScreen.vue';
 export default {
   name: "SettingsScreen",
   components: {
@@ -394,8 +427,9 @@ export default {
     SupportButton,
     LogoutButton,
     Modal,
+    ChatsScreen,
   },
-  props: { user: Object, selectedCity: Array },
+  props: { user: Object, selectedCity: Array ,pusher:Object},
   data() {
     return {
       state: "start",
@@ -558,6 +592,14 @@ export default {
   align-items: center;
   width: 100vw;
   height: 70vh;
+  overflow:auto;
+  // background-color: transparent;
+  &::-webkit-scrollbar {
+      width:30px; // manage scrollbar width here
+    }
+    &::-webkit-scrollbar  {
+      background:transparent; // manage scrollbar background color here
+    }
   &_noticed {
     @extend %flex-type;
     align-items: center;

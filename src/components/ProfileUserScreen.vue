@@ -59,7 +59,7 @@ export default {
    },
    
    settings() {
-      this.$router.push({name:'settings', params:{user:this.user,selectedCity:this.selectedCity}})
+      this.$router.push({name:'settings', params:{user:this.user,selectedCity:this.selectedCity,pusher:this.pusher}})
     },
     toSearchScreen(){
       this.$router.push({name:'search',params:{
