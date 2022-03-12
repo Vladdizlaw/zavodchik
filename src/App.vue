@@ -101,7 +101,7 @@ export default {
     getMyProfile() {
       this.$router.push({
         name: "profile",
-        params: { user: this.user, selectedCity: this.selectedCity },
+        params: { pusher: this.pusher, user: this.user, selectedCity: this.selectedCity },
       });
     },
     async logout() {
@@ -353,7 +353,7 @@ export default {
           //   await sendPush(this.subscriptionPush, data.message);
           // });
 
-          console.log(typeof this.pusher);
+          // console.log(typeof this.pusher);
           this.$router.push({
             name: "profile",
             params: { pusher: this.pusher, user: this.user, selectedCity: this.selectedCity },

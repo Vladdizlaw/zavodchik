@@ -1,8 +1,13 @@
 <template>
   <div>
-    <div class="notice_block" v-show="newMessage || messageBuffer.length > 0" @click="startChat">
+    <div
+      class="notice_block"
+      v-show="newMessage || messageBuffer.length > 0"
+      @click="startChat"
+    >
       <img src="../assets/message.svg" alt="" />
-      <p>{{messageBuffer.length}}
+      <p>
+        {{ messageBuffer.length }}
         Новое сообщение
       </p>
     </div>
@@ -42,7 +47,7 @@ export default {
   components: { Modal, ChatModal },
   props: {
     userSelf: { type: Object, require: true },
-    // opponentUser: { type: Object },
+    opponentUserProps: { type: Object },
     pusher: { type: Object },
   },
   data() {
@@ -71,7 +76,6 @@ export default {
       if (!idChat) {
         console.log("not IdChat");
         idChat = `${this.userSelf.profile.id}#${this.opponentUser.profile.id}`;
-       
       }
 
       const headers = {
@@ -94,28 +98,26 @@ export default {
     },
     async sendToShowedUser(value) {
       /////////
-      
-        const headers = {
-          "Content-Type": "application/json",
-        };
-        let { data } = await Axios.post(
-          `http://localhost:5000/api/message`,
-          {
-            from: this.userSelf.profile.id,
-            to: value.to,
-            name: this.userSelf.profile.name,
-            msg: value.msg,
-          },
-          {
-            headers: headers,
-          }
-        );
 
-        console.log(data);
-        //////////////
-      
+      const headers = {
+        "Content-Type": "application/json",
+      };
+      let { data } = await Axios.post(
+        `http://localhost:5000/api/message`,
+        {
+          from: this.userSelf.profile.id,
+          to: value.to,
+          name: this.userSelf.profile.name,
+          msg: value.msg,
+        },
+        {
+          headers: headers,
+        }
+      );
 
-    
+      console.log(data);
+      //////////////
+
       const messageData = {
         chatId: this.idCurrentChat,
         author: this.userSelf.profile.id,
@@ -132,13 +134,15 @@ export default {
       let payload = this.userSelf.chats;
       payload.push(this.idCurrentChat);
       payload = [...new Set(payload)];
-      console.log("adding to user", payload);
 
-      this.$store.commit("SAVE_USER", { chats: payload });
+      if (payload != this.userSelf.chats) {
+        console.log("adding to user", payload);
+        this.$store.commit("SAVE_USER", { chats: payload });
+      }
       this.$emit("updateUser", payload);
     },
     async startChat() {
-      const val =  this.messageBuffer.shift();
+      const val = this.messageBuffer.shift();
       this.opponentUser.name = val.name;
       this.opponentUser.id = val.from;
       this.incommingMessageToChat = val;
@@ -154,12 +158,11 @@ export default {
     // this.opponentUser.id = this.showedUser.profile.id;
 
     this.pusher.bind("message", async (msg) => {
-     
-      if (msg.from!=this.opponentUser.id){
-      const { data } = await Axios.get(
-        `http://localhost:5000/api/get_user${msg.from}`
-      );
-      this.opponentUser = data;
+      if (msg.from != this.opponentUser.id) {
+        const { data } = await Axios.get(
+          `http://localhost:5000/api/get_user${msg.from}`
+        );
+        this.opponentUser = data;
       }
       console.log("data incomming", msg);
       if (
@@ -168,9 +171,9 @@ export default {
           this.opponentUser?.id != msg.from)
       ) {
         this.newMessage = true;
-       
-         this.messageBuffer.push(msg) 
-         this.incommingMessage = msg;
+
+        this.messageBuffer.push(msg);
+        this.incommingMessage = msg;
       }
       if (
         this.$refs?.modalChat?.isOpen === true &&
@@ -214,7 +217,7 @@ export default {
   animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite;
   cursor: pointer;
   position: absolute;
-  
+
   transition: 0.3s;
   margin-left: 1rem;
 

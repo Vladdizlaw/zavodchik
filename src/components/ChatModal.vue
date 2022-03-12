@@ -83,14 +83,17 @@ export default {
       div.append(p);
       div.classList.add("message");
       div.style.cssText = ` box-sizing:content-box;
-      padding: 0.2rem 1.5rem 0.2rem 1.5rem;
-      border-radius:10px 10px 0px 10px;
-      font:inherit;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+     padding: 0.2rem 1.5rem 0.2rem 1.5rem;
+      border-radius:20px 20px 0px 20px;
       font-size: 3rem;
+      font:inherit;
       border: 1px solid #000000;
-      width:fit-content;
-      height:auto;
-      max-width:30%;
+      
+     height:auto;
+      max-width:45%;
       overflow:hidden;
       overflow-wrap: break-word;
       background: radial-gradient(154.26% 154.26% at 53% 152%, #FEFEFE 0%, #F5F0A2 32.94%, #CEEBFF 65.1%, #95C671 100%);
@@ -98,7 +101,9 @@ export default {
       align-self: end;
       filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))
       drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))
-      drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));`;
+      drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+      
+     `;
 
       this.$refs.chatScreen.insertAdjacentElement("beforeend", div);
       this.$refs.chatScreen.scrollTo(
@@ -111,17 +116,21 @@ export default {
       const p = document.createElement("p");
       p.append(messData);
       div.append(p);
+      // div.innerText(messData)
       div.classList.add("message");
       div.style.cssText = ` 
       box-sizing:content-box;
+      display:flex;
+      justify-content:center;
+      align-items:center;
      padding: 0.2rem 1.5rem 0.2rem 1.5rem;
-      border-radius:10px 10px 10px 0px;
+      border-radius:20px 20px 20px 0px;
       font-size: 3rem;
       font:inherit;
       border: 1px solid #000000;
-      width:fit-content;
-      height:auto;
-      max-width:30%;
+     
+     height:auto;
+      max-width:40%;
       overflow:hidden;
       overflow-wrap: break-word;
       flex-shrink:0;
@@ -129,7 +138,8 @@ export default {
       background: radial-gradient(769.35% 1360.9% at 49% 151%, #F5F0A2 0%, rgba(245, 240, 162, 0.447059) 32.94%, rgba(149, 198, 113, 0.517647) 65.1%, #95C671 100%);
       filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))
       drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))
-      drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));`;
+      drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+      `;
 
       this.$refs.chatScreen.insertAdjacentElement("beforeend", div);
       this.$refs.chatScreen.scrollTo(
@@ -161,6 +171,7 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+ 
 %flex-type {
   display: flex;
   flex-direction: column;
@@ -180,7 +191,7 @@ export default {
   // filter: drop-shadow(0px 10px 10px rgba(0, 0, 0, 0.25))
   //   drop-shadow(0px 10px 10px rgba(0, 0, 0, 0.25))
   //   drop-shadow(0px 10px 10px rgba(0, 0, 0, 0.25));
-  background: #F6F2AC;
+  background: #f8f49d;
 /* 1 */
 
 box-shadow: 10px 20px 30px rgba(0, 0, 0, 0.25);
@@ -190,6 +201,10 @@ border-radius: 20px;
     display:inline-flex;
     gap:1rem;
     padding:0.5rem 0 0.5rem 0;
+    animation-name: shake;
+      animation-timing-function: cubic-bezier(0.16, 0.07, 0.19, 0.57);
+      animation-duration: 0.72s;
+      animation-iteration-count: infinite;
   }
   &_screen {
     display: flex;
@@ -199,15 +214,46 @@ border-radius: 20px;
     height: 75%;
     border-radius: 10px;
     background-color: white;
+    
 
     overflow: auto;
-    padding: 0.5rem 1rem 0.5rem 1rem;
+    
+     &::-webkit-scrollbar {
+      width:30px; // manage scrollbar width here
+    }
+    &::-webkit-scrollbar  {
+      background:transparent; // manage scrollbar background color here
+    }
+    padding: 0.5rem 0rem 0.5rem 2rem;
 
     gap: 0.5rem;
     filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))
       drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))
       drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+     
   }
+  @keyframes shake {
+  10%,
+  90% {
+    transform: translate3d(-1px, 0, 0);
+  }
+
+  20%,
+  80% {
+    transform: translate3d(1px, 0, 0);
+  }
+
+  30%,
+  50%,
+  70% {
+    transform: translate3d(-3px, 0, 0);
+  }
+
+  40%,
+  60% {
+    transform: translate3d(2px, 0, 0);
+  }
+}
   &__manage {
     @extend %flex-type;
     flex-direction: row;
@@ -261,4 +307,5 @@ border-radius: 20px;
     drop-shadow(10px 10px 4px rgba(9, 112, 7, 0.75));
   font-size: 3rem;
 }
+
 </style>
