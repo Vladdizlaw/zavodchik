@@ -394,7 +394,7 @@
         </template>
       </Header>
       <div class="main">
-      <chats-screen :selfUser="user" :pusher="pusher"/>
+      <chats-screen :selfUser="user" :pusher="pusher" @updateUser="updateUser"/>
       </div>
       <div class="footer">
         <Header>
@@ -447,6 +447,9 @@ export default {
       this.$refs.supportModal.confirm();
 
     },
+    updateUser(){
+     this.$emit("updateUser",null)
+   },
     getSupportWindow() {
       this.msgToSupport = "";
       this.$refs.supportModal.openModal();

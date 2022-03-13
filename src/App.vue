@@ -14,6 +14,7 @@
         @viewDetails="viewDetails"
         @myProfile="getMyProfile"
         @updateUser="updateUser"
+        
       >
       </router-view>
     </transition>
@@ -72,6 +73,9 @@ export default {
     },
   },
   methods: {
+    startPusher(){
+      this.pusher = this.$pusher.subscribe(`${this.user.profile.id}`);
+    },
     back() {
       console.log(this.$route.name);
       if (
@@ -284,9 +288,12 @@ export default {
         setTimeout(() => {
           document.cookie = `access_token=${this.user.token}`;
           this.autohorized = true;
+          if(!this.pusher){
+            this.startPusher()
+          }
           this.$router.push({
             name: "profile",
-            params: { user: this.user, selectedCity: this.selectedCity },
+            params: { pusher: this.pusher, user: this.user, selectedCity: this.selectedCity },
           });
         }, 1000);
       }, 1000);
@@ -305,10 +312,13 @@ export default {
       document.cookie = `access_token=${this.user.token}`;
       console.log("from Sign", document.cookie);
       // window.location.reload(true);
+      if(!this.pusher){
+            this.startPusher()
+          }
       this.autohorized = true;
       this.$router.push({
         name: "profile",
-        params: { user: this.user, selectedCity: this.selectedCity },
+        params: { pusher: this.pusher, user: this.user, selectedCity: this.selectedCity },
       });
       // window.location.reload(true)
       console.log("SIGN-----", user);
@@ -346,7 +356,7 @@ export default {
         console.log("user get from server");
         this.subscriptionPush = await getPushSubscription();
         setTimeout(async () => {
-          this.pusher = this.$pusher.subscribe(`${this.user.profile.id}`);
+          this.startPusher()
           // this.pusher.bind("message", async (data) => {
           //   this.pusherMessage = data;
           //   console.log("pusher this", this.pusherMessage);

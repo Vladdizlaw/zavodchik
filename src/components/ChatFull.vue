@@ -135,11 +135,13 @@ export default {
       payload.push(this.idCurrentChat);
       payload = [...new Set(payload)];
 
-      if (payload != this.userSelf.chats) {
+     if (payload != this.userSelf.chats) {
         console.log("adding to user", payload);
-        this.$store.commit("SAVE_USER", { chats: payload });
-      }
-      this.$emit("updateUser", payload);
+        this.$store.commit("SAVE_USER", { chats: payload }); 
+        this.$emit("updateUser",null);
+         console.log('user new',payload)
+     }
+     
     },
     async startChat() {
       const val = this.messageBuffer.shift();
@@ -150,6 +152,16 @@ export default {
 
       console.log("start Chat", this.chatCurrent);
       this.newMessage = false;
+       let payload =  this.userSelf.chats;
+      payload.push(`${this.userSelf.profile.id}#${val.from}`);
+      payload = [...new Set(payload)];
+       console.log('payload',payload,this.userSelf.chats)
+     if (payload != this.userSelf.chats) {
+        console.log("adding to user", payload);
+        this.$store.commit("SAVE_USER", { chats: payload }); 
+        this.$emit("updateUser",null);
+         console.log('user new',payload)
+     }
     },
   },
   async beforeMount() {

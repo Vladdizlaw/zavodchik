@@ -1,7 +1,7 @@
 <template>
    <profile-screen :user="user" >
      <template #modalAnother>
-       <chat-full :pusher="pusher" :userSelf="user" />
+       <chat-full :pusher="pusher" :userSelf="user" @updateUser="updateUser" />
      </template>
         <template #header>
           <Header>
@@ -57,6 +57,9 @@ export default {
    logout(){
      this.$emit('logout',null)
    },
+   updateUser(){
+     this.$emit("updateUser",null)
+   },
    
    settings() {
       this.$router.push({name:'settings', params:{user:this.user,selectedCity:this.selectedCity,pusher:this.pusher}})
@@ -75,6 +78,9 @@ export default {
   },  
   async mounted(){
      await requestPermissionNotification()
+     if (this.pusher==null){
+        this.$emit('nopusher',null)
+     }
        
 
   }

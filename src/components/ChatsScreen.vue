@@ -33,9 +33,9 @@
       </div>
       <div
         class="chats_block_chat__new"
-        v-show="newMessage(incommingMessage, chat.chatId)"
+        v-show="newMessage( chat.chatId)"
       >
-        <img src="../assets/message.svg" alt="" />Новое сообщение
+        {{newMessage( chat.chatId)}}<img src="../assets/message.svg" alt="" />Новое сообщение
       </div>
     </div>
   </div>
@@ -58,7 +58,7 @@ export default {
 
       opponentUsers: [],
       incommingMessages:[],
-      incommingMessage:{from:null},
+      countIncommingMessages:null,
       incommingMessageToChat: null,
     };
   },
@@ -78,16 +78,22 @@ export default {
         animal: result.animal?.name,
       };
     },
-    newMessage(msg, chatId) {
-      if (!msg||(this.incommingMessages.length == 0 &&!this.incommingMessage)) {
+    newMessage(chatId) {
+      let countMess=0
+      if ((this.incommingMessages.length == 0 )) {
         return false;
       }
       const id = chatId.split("#").filter((i)=> i !== this.selfUser?.profile?.id)[0];
-      if (msg?.from == id) {
-        return true;
-      } else {
-        return false;
+      for (let i of this.incommingMessages) {
+        if (i.from == id) {
+          countMess++
+
+       
+      } 
       }
+      
+        return countMess;
+      
     },
     async openChat(chatId) {
          this.$refs.chat.clearScreen();
@@ -105,12 +111,22 @@ export default {
       this.opponentUser = result[0];
       // console.log("chatOpponent", this.opponentUser);
     //   this.$refs.chat.clearScreen();
-    if (this.incommingMessage.from == id){
-      console.log("gitcha")
-      this.incommingMessages.splice((this.incommingMessages.findIndex((el)=>el==this.incommingMessage)),1);
-      this.incommingMessage=null
-    }
+   this.incommingMessages=this.incommingMessages.filter(el=>el.from != id)
+      // this.incommingMessage=null
+    
       this.$refs.modalChat.openModal();
+      ////get this into  function
+       let payload = this.selfUser.chats;
+      payload.push(this.chatData.chatId);
+      payload = [...new Set(payload)];
+
+      if (payload != this.selfUser.chats) {
+        console.log("adding to user in new chat", payload);
+        this.$store.commit("SAVE_USER", { chats: payload }); 
+        this.$emit("updateUser",null);
+        console.log('user new',this.selfUser)
+      }
+      /////
     },
      async sendToShowedUser(value) {
      
@@ -153,11 +169,32 @@ export default {
       payload = [...new Set(payload)];
 
       if (payload != this.selfUser.chats) {
-        console.log("adding to user", payload);
+        console.log("adding to user in new chat", payload);
         this.$store.commit("SAVE_USER", { chats: payload }); 
-        this.$emit("updateUser", payload);
+        this.$emit("updateUser",null);
+        console.log('user new',this.selfUser)
       }
      
+    },
+   async  makeNewChat(msg){
+      let chat = await fetch("http://localhost:5000/api/chat/get_chat", {
+      method: "POST",
+      body: JSON.stringify({ chatId:`${this.selfUser.profile.id}#${msg.from}` }),
+      headers: {
+        "content-type": "application/json",
+      },
+    });
+    let  user = await fetch(`http://localhost:5000/api/get_user${msg.from}`, {
+      method: "GET",
+     
+      headers: {
+        "content-type": "application/json",
+      },
+    });
+      chat=await chat.json()
+      user=await user.json()
+      this.allChats.push(chat)
+      this.opponentUsers.push(user)
     },
   },
   async mounted() {
@@ -192,9 +229,9 @@ export default {
         this.incommingMessageToChat = msg 
         this.incommingMessages.splice((this.incommingMessages.findIndex((el)=>el==msg)),1);
         console.log('allChats from chats-screen',this.incommingMessageToChat)
-      }else{
-        this.incommingMessage = msg 
-        
+      }
+      if (!this.opponentUsers.includes(msg.from)) {
+          this.makeNewChat(msg)
       }
 
     });

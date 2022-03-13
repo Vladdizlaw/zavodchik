@@ -8,7 +8,7 @@
     <div ref="chatScreen" class="modal-chat_screen"></div>
     <div class="modal-chat__manage">
       <input
-        autofocus
+        tabindex="0"
         class="modal-chat__manage_input"
         type="text"
         v-model="message"
@@ -214,9 +214,10 @@ border-radius: 20px;
     height: 75%;
     border-radius: 10px;
     background-color: white;
+    transition:0.3s;
     
 
-    overflow: auto;
+    overflow: scroll;
     
      &::-webkit-scrollbar {
       width:30px; // manage scrollbar width here
@@ -224,10 +225,15 @@ border-radius: 20px;
     &::-webkit-scrollbar  {
       background:transparent; // manage scrollbar background color here
     }
+    &:hover {
+      filter: drop-shadow(0px 6px 6px rgba(0, 0, 0, 0.55))
+      drop-shadow(0px 8px 8px rgba(0, 0, 0, 0.25));
+    
+    }
     padding: 0.5rem 0rem 0.5rem 2rem;
 
     gap: 0.5rem;
-    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))
+    filter: drop-shadow(1px 4px 4px rgba(0, 0, 0, 0.25))
       drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))
       drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
      
@@ -268,9 +274,15 @@ border-radius: 20px;
       border-radius: 10px;
       font: inherit;
       font-size: 3rem;
+      transition:0.3s;
       filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))
         drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))
         drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+        &:hover {
+      filter: drop-shadow(0px 6px 6px rgba(0, 0, 0, 0.55))
+      drop-shadow(0px 8px 8px rgba(0, 0, 0, 0.25));
+    
+    }
     }
     &_button {
       max-width: 10rem;
@@ -302,10 +314,6 @@ border-radius: 20px;
     }
   }
 }
-.message:hover {
-  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.5))
-    drop-shadow(10px 10px 4px rgba(9, 112, 7, 0.75));
-  font-size: 3rem;
-}
+
 
 </style>
