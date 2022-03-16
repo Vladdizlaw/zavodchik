@@ -156,12 +156,12 @@ export default {
       payload.push(`${this.userSelf.profile.id}#${val.from}`);
       payload = [...new Set(payload)];
        console.log('payload',payload,this.userSelf.chats)
-     if (payload != this.userSelf.chats) {
-        console.log("adding to user", payload);
-        this.$store.commit("SAVE_USER", { chats: payload }); 
-        this.$emit("updateUser",null);
-         console.log('user new',payload)
-     }
+    //  if (payload != this.userSelf.chats) {
+    //     console.log("adding to user", payload);
+    //     this.$store.commit("SAVE_USER", { chats: payload }); 
+    //     this.$emit("updateUser",null);
+    //      console.log('user new',payload)
+    //  }
     },
   },
   async beforeMount() {
