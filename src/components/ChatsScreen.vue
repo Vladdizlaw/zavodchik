@@ -15,7 +15,7 @@
     </Modal>
     <div
       class="chats_block_chat"
-      v-for="chat in allChats"
+      v-for="chat in realAllChats"
       :key="chat._id"
       @click="openChat(chat.chatId)"
     >
@@ -27,17 +27,19 @@
         :src="showUser(chat.chatId)&&showUser(chat.chatId).photo"
         name="0"
       />
-      <div class="chats_block_chat__title">
+      <div class="chats_block_chat__title" >
         {{ showUser(chat.chatId)&&showUser(chat.chatId).name }} хозяин
         {{ showUser(chat.chatId)&&showUser(chat.chatId).animal }}
       </div>
       <div
         class="chats_block_chat__new"
-        v-show="newMessage( chat.chatId)"
+        v-show="newMessage( chat.chatId)||newestChat(chat.chatId)"
       >
-        {{newMessage( chat.chatId)}}<img src="../assets/message.svg" alt="" />Новое сообщение
+        {{newMessage( chat.chatId)||newestChat(chat.chatId)}}<img src="../assets/message.svg" alt="" />Новое сообщение
       </div>
     </div>
+    
+    
   </div>
 </template>
 <script>
@@ -53,6 +55,8 @@ export default {
   data() {
     return {
       allChats: [],
+      realAllChats:[],
+      oldChatsIds:[],
       chatData: null,
       opponentUser: {profile:{name:null,id:null}},
 
@@ -83,9 +87,12 @@ export default {
       if ((this.incommingMessages.length == 0 )) {
         return false;
       }
+      if (!this.oldChatsIds.includes(chatId)){
+        countMess++
+      }
       const id = chatId.split("#").filter((i)=> i !== this.selfUser?.profile?.id)[0];
       for (let i of this.incommingMessages) {
-        if (i.from == id) {
+        if (i.from == id ) {
           countMess++
 
        
@@ -94,6 +101,11 @@ export default {
       
         return countMess;
       
+    },
+    newestChat(chatId){
+      if(!this.oldChatsIds.includes(chatId)){
+        return 1
+      }
     },
     async openChat(chatId) {
          this.$refs.chat.clearScreen();
@@ -119,7 +131,10 @@ export default {
        let payload = this.selfUser.chats;
       payload.push(this.chatData.chatId);
       payload = [...new Set(payload)];
+      if (!this.oldChatsIds.includes(chatId)){
+        this.oldChatsIds.push(chatId)
 
+      }
       if (payload != this.selfUser.chats) {
         console.log("adding to user in new chat", payload);
         this.$store.commit("SAVE_USER", { chats: payload }); 
@@ -199,18 +214,25 @@ export default {
   },
   async mounted() {
     let usersIds = [];
-    const response = await fetch("http://localhost:5000/api/chat/get_chats", {
+    let response = await fetch("http://localhost:5000/api/chat/get_chats", {
       method: "POST",
-      body: JSON.stringify({ chats: this.selfUser.chats }),
+      body: JSON.stringify({ chats: this.selfUser.chats, id:this.selfUser.profile.id }),
       headers: {
         "content-type": "application/json",
       },
     });
-    this.selfUser.chats.forEach((el) => {
+     response= await response.json()
+    this.allChats = response.chats;
+    this.realAllChats =response.allChats;
+    this.oldChatsIds=this.allChats.map(c=>c.chatId)
+     console.log("oldchats", this.oldChatsIds);
+     const arrIdsChats= this.realAllChats.map(c=>c.chatId)
+    arrIdsChats.forEach((el) => {
       let res = el.split("#").filter((i)=> i !== this.selfUser?.profile?.id)[0];
       usersIds.push(res);
     });
-    console.log("users", usersIds);
+   
+   
     const data = await fetch("http://localhost:5000/api/get_users", {
       method: "POST",
       body: JSON.stringify({ users: usersIds }),
@@ -218,9 +240,14 @@ export default {
         "content-type": "application/json",
       },
     });
-    this.allChats = await response.json();
+    
+  // ???????
+  
+  // this.allChats=this.realAllChats
+    console.log("length chats:",this.allChats,this.realAllChats)
     this.opponentUsers = await data.json();
     this.pusher.bind("message", async (msg) => {
+      const usersIds=this.opponentUsers.map(el=>el.profile.id)
       this.incommingMessages.push(msg);
       if (
         this.$refs?.modalChat?.isOpen === true &&
@@ -230,7 +257,8 @@ export default {
         this.incommingMessages.splice((this.incommingMessages.findIndex((el)=>el==msg)),1);
         console.log('allChats from chats-screen',this.incommingMessageToChat)
       }
-      if (!this.opponentUsers.includes(msg.from)) {
+      if (!(usersIds.includes(msg.from))) {
+        console.log('users',usersIds,'msg,from',msg.from)
           this.makeNewChat(msg)
       }
 
@@ -272,7 +300,7 @@ export default {
     }
     &__photo:hover {
       width: 5%;
-      height: 90%;
+      height: 80%;
       box-shadow: 10px 20px 30px rgba(0, 0, 0, 0.25);
     }
     &:hover {
@@ -310,6 +338,7 @@ export default {
     }
   }
 }
+
 @keyframes shake {
   10%,
   90% {

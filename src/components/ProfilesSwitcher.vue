@@ -6,12 +6,15 @@
     </div>
     <kinesis-container :duration="300" :perspective="10000">
       <kinesis-element :strength="5" type="depth">
-        <slot></slot> 
+        <slot></slot>
+           
         <div
           class="center"
           :class="{ dog: typeAnimal == 'dog', cat: typeAnimal == 'cat' }"
           @click="clickCenter"
-        ></div>
+        >
+        <div class="switcher__help"> <slot name="helper"> </slot></div>
+        </div>
       </kinesis-element>
     </kinesis-container>
     <div class="right" @click="getNextProfile">
@@ -63,7 +66,21 @@ export default {
   img {
     margin: 0.1rem 0.3rem 0 0.3rem;
   }
-
+  .switcher__help{
+  position:absolute;
+  top:-100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  border-radius: 5px 5px;
+  border:  1px solid #000;
+  background-color: #F6F2AC;
+  font-size: 2rem ;
+  box-shadow: 10px 20px 30px rgba(0, 0, 0, 0.25);
+  opacity: 0;
+  transition: 0.7s;
+}
   .left {
     @extend %flex;
     max-width: 35%;
@@ -78,12 +95,17 @@ export default {
     }
   }
   .center {
+     position :relative;
     width: 15rem;
     height: 8.8rem;
+    
     &:hover {
       filter: drop-shadow(5px 5px 5px rgba(1, 32, 0, 0.75))
         drop-shadow(7px 7px 7px rgba(9, 112, 7, 0.75));
     }
+     &:hover .switcher__help{
+    opacity: 0.8;
+     }
     &:active {
       filter: drop-shadow(0px 4px 4px rgba(39, 33, 33, 0.5))
         drop-shadow(10px 10px 4px rgba(4, 24, 4, 0.75));

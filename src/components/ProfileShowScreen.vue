@@ -40,7 +40,15 @@
         @next="nextProfile"
         @clickCenter="openChat"
         :typeAnimal="showedUser.animal.typeAnimal"
+        class="profiles-switcher"
       >
+      
+         
+            <template #helper>
+            Нажмите что бы начать чат с {{showedUser.profile.name}}
+            </template>
+
+          
       </profiles-switcher>
     </template>
   </profile-screen>
@@ -128,6 +136,7 @@ export default {
       );
       this.idCurrentChat = data.chatId;
       this.chatCurrent = data;
+      
       // }
       console.log("chatCurrent", this.chatCurrent);
       this.$refs.chat.clearScreen();
@@ -135,7 +144,7 @@ export default {
     },
     async sendToShowedUser(value) {
       /////////
-      {
+      
         const headers = {
           "Content-Type": "application/json",
         };
@@ -154,11 +163,9 @@ export default {
 
         console.log(data);
         //////////////
-      }
+      
 
-      const headers = {
-        "Content-Type": "application/json",
-      };
+     
       const messageData = {
         chatId: this.idCurrentChat,
         author: this.userSelf.profile.id,
@@ -254,6 +261,7 @@ export default {
   justify-content: space-around;
   align-items: start;
 }
+
 
 .dog {
   background: url("../assets/cover_dog_acc.svg"), url("../assets/cover_dog.png");
