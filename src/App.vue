@@ -13,6 +13,8 @@
         @saveProfile="updateProfile"
         @viewDetails="viewDetails"
         @myProfile="getMyProfile"
+        @updateUser="updateUser"
+        
       >
       </router-view>
     </transition>
@@ -20,14 +22,19 @@
 </template>
 
 <script>
+//import Pusher from  'pusher'
 import axios from "axios";
-
+import {
+  requestPermissionNotification,
+  // sendPush,
+  getPushSubscription,
+} from "./api.js";
 export default {
   name: "App",
 
   data() {
     return {
-      // state: "start", //CСостояние
+      pusher: null,
       searchParams: {},
       autohorized: false,
       idSelected: false,
@@ -35,6 +42,9 @@ export default {
       substate: null,
       errorStr: null,
       searchUsers: null,
+      permissionNotify: null,
+      subscriptionPush: null,
+      pusherMessage: null,
     };
   },
   computed: {
@@ -44,10 +54,9 @@ export default {
         .filter((el) => el.includes("access_token"));
 
       if (!token || token.length <= 0 || token[0].split("=")[1] === "null") {
-       
         return false;
       }
-    
+
       return true;
     },
     user() {
@@ -64,17 +73,23 @@ export default {
     },
   },
   methods: {
+    startPusher(){
+      this.pusher = this.$pusher.subscribe(`${this.user.profile.id}`);
+    },
     back() {
       console.log(this.$route.name);
       if (
-       (this.isAutentificate ||this.autohorized)&&
+        (this.isAutentificate || this.autohorized) &&
         (this.$route.name == "search" || this.$route.name == "settings")
       ) {
         this.$router.push({
           name: "profile",
-          params: { user: this.user, selectedCity: this.selectedCity },
+          params: { user: this.user, selectedCity: this.selectedCity,pusher:this.pusher },
         });
-      } else if ((this.isAutentificate||this.autohorized) && this.$route.name == "searchResult") {
+      } else if (
+        (this.isAutentificate || this.autohorized) &&
+        this.$route.name == "searchResult"
+      ) {
         this.$router.push({
           name: "map",
           params: {
@@ -90,11 +105,10 @@ export default {
     getMyProfile() {
       this.$router.push({
         name: "profile",
-        params: { user: this.user, selectedCity: this.selectedCity },
+        params: { pusher: this.pusher, user: this.user, selectedCity: this.selectedCity },
       });
     },
     async logout() {
-      console.log("logout");
       const headers = {
         "Content-Type": "application/json",
       };
@@ -115,21 +129,12 @@ export default {
       this.$store.dispatch("GET_AUTH_USER");
     },
     async senpPhoto() {
-      // let index
-      //  const headers={
-      // 'Content-Type': 'multipart/form-data'}
       const PhotoArray = [...this.user.photoAnimal];
-      // console.log(PhotoArray);
       let formData = new FormData();
       PhotoArray.forEach((photo, ind) => {
         formData.append(`file[${ind}]`, photo);
       });
 
-      // this.user.photoLitter?.forEach( (photo,ind)=>{
-
-      //    formData.append(`file[${index+ind}]`,photo)
-
-      // })
       formData.append("id", this.user.profile.id);
       const answer = await axios.post(
         "http://localhost:5000/api/create_photo",
@@ -149,6 +154,7 @@ export default {
       this.$store.dispatch("POST_USER", this.user);
     },
     async updateUser() {
+      console.log("userupdated", this.user);
       this.$store.dispatch("UPDATE_USER", this.user);
     },
     async getLocation() {
@@ -211,10 +217,11 @@ export default {
       this.searchParams.awards = value.animalProperty.awards;
       this.searchParams.place = value.animalProperty.place;
       this.searchParams.dateMating = value.animalProperty.dateMating;
-      this.searchParams.id = value.animalProperty.id;
+      this.searchParams.id = this.user.profile.id;
       const { data } = await axios.get(
         `http://localhost:5000/api/get_custom_users/${this.searchParams.animalType}/${this.searchParams.startAge}/${this.searchParams.stopAge}/${this.searchParams.male}/${this.searchParams.breed}/${this.searchParams.awards}/${this.searchParams.place}/${this.searchParams.dateMating}/${this.searchParams.id}`
       );
+      console.log("searchparams id", this.searchParams.id);
       console.log(data);
       this.searchUsers = data;
       this.idSelected = null;
@@ -228,7 +235,6 @@ export default {
       });
     },
     getSign() {
-     
       this.$router.push({
         name: "registration",
         params: {
@@ -250,23 +256,25 @@ export default {
     },
 
     async viewDetails(value) {
-    
-      if (this.isAutentificate||this.autohorized) {
-         const { data } = await axios.get(
-        `http://localhost:5000/api/get_user${value.id}`
-      );
+      if (this.isAutentificate || this.autohorized) {
+        const { data } = await axios.get(
+          `http://localhost:5000/api/get_user${value.id}`
+        );
 
-      this.idSelected = data;
-      this.$router.push({
-        name: "searchResult",
-        params: { user: this.idSelected ,users:this.searchUsers},
-      });
-      }else{
-        
+        this.idSelected = data;
+        this.$router.push({
+          name: "searchResult",
+          params: {
+            pusher: this.pusher,
+            user: this.idSelected,
+            users: this.searchUsers,
+            userSelf: this.user,
+          },
+        });
+      } else {
         this.getSign();
         return;
       }
-     
     },
 
     async getRegForms(value) {
@@ -279,10 +287,13 @@ export default {
         await this.getUser();
         setTimeout(() => {
           document.cookie = `access_token=${this.user.token}`;
-          this.autohorized=true
+          this.autohorized = true;
+          if(!this.pusher){
+            this.startPusher()
+          }
           this.$router.push({
             name: "profile",
-            params: { user: this.user, selectedCity: this.selectedCity },
+            params: { pusher: this.pusher, user: this.user, selectedCity: this.selectedCity },
           });
         }, 1000);
       }, 1000);
@@ -294,17 +305,20 @@ export default {
       this.$store.commit("SAVE_USER_PROFILE", e.profile);
       await this.updateUser();
     },
-    
+
     async Sign(e) {
       const user = await axios.post("http://localhost:5000/api/login", e);
       this.$store.commit("SAVE_USER", user.data);
       document.cookie = `access_token=${this.user.token}`;
       console.log("from Sign", document.cookie);
       // window.location.reload(true);
-      this.autohorized=true
+      if(!this.pusher){
+            this.startPusher()
+          }
+      this.autohorized = true;
       this.$router.push({
         name: "profile",
-        params: { user: this.user, selectedCity: this.selectedCity },
+        params: { pusher: this.pusher, user: this.user, selectedCity: this.selectedCity },
       });
       // window.location.reload(true)
       console.log("SIGN-----", user);
@@ -312,19 +326,47 @@ export default {
     pay() {
       console.log("pay");
     },
+    // requestPermission() {},
+    async postMessageToChat(msg) {
+      const headers = {
+        "Content-Type": "application/json",
+      };
+      let { data } = await axios.post(
+        `http://localhost:5000/api/message`,
+        { from: this.user.profile.id, to: "someone", msg: msg },
+        {
+          headers: headers,
+        }
+      );
+      console.log(data);
+    },
   },
+
   async mounted() {
-    
-    if (this.isAutentificate||this.autohorized) {
+    this.permissionNotify = await requestPermissionNotification();
+
+    console.log("permission", this.permissionNotify);
+
+    if (this.isAutentificate || this.autohorized) {
       try {
+        // await sendPush()
+
         console.log("cookie:", document.cookie);
         await this.getAuthUser();
-        console.log('user get from server')
-        setTimeout(() => {
-          console.log('rout to profile')
+        console.log("user get from server");
+        this.subscriptionPush = await getPushSubscription();
+        setTimeout(async () => {
+          this.startPusher()
+          // this.pusher.bind("message", async (data) => {
+          //   this.pusherMessage = data;
+          //   console.log("pusher this", this.pusherMessage);
+          //   await sendPush(this.subscriptionPush, data.message);
+          // });
+
+          // console.log(typeof this.pusher);
           this.$router.push({
             name: "profile",
-            params: { user: this.user, selectedCity: this.selectedCity },
+            params: { pusher: this.pusher, user: this.user, selectedCity: this.selectedCity },
           });
         }, 500);
       } catch (e) {
@@ -355,7 +397,6 @@ export default {
       this.$router.push({ name: "start" });
     }
   },
-  
 };
 </script>
 <style lang="scss" scoped>
@@ -364,7 +405,6 @@ export default {
   padding: 0px;
   margin: 0px;
   box-sizing: border-box;
-
 }
 html {
   overflow-y: hidden !important;
@@ -392,7 +432,5 @@ body {
 ::-webkit-scrollbar {
   width: 0;
   background: transparent;
-} 
-
+}
 </style>
-

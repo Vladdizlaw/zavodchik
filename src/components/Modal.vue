@@ -28,30 +28,30 @@ export default {
       });
       this.$options.modalController = { resolve, reject };
       this.isOpen = true;
-      console.log(this.$options.modalController)
+      // console.log(this.$options.modalController)
       return promiseModal;
     },
     cancelModal(e) {
       let res=e.path.filter(el=>el.classList=="content")
 
-      console.log(res)
+      // console.log(res)
       if (res.length!==0) {
         
         return
       } else {
-        console.log(e.path)
+        // console.log(e.path)
         this.$options.modalController.resolve(false);
         this.isOpen = false;
       }
     },
     cancelEsc(e) {
       if (e.key == "Escape") {
-        this.$options.modalController.resolve(false);
+        this.$options.modalController?.resolve(false);
         this.isOpen = false;
       }
     },
     confirm() {
-      console.log('modal confirm')
+      // console.log('modal confirm')
       this.$options.modalController.resolve(true);
       this.isOpen = false;
     },
@@ -73,6 +73,7 @@ export default {
   width: 100vw;
   height: 100vh;
   transition: all 1s;
+  top:0;
   display: flex;
   justify-content: center;
   align-items: center;

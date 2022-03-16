@@ -1,5 +1,8 @@
 <template>
    <profile-screen :user="user" >
+     <template #modalAnother>
+       <chat-full :pusher="pusher" :userSelf="user" @updateUser="updateUser" />
+     </template>
         <template #header>
           <Header>
             
@@ -34,12 +37,15 @@ import SettingsButton from "./SettingsButton.vue";
 import SearchButton from "./SearchButton.vue";
 import LogoutButton from "./LogoutButton.vue";
 import TrialBlock from "./TrialBlock.vue";
+import { requestPermissionNotification } from "../api.js";
+import ChatFull from './ChatFull.vue';
 export default {
   name: "ProfileUserScreen",
-  components:{ProfileScreen,SettingsButton,SearchButton,TrialBlock,LogoutButton,Header},
+  components:{ProfileScreen,SettingsButton,SearchButton,TrialBlock,LogoutButton,Header, ChatFull},
   props: {
     user:Object,
     selectedCity:Array, 
+    pusher:Object
   },
   data() {
     return {
@@ -51,9 +57,12 @@ export default {
    logout(){
      this.$emit('logout',null)
    },
+   updateUser(){
+     this.$emit("updateUser",null)
+   },
    
    settings() {
-      this.$router.push({name:'settings', params:{user:this.user,selectedCity:this.selectedCity}})
+      this.$router.push({name:'settings', params:{user:this.user,selectedCity:this.selectedCity,pusher:this.pusher}})
     },
     toSearchScreen(){
       this.$router.push({name:'search',params:{
@@ -67,6 +76,14 @@ export default {
   computed: {
    
   },  
+  async mounted(){
+     await requestPermissionNotification()
+     if (this.pusher==null){
+        this.$emit('nopusher',null)
+     }
+       
+
+  }
 };
 </script>
 <style scoped>

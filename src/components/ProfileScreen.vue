@@ -11,11 +11,12 @@
         <img :src="url" class="image" alt="" />
       </template>
     </Modal>
-
+ <slot name="modalAnother"></slot>
     <div class="header">
       <slot name="header"></slot>
     </div>
     <div class="main">
+     
       <div class="main-left">
         <div class="main-left__name">
           <p>
@@ -347,6 +348,7 @@ export default {
 .LU__UP {
   width: 100%;
   height: 45%;
+ 
 }
 .LU__DOWN {
   width: 100%;
@@ -426,6 +428,7 @@ export default {
   position: absolute;
   width: 100%;
   height: 100%;
+  object-fit: cover;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.75);
   border: 0.5px solid green;
   border-radius: 10px;
