@@ -200,7 +200,11 @@ border-radius: 20px;
 
     display:inline-flex;
     gap:1rem;
-   
+    padding: 0.2rem 0 0.2rem 0;
+    img{
+      box-shadow: 10px 20px 30px rgba(0, 0, 0, 0.25);
+border-radius: 5px;
+    }
   }
   &_screen {
     display: flex;

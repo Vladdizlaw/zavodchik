@@ -326,7 +326,7 @@
               :class="{ checked: noticeMatingDate.value }"
             ></div>
             <div class="personal_data_text">
-              <div><p>Уведомлять о новых периодах для случки</p></div>
+              <div><p>Уведомлять о новых сообщениях от пользователей когда офлайн</p></div>
             </div>
           </div>
           <div
