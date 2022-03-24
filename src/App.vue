@@ -2,7 +2,11 @@
   <div class="app">
     <transition name="no-mode-translate-fade" mode="in-out">
       <router-view
+        :authentification="isAutentificate"
+        :nameStart="user.profile.mail"
+        :mobileUserAgent="mobileUserAgent"
         @animalType="getAnimalType"
+        @enterProfile="getMyProfile"
         @animalProperty="getSearchResult"
         @back="back"
         @logout="logout"
@@ -14,7 +18,6 @@
         @viewDetails="viewDetails"
         @myProfile="getMyProfile"
         @updateUser="updateUser"
-        
       >
       </router-view>
     </transition>
@@ -45,6 +48,7 @@ export default {
       permissionNotify: null,
       subscriptionPush: null,
       pusherMessage: null,
+      mobileUserAgent:null
     };
   },
   computed: {
@@ -56,7 +60,6 @@ export default {
       if (!token || token.length <= 0 || token[0].split("=")[1] === "null") {
         return false;
       }
-
       return true;
     },
     user() {
@@ -73,7 +76,7 @@ export default {
     },
   },
   methods: {
-    startPusher(){
+    startPusher() {
       this.pusher = this.$pusher.subscribe(`${this.user.profile.id}`);
     },
     back() {
@@ -84,7 +87,11 @@ export default {
       ) {
         this.$router.push({
           name: "profile",
-          params: { user: this.user, selectedCity: this.selectedCity,pusher:this.pusher },
+          params: {
+            user: this.user,
+            selectedCity: this.selectedCity,
+            pusher: this.pusher,
+          },
         });
       } else if (
         (this.isAutentificate || this.autohorized) &&
@@ -105,7 +112,11 @@ export default {
     getMyProfile() {
       this.$router.push({
         name: "profile",
-        params: { pusher: this.pusher, user: this.user, selectedCity: this.selectedCity },
+        params: {
+          pusher: this.pusher,
+          user: this.user,
+          selectedCity: this.selectedCity,
+        },
       });
     },
     async logout() {
@@ -223,7 +234,7 @@ export default {
       );
       console.log("searchparams id", this.searchParams.id);
       console.log(data);
-      this.searchUsers = data;
+      this.searchUsers = data; //?
       this.idSelected = null;
       this.$router.push({
         name: "map",
@@ -288,12 +299,16 @@ export default {
         setTimeout(() => {
           document.cookie = `access_token=${this.user.token}`;
           this.autohorized = true;
-          if(!this.pusher){
-            this.startPusher()
+          if (!this.pusher) {
+            this.startPusher();
           }
           this.$router.push({
             name: "profile",
-            params: { pusher: this.pusher, user: this.user, selectedCity: this.selectedCity },
+            params: {
+              pusher: this.pusher,
+              user: this.user,
+              selectedCity: this.selectedCity,
+            },
           });
         }, 1000);
       }, 1000);
@@ -312,13 +327,17 @@ export default {
       document.cookie = `access_token=${this.user.token}`;
       console.log("from Sign", document.cookie);
       // window.location.reload(true);
-      if(!this.pusher){
-            this.startPusher()
-          }
+      if (!this.pusher) {
+        this.startPusher();
+      }
       this.autohorized = true;
       this.$router.push({
         name: "profile",
-        params: { pusher: this.pusher, user: this.user, selectedCity: this.selectedCity },
+        params: {
+          pusher: this.pusher,
+          user: this.user,
+          selectedCity: this.selectedCity,
+        },
       });
       // window.location.reload(true)
       console.log("SIGN-----", user);
@@ -344,8 +363,9 @@ export default {
 
   async mounted() {
     this.permissionNotify = await requestPermissionNotification();
+    this.mobileUserAgent=!navigator.userAgentData.mobile
 
-    console.log("permission", this.permissionNotify);
+   
 
     if (this.isAutentificate || this.autohorized) {
       try {
@@ -356,18 +376,12 @@ export default {
         console.log("user get from server");
         this.subscriptionPush = await getPushSubscription();
         setTimeout(async () => {
-          this.startPusher()
-          // this.pusher.bind("message", async (data) => {
-          //   this.pusherMessage = data;
-          //   console.log("pusher this", this.pusherMessage);
-          //   await sendPush(this.subscriptionPush, data.message);
-          // });
+          this.startPusher();
 
-          // console.log(typeof this.pusher);
-          this.$router.push({
-            name: "profile",
-            params: { pusher: this.pusher, user: this.user, selectedCity: this.selectedCity },
-          });
+          // this.$router.push({
+          //   name: "profile",
+          //   params: { pusher: this.pusher, user: this.user, selectedCity: this.selectedCity },
+          // });
         }, 500);
       } catch (e) {
         console.log("error", e);
@@ -394,8 +408,13 @@ export default {
   },
   created() {
     if (this.$route.name !== "start") {
-      this.$router.push({ name: "start" });
+      console.log("params auth", this.isAutentificate);
+      this.$router.push({
+        name: "start",
+        params: { authentification: this.isAutentificate || this.autohorized },
+      });
     }
+    // this.$router.push({ name: "start", params:{ authentification: this.isAutentificate|| this.autohorized}})
   },
 };
 </script>

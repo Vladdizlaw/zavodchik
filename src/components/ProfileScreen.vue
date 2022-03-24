@@ -6,9 +6,12 @@
       cat: this.user && this.user.animal.typeAnimal == 'cat',
     }"
   >
+      
     <Modal ref="modal">
       <template #content>
+     
         <img :src="url" class="image" alt="" />
+        
       </template>
     </Modal>
  <slot name="modalAnother"></slot>
@@ -435,9 +438,10 @@ export default {
   transition: all 0.4s;
 }
 .photo > img:hover {
-  width: 110%;
-  height: 120%;
+  /* width: 110%;
+  height: 120%; */
   z-index: 100;
+  transform: scale(1.2);
   /* border:1px green;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.75); */
 }

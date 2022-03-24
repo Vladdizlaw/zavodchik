@@ -13,6 +13,7 @@ export default new VueRouter({
             path: '/',
             name:'start',
             component: StartScreen,
+            props:true
             
         },
         {
