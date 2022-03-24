@@ -19,7 +19,7 @@
       v-for="chat in realAllChats"
       :key="chat._id"
       @click="openChat(chat.chatId)"
-      v-show="chat.messages.length"
+      v-show="chat.messages.length" @mouseleave="deleteConfirmation=false"
     >
       <img
         class="chats_block_chat__photo"
@@ -41,7 +41,7 @@
         }}<img src="../assets/message.svg" alt="" />Новое сообщение
       </div>
      
-      <div class="chats_block__delete" @click.stop="deleteConfirmation=!deleteConfirmation"> 
+      <div class="chats_block__delete"  @click.stop="deleteConfirmation=!deleteConfirmation"> 
         <div class="chats_block__notice">
         <div v-if="!deleteConfirmation"> Удалить чат с {{ showUser(chat.chatId) && showUser(chat.chatId).name }}</div>
           <div class="notice__alarm" v-if="deleteConfirmation"> Вы уверены? <div class="notice__buttons"><button @click.stop="deleteChat(chat.chatId)">Да</button><button>Нет</button></div></div>
