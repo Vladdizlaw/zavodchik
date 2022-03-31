@@ -20,7 +20,7 @@
       </template>
     </Modal>
     <section class="settings-common" v-if="state == 'start'">
-      <Header>
+      <Header >
         <template #left>
           <back-button @back="back" />
         </template>
@@ -575,26 +575,29 @@ export default {
 
 .header__text {
   position: relative;
-
+  font-size: max(4vw,2.7rem);;
   justify-self: center;
   display: flex;
   align-items: center;
   justify-content: center;
+  height: auto;
   /* font-size: 1.8em; */
   flex-wrap: nowrap;
-}
-
-.header__text > img {
-  height: 1em;
+img {
+  height: max(4vw,2.5rem);
   margin-right: 0.2em;
 }
+
+}
+
+
 
 .main {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100vw;
-  height: 70vh;
+  // height: 90vh;
   overflow:auto;
   // background-color: transparent;
   &::-webkit-scrollbar {
@@ -614,18 +617,27 @@ export default {
 }
 .main-menu {
   padding-top: 4rem;
-  max-height: 80%;
+  height:60vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-around;
+  justify-content:space-around;
   line-height: 81px;
-  font-size: 1.2em;
+  font-size:  max(2.8vw,2.3rem);
   transition: all 0.4s;
   cursor: pointer;
+  overflow: auto;
+   box-sizing: border-box;
+  @media screen and(max-height:580px){
+    justify-content: center;
+    font-size:7vh;
+    // align-items: start;
+     height:40vh;
+  }
 }
 .main-menu > p {
   margin-top: -3rem;
+ 
 }
 .main-menu > p:hover {
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.5),
@@ -644,6 +656,7 @@ export default {
   position: absolute;
   bottom: 0rem;
 }
+
 
 .contacts {
   display: flex;
@@ -889,5 +902,11 @@ option {
 
     }
   }
+}
+.settings_common{
+  display:flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height:100%;
 }
 </style>

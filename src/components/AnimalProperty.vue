@@ -83,7 +83,7 @@ export default {
   //Компонент выбора свойств животного, принимает тип животного (cat,dog) и геопозицию,
   //отдает событие "animalProperty" с обектом собранных данных animalProperty
   props: {
-    isAutentificate: Boolean,
+   authentification: Boolean,
     animalType: String,
     selectedCity: Array,
     city: String,
@@ -104,6 +104,7 @@ export default {
     };
   },
   async mounted() {
+    console.log('auth',this.authentification)
     this.cityList = require("../cities.json");
 
     this.animalProperty.place = this.city;
@@ -142,12 +143,12 @@ export default {
     },
     back() {
      
-      if (!this.isAutentificate) {
-        this.$router.push({name:'start'});
-      } else { 
-        console.log('from back isAutentificate')
+      // if (!this.autentification) {
+      //   this.$router.push({name:'start'});
+      // } else { 
+      //   console.log('from back isAutentificate')
         this.$emit("back", null);
-      }
+      // }
     },
   },
 };

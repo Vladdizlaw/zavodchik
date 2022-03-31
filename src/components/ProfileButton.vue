@@ -18,9 +18,9 @@ export default {
   },
 };
 </script>
-<style scoped>
+<style lang="scss" scoped>
 .profile {
-  font-size: 2.5rem;
+ 
   display: flex;
   /* width: 5rem; */
   flex-wrap: nowrap;
@@ -28,6 +28,23 @@ export default {
   align-items: center;
   transition: 0.3s;
   cursor: pointer;
+  
+   p{
+     font-size: max(2.7vw, 2rem);
+  @media screen and (max-width:450px) {
+     display: none;
+     
+  }
+   }
+  img {
+    padding-top: 0.25rem;
+    height: max(2.7vw, 1.8rem);
+     @media screen and (max-width:600px) {
+       height:2.5rem;
+        
+      
+    }
+  }
 }
 .profile > img {
   height: 0.7em;

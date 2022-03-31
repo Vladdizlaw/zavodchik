@@ -55,7 +55,9 @@
           <a class="sign" @click="sign">Вход</a>
         </div>
         <div class="screen_r__registration" v-if="authentification">
-          <a class="signup" @click="signUp"> Войти как {{ nameStart }} </a>
+          <a class="signup" @click="signUp">
+            Войти как <strong>{{ nameStart }}</strong>
+          </a>
         </div>
       </div>
     </div>
@@ -66,12 +68,12 @@
 export default {
   //Стартовый экран с выбором типа животного, кнопкой входа или регистрации .
   //Принимает булевое значение мобильный ли клиент, имя юзера и аутентификацию. Выдает соответствующие события "animalType"
-  //"registration" , "sign","enterProfile" 
+  //"registration" , "sign","enterProfile"
   name: "StartScreen",
   props: {
-    mobileUserAgent: { type: Boolean },
-    nameStart: { type: String },
-    authentification: { type: Boolean },
+    mobileUserAgent: { type: Boolean }, //В зависимости от значения показывается шаблон экрана с анимацией ховера или нет
+    nameStart: { type: String }, //Имя авторизованого пользователя
+    authentification: { type: Boolean }, //авторизован ли пользователь
   },
 
   data() {
@@ -93,9 +95,7 @@ export default {
       this.$emit("enterProfile", null);
     },
   },
-  mounted() {
-   
-  },
+  mounted() {},
 };
 </script>
 
@@ -107,7 +107,7 @@ export default {
   90% {
     filter: drop-shadow(0px 4px 4px rgba(13, 100, 20, 0.2))
       drop-shadow(10px 10px 4px rgba(15, 92, 15, 0.25));
-    transform: scale(1.01);
+    transform: scale(1.03);
   }
 
   20%,
@@ -163,23 +163,20 @@ export default {
       top: -10rem;
     }
 
-     @media screen and (orientation: portrait){
+    @media screen and (orientation: portrait) {
       font-size: 6vh;
-       top: -20vh;
+      top: -20vh;
     }
-    @media screen and (orientation: portrait) and (max-height: 1000px) {
+    @media screen and (orientation: portrait) and (max-height: 670px) {
       margin: 0;
-      top: -30vh;
+      top: -35vh;
       font-size: 6vh;
     }
-   
   }
 
   .screen_image {
     position: relative;
-    // align-self: center;
-    // top: 20%;
-    // left: 10%;
+
     display: flex;
     height: 70%;
     width: 100%;
@@ -225,7 +222,7 @@ export default {
       &:active:after {
         content: "";
         border-radius: 50%;
-        height: 88%;
+        height: 87.5%;
         border: 2px solid green;
         box-shadow: 7px 7px black;
         position: absolute;
@@ -237,6 +234,10 @@ export default {
         opacity: 1;
         width: 22vw;
         height: 23vw;
+          @media screen and (orientation: portrait) {
+        width: 27vh;
+        height: 28vh;
+                }
       }
     }
     .screen_image__dog {
@@ -258,7 +259,7 @@ export default {
       &:hover:after {
         content: "";
         border-radius: 50%;
-        height: 83%;
+        height: 82.7%;
         border: 2px solid green;
         box-shadow: 5px 5px rgb(2, 95, 2);
         position: absolute;
@@ -271,7 +272,7 @@ export default {
       &:active:after {
         content: "";
         border-radius: 50%;
-        height: 85%;
+        height: 83%;
         border: 2px solid green;
         box-shadow: 7px 7px black;
         position: absolute;
@@ -284,14 +285,13 @@ export default {
         opacity: 1;
         width: 22vw;
         height: 22vw;
-      }
+        @media screen and (orientation: portrait) {
+        width: 28vh;
+        height: 28vh;
+                }
     }
 
-    .screen-image__cat:hover {
-      opacity: 1.2;
-      width: 25em;
-      height: 26.5em;
-    }
+ }
   }
 
   .screen_r {
@@ -311,8 +311,11 @@ export default {
       margin: 0;
 
       bottom: -17vh;
-      // left: 10vh;
+
       font-size: 3.5vh;
+    }
+    @media screen and (max-height: 490px) {
+      bottom: 30vh;
     }
     .reg,
     .sign {
@@ -338,8 +341,9 @@ export default {
     }
   }
 }
+
 .signup {
-  font-size: 3vw;
+  font-size: 2.8vw;
   animation: flame 2s linear infinite;
   text-transform: uppercase;
   cursor: pointer;
@@ -350,9 +354,11 @@ export default {
     text-shadow: 5px 5px 4px #003902;
   }
 }
+ 
 @media only screen and (max-width: 1300px) {
   .screen-text {
     margin-top: -2em;
   }
 }
+
 </style>

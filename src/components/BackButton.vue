@@ -1,26 +1,24 @@
 <template>
-     <div class="backbutton" @click="$emit('back',null)">
-          <img src="../assets/back.svg" />
-          <p>Назад</p>
-        </div>
+  <div class="backbutton" @click="$emit('back', null)">
+    <img src="../assets/back.svg" />
+    <p>Назад</p>
+  </div>
 </template>
 <script>
 export default {
-    name:'BackButton',
-    
-    
-}
+  name: "BackButton",
+};
 </script>
-<style scoped>
+<style scoped lang="scss">
 .backbutton {
   font-family: "Amatic SC";
-  font-size: 3rem;
+  font-size: max(2.7vw, 2rem);
   font-style: normal;
-  font-weight: 700;
-  line-height: 45px;
+  font-weight: 900;
+ 
   letter-spacing: 0em;
   text-align: left;
-  cursor:pointer;
+  cursor: pointer;
 
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
     0px 4px 4px rgba(0, 0, 0, 0.25);
@@ -28,20 +26,33 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  /* width: 10%; */
-  /* height: 2rem; */
+
   transition: 0.3s;
-}
-.backbutton:hover {
+   p{
+     box-sizing: border-box;
+     @media screen and (max-width:450px) {
+     display: none;
+     
+  }
+   }
+  img {
+    padding-top: 0.25rem;
+    max-height: max(2.7vw, 1.8rem);
+     @media screen and (max-width:600px) {
+       height:2.5rem;
+        
+      
+    }
+  }
+
+&:hover {
   filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.5))
     drop-shadow(10px 10px 4px rgba(9, 112, 7, 0.75));
 }
-.backbutton > img {
-  padding-top: 0.25rem;
-  max-height: 2.5rem;
-}
-.backbutton :active {
+
+& :active {
   filter: drop-shadow(0px 4px 4px rgba(39, 33, 33, 0.5))
     drop-shadow(10px 10px 4px rgba(10, 73, 10, 0.75));
+}
 }
 </style>

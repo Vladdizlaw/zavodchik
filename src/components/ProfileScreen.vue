@@ -238,7 +238,7 @@ export default {
   },
 };
 </script>
-<style scoped>
+<style lang="scss" scoped>
 .dog {
   background: url("../assets/cover_dog_acc.svg"), url("../assets/cover_dog.png");
   background-position: center, center;
@@ -264,7 +264,7 @@ export default {
   transform: matrix(1, 0, 0, 1, 0, 0);
 
   width: 100vw;
-  height: 100%;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: start;
@@ -276,10 +276,14 @@ export default {
   margin-top: 1rem;
   margin-bottom: 1rem;
   width: 100%;
-  height: 2em;
+  // height: 2em;
   display: flex;
   justify-content: start;
   align-items: center;
+    @media screen and (orientation:portrait){
+     margin-top: 0rem;
+  margin-bottom: 0rem;
+    }
 }
 
 .main {
@@ -288,19 +292,33 @@ export default {
   height: 65vh;
   justify-content: start;
   align-items: center;
+  @media screen and (orientation:portrait){
+    width:100%;
+    height:100%;
+  }
 }
 .main-left {
   margin-left: 2em;
   width: 50%;
-  min-height: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: start;
   align-items: space-around;
+  @media screen and (orientation:portrait){
+    margin-left:1rem;
+  }
 }
 .main-left__name {
-  max-height: 10%;
-  font-size: 3.5rem;
+  box-sizing: border-box;
+  margin:0px;
+  // max-height: 10%;
+  p{
+  font-size: max(4vw, 2rem);
+  }
+  @media screen and (orientation:portrait){
+  
+  }
   /* margin-bottom: 1em; */
 }
 .main-left__data {
@@ -311,10 +329,15 @@ export default {
   justify-content: center;
   align-items: start;
   margin-top: 2rem;
-  font-size: 2rem;
+  overflow:auto;
+   @media screen and (orientation:portrait){
+    margin-top: 0rem;
+  }
+  
 }
 .main-left__data > p {
   margin-top: -2rem;
+  font-size: max(2vw,1.5rem);
 }
 .main-right {
   width: 40%;
@@ -456,5 +479,9 @@ export default {
   justify-content: space-around;
   align-items: center;
   flex-wrap: nowrap;
+}
+.image{
+  
+  object-fit: fill;
 }
 </style>

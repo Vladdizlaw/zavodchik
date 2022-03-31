@@ -30,23 +30,30 @@ export default {
   },
 }
 </script>
-<style scoped>
+<style lang="scss" scoped>
 .trial-block {
   display: flex;
   /* min-width: 68%; */
-  justify-content: center;
+  justify-content:center;
   align-items: center;
-  gap: 1em;
-  font-size: 2rem;
+  gap: 1rem;
+  p{
+    line-height: 1.2rem;
+    box-sizing: border-box;
+  font-size: max(2.3vw, 1.5rem);
+   @media screen and (max-width: 380px) {
+      display: none;
+      } 
+  }
 }
-.trial-block > button {
+ button {
     height:2rem;
     width:6rem;
   border: 1px solid #000000;
   box-sizing: border-box;
   transition: 0.3s;
   border-radius: 15px 0px;
-  padding: 0 1em 0 1em;
+  padding: 0 1rem 0 1rem;
   background: transparent;
 }
 button:hover {

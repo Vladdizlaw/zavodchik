@@ -32,9 +32,10 @@ export default {
   align-items: center;
   transition:0.3s;
   cursor: pointer;
+  height:object-fit;
 }
 .search > img {
-  height: 0.7em;
+  height:object-fit;
 }
 .search:hover {
   filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.5))

@@ -2,8 +2,8 @@
   <div class="app">
     <transition name="no-mode-translate-fade" mode="in-out">
       <router-view
-        :authentification="isAutentificate"
-        :nameStart="user.profile.mail"
+        :authentification="isAutentificate||autohorized"
+        :nameStart="user.profile.name"
         :mobileUserAgent="mobileUserAgent"
         @animalType="getAnimalType"
         @enterProfile="getMyProfile"
@@ -37,7 +37,7 @@ export default {
 
   data() {
     return {
-      pusher: null,
+      pusher: null,//Объект 
       searchParams: {},
       autohorized: false,
       idSelected: false,
@@ -48,7 +48,8 @@ export default {
       permissionNotify: null,
       subscriptionPush: null,
       pusherMessage: null,
-      mobileUserAgent:null
+      mobileUserAgent:null,
+      entered:false
     };
   },
   computed: {
@@ -79,10 +80,10 @@ export default {
     startPusher() {
       this.pusher = this.$pusher.subscribe(`${this.user.profile.id}`);
     },
-    back() {
+    back(e) {
       console.log(this.$route.name);
       if (
-        (this.isAutentificate || this.autohorized) &&
+        ((this.isAutentificate || this.autohorized) && this.entered) &&
         (this.$route.name == "search" || this.$route.name == "settings")
       ) {
         this.$router.push({
@@ -93,7 +94,34 @@ export default {
             pusher: this.pusher,
           },
         });
-      } else if (
+      }
+       else if (
+        (this.isAutentificate || this.autohorized ) &&
+        (this.$route.name == "search" ) &&(!this.entered)
+      ) {
+        this.$router.push({
+          name: "start",
+          params: {
+            user: this.user,
+            selectedCity: this.selectedCity,
+            pusher: this.pusher,
+          },
+        });
+      }
+      else  if(e=="map"){
+       
+        this.$router.push({
+        name: "search",
+        params: {
+          animalType: this.user.animal.typeAnimal,
+          city: this.user.profile.city,
+          selectedCity: this.selectedCity,
+          // isAutentificate: this.isAutentificate,
+        },
+      });
+      } 
+      
+      else if (
         (this.isAutentificate || this.autohorized) &&
         this.$route.name == "searchResult"
       ) {
@@ -110,6 +138,11 @@ export default {
       }
     },
     getMyProfile() {
+      console.log('entered',this.entered)
+      if(!this.entered){
+        this.entered=true
+         console.log('entered',this.entered)
+      }
       this.$router.push({
         name: "profile",
         params: {
@@ -132,6 +165,7 @@ export default {
       );
       this.$store.commit("DELETE_USER");
       this.$router.push({ name: "start" });
+      this.entered=false
       window.location.reload(true);
       // console.log(this.user)
     },
@@ -208,14 +242,16 @@ export default {
     },
     getAnimalType(value) {
       // this.user.animal.animalType = value.animalType;
-      this.$store.commit("SAVE_USER_ANIMAL", value);
+     if (!(this.isAutentificate||this.autohorized))
+     console.log('not autentificate')
+     { this.$store.commit("SAVE_USER_ANIMAL", value);}
       this.$router.push({
         name: "search",
         params: {
           animalType: this.user.animal.typeAnimal,
           city: this.user.profile.city,
           selectedCity: this.selectedCity,
-          isAutentificate: this.isAutentificate,
+          // isAutentificate: this.isAutentificate,
         },
       });
     },
@@ -363,8 +399,8 @@ export default {
 
   async mounted() {
     this.permissionNotify = await requestPermissionNotification();
-    this.mobileUserAgent=!navigator.userAgentData.mobile
-
+    this.mobileUserAgent=navigator.userAgentData.mobile||screen.orientation.type=='portrait-primary'
+    console.log(navigator)
    
 
     if (this.isAutentificate || this.autohorized) {
@@ -411,7 +447,7 @@ export default {
       console.log("params auth", this.isAutentificate);
       this.$router.push({
         name: "start",
-        params: { authentification: this.isAutentificate || this.autohorized },
+      
       });
     }
     // this.$router.push({ name: "start", params:{ authentification: this.isAutentificate|| this.autohorized}})
@@ -434,6 +470,7 @@ body {
   margin: 0 !important;
   padding: 0;
   overflow: hidden;
+ 
 }
 .app {
   height: 100vh;

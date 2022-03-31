@@ -88,10 +88,12 @@ export default {
   display: flex;
   overflow: hidden;
   border-radius: 10px;
+  
   /* box-shadow: 8px 8px rgba(64, 65, 63, 0.55); */
   transition: all 0.4s;
   box-shadow: 5px 6px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
     0px 4px 4px rgba(0, 0, 0, 0.25);
+    
 }
 
 .bounce-enter-active {
