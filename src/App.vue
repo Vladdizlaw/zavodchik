@@ -399,8 +399,11 @@ export default {
 
   async mounted() {
     this.permissionNotify = await requestPermissionNotification();
-    this.mobileUserAgent=navigator.userAgentData.mobile||screen.orientation.type=='portrait-primary'
-    console.log(navigator)
+    if (screen.availWidth<760||screen.orientation.type=='portrait-primary'){
+      this.mobileUserAgent=true
+    }
+    // navigator.userAgentData.mobile||screen.orientation.type=='portrait-primary'
+    console.log(screen.orientation.type)
    
 
     if (this.isAutentificate || this.autohorized) {

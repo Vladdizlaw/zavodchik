@@ -200,6 +200,7 @@ export default {
       opacity: 0.8;
       transition: 1.2s;
       margin-right: 5vw;
+      cursor: pointer;
       @media screen and (orientation: portrait) {
         width: 25vh;
         height: 26vh;
@@ -234,10 +235,10 @@ export default {
         opacity: 1;
         width: 22vw;
         height: 23vw;
-          @media screen and (orientation: portrait) {
-        width: 27vh;
-        height: 28vh;
-                }
+        @media screen and (orientation: portrait) {
+          width: 27vh;
+          height: 28vh;
+        }
       }
     }
     .screen_image__dog {
@@ -249,6 +250,7 @@ export default {
       opacity: 0.8;
       transition: 1.2s;
       margin-left: 5vw;
+      cursor: pointer;
       @media screen and (orientation: portrait) {
         margin-right: 10vh;
         justify-self: flex-start;
@@ -286,12 +288,11 @@ export default {
         width: 22vw;
         height: 22vw;
         @media screen and (orientation: portrait) {
-        width: 28vh;
-        height: 28vh;
-                }
+          width: 28vh;
+          height: 28vh;
+        }
+      }
     }
-
- }
   }
 
   .screen_r {
@@ -354,11 +355,10 @@ export default {
     text-shadow: 5px 5px 4px #003902;
   }
 }
- 
+
 @media only screen and (max-width: 1300px) {
   .screen-text {
     margin-top: -2em;
   }
 }
-
 </style>

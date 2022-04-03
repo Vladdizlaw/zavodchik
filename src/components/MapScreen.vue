@@ -277,6 +277,7 @@ export default {
   width: max(5vw, 2.8rem);
   height: max(6vh, 2.8rem);
   transition: all 1s;
+  cursor:pointer;
   &:hover {
     width: max(6vw, 2rem);
     height: 6vh;
@@ -295,16 +296,16 @@ export default {
   background: url("../assets/cover1.png");
   background-position: center;
   background-size: cover;
-  width: fit-content;
-  height:fit-content;
+  width: max(10vw,9rem);
+  height: fit-content;
   // object-fit:cover;
   z-index: 1;
   display: none;
   font-family: Amatic SC;
   font-style: normal;
   font-weight: bold;
-  font-size:max(1.3vw,1.3rem);
-  line-height: 1rem;
+  font-size:max(1.3vh,1.3rem);
+  line-height: 1.25rem;
   position: relative;
   opacity: 0;
   transition: all 0.5s;
@@ -313,10 +314,10 @@ export default {
     line-height: 0.7rem;
   }
   &:hover {
-    font-size:max(1.3vw,1.3rem);
+    // font-size:max(1.3vw,1.3rem);
    
    
-    transform: scaleZ(11rem);
+    // transform: scaleZ(11rem);
     z-index: 1000;
     filter: drop-shadow(0px 6px 6px rgba(0, 0, 0, 0.55))
       drop-shadow(0px 8px 8px rgba(0, 0, 0, 0.25));
@@ -365,6 +366,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  cursor:pointer;
   filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))
     drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))
     drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
