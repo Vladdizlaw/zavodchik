@@ -129,6 +129,7 @@
         <button class="next-btn" @click.stop="getRegistrationAnimal2">
           <p>Далее</p>
         </button>
+        
       </section>
       <section class="registration-animal3" v-if="states.registrationAnimal3.value">
         <PhotoAdd :message="'Фото животных'" @photo="getPhotoAnimal" />
@@ -137,7 +138,7 @@
           <div
             class="personal_data_checkbox"
             @click="licenseAgreement"
-            :class="{ checked: animalForm['licenseAgreement'] }"
+            :class="{ checked: regForm['licenseAgreement'] }"
           ></div>
           <div class="personal_data_text">
             <div><p>Я принимаю Соглашение на обработку персональных данных</p></div>
@@ -150,7 +151,7 @@
           <div
             class="personal_data_checkbox"
             @click="startTrial"
-            :class="{ checked: animalForm['startTrial']['value'] }"
+            :class="{ checked: regForm['startTrial']['value'] }"
           ></div>
           <div class="personal_data_text">
             <p>Попробовать бесплатно</p>
@@ -161,6 +162,9 @@
         </div>
         <button class="next-btn" @click.stop="getRegistrationAnimal3">
           <p>Зарегестрировать</p>
+        </button>
+        <button class="next-btn" @click.stop="addNewAnimal">
+          <p>Далее</p>
         </button>
       </section>
     </div>
@@ -236,13 +240,14 @@ export default {
         pass: null,
         city: null,
         id:null,
+        licenseAgreement: false,
+        startTrial: { value: false, date: null },
          hood: "",
-          seenFlags:{seenHoodFlag:true,seenTelFlag:true},
+        seenFlags:{seenHoodFlag:true,seenTelFlag:true},
       },
       animalType: null,
       
-       photoAnimal: [],
-       photoUrl: [],
+      
       animalForm: {
         typeAnimal: null,
         male: null,
@@ -254,10 +259,13 @@ export default {
         vaccination: null,
         color: null,
         matingConditions: null,
+        photoAnimal: [],
+        photoUrl: [],
+        id:null,
+        owner:null,
        
-        licenseAgreement: false,
-        startTrial: { value: false, date: null },
       },
+      animals:[]
     };
   },
   mounted() {
@@ -291,19 +299,39 @@ export default {
     
   },
   methods: {
+    addNewAnimal(){
+        this.animalForm.id=uuidv4()
+        const pushedAnimal={...this.animalForm}
+        this.animals.push(pushedAnimal)
+        this.animalForm.typeAnimal=null
+        this.animalForm.male=null
+        this.animalForm.age=1
+        this.animalForm.breed=null
+        this.animalForm.name=null
+        this.animalForm.dateMating=null
+        this.animalForm.awards= null
+        this.animalForm.vaccination=null
+        this.animalForm.color=null
+        this.animalForm.matingConditions=null
+        this.animalForm.photoAnimal=[]
+        this.animalForm.photoUrl=[]
+        this.states.registrationAnimal3.value =false;
+        this.states.registrationAnimal1.value = true;
+
+    },
     getPhotoAnimal(value) {
-      this.photoAnimal = value.photo;
+      this.animalForm.photoAnimal = value.photo;
       // console.log(this.animalForm.photoAnimal);
     },
    
     licenseAgreement() {
-      this.animalForm.licenseAgreement = !this.animalForm.licenseAgreement;
+      this.regForm.licenseAgreement = !this.regForm.licenseAgreement;
     },
     startTrial() {
-      this.animalForm.startTrial.value = !this.animalForm.startTrial.value;
-      if (this.animalForm.startTrial.value) {
-        this.animalForm.startTrial.dateStart = Date.now();
-        this.animalForm.startTrial.dateEnd = this.animalForm.startTrial.dateStart + 77760000
+      this.regForm.startTrial.value = !this.regForm.startTrial.value;
+      if (this.regForm.startTrial.value) {
+        this.regForm.startTrial.dateStart = Date.now();
+        this.regForm.startTrial.dateEnd = this.regForm.startTrial.dateStart + (86400000*15)
       }
     },
     getSelfState() {
@@ -322,7 +350,12 @@ export default {
       // this.states.previosState='start'
     },
     sendRegisteredData(){
-      this.$emit('registeredData',{profile:this.regForm,id:this.regForm.id,photoAnimal:this.photoAnimal,animal:this.animalForm})
+         if(this.animalForm.name!==null){
+           const pushedAnimal={...this.animalForm}
+           this.animals.push(pushedAnimal)
+           }
+        // console.log(this.animals)
+      this.$emit('registeredData',{profile:this.regForm,id:this.regForm.id,animals:this.animals})
     },
     getRegistration() {
       let valid = true;
@@ -369,6 +402,7 @@ export default {
       if (!valid) {
         return;
       } else {
+        this.regForm.id=uuidv4()
         this.$emit("regForm", { regForm: this.regForm });
         //  this.start = true;
         this.states.registrationUser.value = false;
@@ -410,6 +444,7 @@ export default {
       if (!valid) {
         return;
       }
+      this.animalForm.owner=this.regForm.id
       this.states.registrationAnimal1.value = false;
       this.states.registrationAnimal2.value = true;
       //  this.states.previosState='registrationAnimal1'
@@ -421,14 +456,14 @@ export default {
     getRegistrationAnimal3() {
       let valid = true;
 
-      if (!this.animalForm.licenseAgreement) {
+      if (!this.regForm.licenseAgreement) {
         valid = false;
         this.errs.licenseAgreement = "Требуется подписать соглашение";
         setTimeout(() => {
           this.errs.licenseAgreement = "";
         }, 3000);
       }
-      if (!this.animalForm.startTrial.value) {
+      if (!this.regForm.startTrial.value) {
         valid = false;
         this.errs.startTrial = "Требуется активировать пробный период";
         setTimeout(() => {
@@ -438,7 +473,8 @@ export default {
       if (!valid){
         return
       }
-      this.regForm.id=uuidv4()
+      this.animalForm.owner=this.regForm.id
+      this.animalForm.id=uuidv4()
       this.sendRegisteredData()
     },
     back() {

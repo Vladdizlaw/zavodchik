@@ -2,7 +2,7 @@
   <div class="app">
     <transition name="no-mode-translate-fade" mode="in-out">
       <router-view
-        :authentification="isAutentificate||autohorized"
+        :authentification="isAutentificate || autohorized"
         :nameStart="user.profile.name"
         :mobileUserAgent="mobileUserAgent"
         @animalType="getAnimalType"
@@ -25,6 +25,7 @@
 </template>
 
 <script>
+import AnimalModule from "./store/modules/animal.js";
 //import Pusher from  'pusher'
 import axios from "axios";
 import {
@@ -37,7 +38,7 @@ export default {
 
   data() {
     return {
-      pusher: null,//Объект 
+      pusher: null, //Объект
       searchParams: {},
       autohorized: false,
       idSelected: false,
@@ -48,8 +49,8 @@ export default {
       permissionNotify: null,
       subscriptionPush: null,
       pusherMessage: null,
-      mobileUserAgent:null,
-      entered:false
+      mobileUserAgent: null,
+      entered: false,
     };
   },
   computed: {
@@ -83,7 +84,8 @@ export default {
     back(e) {
       console.log(this.$route.name);
       if (
-        ((this.isAutentificate || this.autohorized) && this.entered) &&
+        (this.isAutentificate || this.autohorized) &&
+        this.entered &&
         (this.$route.name == "search" || this.$route.name == "settings")
       ) {
         this.$router.push({
@@ -94,10 +96,10 @@ export default {
             pusher: this.pusher,
           },
         });
-      }
-       else if (
-        (this.isAutentificate || this.autohorized ) &&
-        (this.$route.name == "search" ) &&(!this.entered)
+      } else if (
+        (this.isAutentificate || this.autohorized) &&
+        this.$route.name == "search" &&
+        !this.entered
       ) {
         this.$router.push({
           name: "start",
@@ -107,21 +109,17 @@ export default {
             pusher: this.pusher,
           },
         });
-      }
-      else  if(e=="map"){
-       
+      } else if (e == "map") {
         this.$router.push({
-        name: "search",
-        params: {
-          animalType: this.user.animal.typeAnimal,
-          city: this.user.profile.city,
-          selectedCity: this.selectedCity,
-          // isAutentificate: this.isAutentificate,
-        },
-      });
-      } 
-      
-      else if (
+          name: "search",
+          params: {
+            animalType: this.user.animals[0].typeAnimal,
+            city: this.user.profile.city,
+            selectedCity: this.selectedCity,
+            // isAutentificate: this.isAutentificate,
+          },
+        });
+      } else if (
         (this.isAutentificate || this.autohorized) &&
         this.$route.name == "searchResult"
       ) {
@@ -138,10 +136,10 @@ export default {
       }
     },
     getMyProfile() {
-      console.log('entered',this.entered)
-      if(!this.entered){
-        this.entered=true
-         console.log('entered',this.entered)
+      console.log("entered", this.entered);
+      if (!this.entered) {
+        this.entered = true;
+        console.log("entered", this.entered);
       }
       this.$router.push({
         name: "profile",
@@ -165,7 +163,7 @@ export default {
       );
       this.$store.commit("DELETE_USER");
       this.$router.push({ name: "start" });
-      this.entered=false
+      this.entered = false;
       window.location.reload(true);
       // console.log(this.user)
     },
@@ -173,30 +171,36 @@ export default {
     async getAuthUser() {
       this.$store.dispatch("GET_AUTH_USER");
     },
-    async senpPhoto() {
-      const PhotoArray = [...this.user.photoAnimal];
+    async senpPhoto(photoArray, animalId) {
+      // const PhotoArray = [...this.user.photoAnimal];
       let formData = new FormData();
-      PhotoArray.forEach((photo, ind) => {
+      photoArray.forEach((photo, ind) => {
         formData.append(`file[${ind}]`, photo);
       });
 
-      formData.append("id", this.user.profile.id);
-      const answer = await axios.post(
-        "http://localhost:5000/api/create_photo",
-        formData,
-        {
+      // formData.append("id", this.user.profile.id);
+      formData.append("animalId", animalId);
+      console.log("formData:", formData);
+      try {
+        await axios.post("http://localhost:5000/api/create_photo", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-        }
-      );
-      console.log(answer, "formData:", formData);
+        });
+      } catch (e) {
+        console.log("sendPhoto", e);
+      }
     },
     async getUser() {
-      this.$store.dispatch("GET_USER", this.user.profile.id);
+      this.$store.dispatch("GET_PROFILE",this.user.profile.id);
+      this.$store.dispatch("GET_ANIMALS",this.user.profile.id)
     },
     async sendUser() {
-      this.$store.dispatch("POST_USER", this.user);
+      this.$store.dispatch("POST_PROFILE", this.user.profile);
+      for (let key in this.user.animals) {
+        console.log("key", this.user.animals[key]);
+        this.$store.dispatch("POST_ANIMAL", this.user.animals[key]);
+      }
     },
     async updateUser() {
       console.log("userupdated", this.user);
@@ -222,7 +226,7 @@ export default {
       try {
         const location = await this.getLocation();
 
-        this.$store.commit("SAVE_USER", {
+        this.$store.commit("SAVE_PROFILE", {
           location: {
             latitude: location.coords.latitude,
             longitude: location.coords.longitude,
@@ -242,13 +246,15 @@ export default {
     },
     getAnimalType(value) {
       // this.user.animal.animalType = value.animalType;
-     if (!(this.isAutentificate||this.autohorized))
-     console.log('not autentificate')
-     { this.$store.commit("SAVE_USER_ANIMAL", value);}
+      if (!(this.isAutentificate || this.autohorized))
+        console.log("not autentificate");
+      {
+        this.$store.commit("SAVE_USER_ANIMAL", value, 0);
+      }
       this.$router.push({
         name: "search",
         params: {
-          animalType: this.user.animal.typeAnimal,
+          animalType: this.users.animals[0].typeAnimal,
           city: this.user.profile.city,
           selectedCity: this.selectedCity,
           // isAutentificate: this.isAutentificate,
@@ -256,6 +262,7 @@ export default {
       });
     },
     async getSearchResult(value) {
+      console.log("value", value);
       this.searchParams.animalType = this.user.animal.typeAnimal;
       this.searchParams.startAge = value.animalProperty.startAge;
       this.searchParams.stopAge = value.animalProperty.stopAge;
@@ -323,31 +330,66 @@ export default {
         return;
       }
     },
-
+    addModuleAnimalToVuex() {
+      const size = Array.from(Object.values(this.user.animals)).length;
+      console.log("animals", size);
+      this.$store.registerModule(["animals", size], AnimalModule);
+    },
     async getRegForms(value) {
-      this.$store.commit("SAVE_USER", value);
-      await this.sendUser();
-      setTimeout(async () => {
-        await this.senpPhoto();
-      }, 1000);
-      setTimeout(async () => {
-        await this.getUser();
-        setTimeout(() => {
-          document.cookie = `access_token=${this.user.token}`;
-          this.autohorized = true;
-          if (!this.pusher) {
-            this.startPusher();
+      console.log("value", value);
+      this.$store.commit("SAVE_PROFILE", value.profile);
+      if (value.animals.length > 1) {
+        value.animals.forEach((el, ind) => {
+          el.ind = ind;
+          if (ind > 0) {
+            this.addModuleAnimalToVuex();
+            this.$store.commit("SAVE_ANIMAL", el);
+          } else {
+            this.$store.commit("SAVE_ANIMAL", el);
           }
-          this.$router.push({
-            name: "profile",
-            params: {
-              pusher: this.pusher,
-              user: this.user,
-              selectedCity: this.selectedCity,
-            },
-          });
-        }, 1000);
+        });
+      } else {
+        const payload = value.animals[0];
+        payload.ind = 0;
+        this.$store.commit("SAVE_ANIMAL", payload);
+      }
+
+      console.log("this.user", this.user);
+      this.$store.commit("ADD_ANIMALS_TO_PROFILE")
+      await this.sendUser();
+
+      setTimeout(async () => {
+        Array.from(Object.keys(this.user.animals)).forEach(async ind=>{
+          console.log("recieved", this.user.animals[ind].photoAnimal);
+          await this.senpPhoto(
+            this.user.animals[ind].photoAnimal,
+            this.user.animals[ind]["id"]
+          );
+          console.log("done", ind);
+        })
+          
+      
+        setTimeout(async()=>{ await this.getUser()},1000)
       }, 1000);
+
+      // setTimeout(async () => {
+
+      //   setTimeout(() => {
+      //     document.cookie = `access_token=${this.user.token}`;
+      //     this.autohorized = true;
+      //     if (!this.pusher) {
+      //       this.startPusher();
+      //     }
+      //     this.$router.push({
+      //       name: "profile",
+      //       params: {
+      //         pusher: this.pusher,
+      //         user: this.user,
+      //         selectedCity: this.selectedCity,
+      //       },
+      //     });
+      //   }, 1000);
+      // }, 1000);
 
       console.log("get reg form this.user", this.user);
     },
@@ -399,9 +441,13 @@ export default {
 
   async mounted() {
     this.permissionNotify = await requestPermissionNotification();
-    this.mobileUserAgent=navigator.userAgentData.mobile||screen.orientation.type=='portrait-primary'
-    console.log(navigator)
-   
+    this.mobileUserAgent =
+      navigator.userAgentData.mobile ||
+      screen.orientation.type == "portrait-primary";
+    console.log("start:", this.user);
+    // this.addAnimalToVuex()
+    // ;
+    console.log("start:", this.user);
 
     if (this.isAutentificate || this.autohorized) {
       try {
@@ -447,7 +493,6 @@ export default {
       console.log("params auth", this.isAutentificate);
       this.$router.push({
         name: "start",
-      
       });
     }
     // this.$router.push({ name: "start", params:{ authentification: this.isAutentificate|| this.autohorized}})
@@ -470,7 +515,6 @@ body {
   margin: 0 !important;
   padding: 0;
   overflow: hidden;
- 
 }
 .app {
   height: 100vh;
