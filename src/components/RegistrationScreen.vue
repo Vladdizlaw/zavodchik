@@ -6,202 +6,63 @@
         states.registrationUser.value ||
           states.registrationAnimal1.value ||
           states.registrationAnimal2.value ||
-          states.registrationAnimal3.value
+          states.registrationAnimal3.value ||
+          states.start.value
       "
     >
       <div class="registration-title">
-        <back-button @back="back" />
-        <div class="registration-title__text" ><p>Регистрация</p></div>
+        <Header>
+          <template #left>
+            <back-button @back="back" />
+          </template>
+          <template #center>
+            <p class="registration_title" v-show="!states.start.value">Регистрация</p>
+            
+          </template>
+        </Header>
       </div>
-      <section class="registration-user" v-if="states.registrationUser.value">
-        <div class="user mail">
-          <p>Введите email:</p>
-          <input type="email" v-model="regForm.mail" />
-          <div class="errmsg" :v-show="errs.mail">
-            {{ errs.mail }}
-          </div>
-        </div>
-        <div class="user phone">
-          <p>Введите телефон:</p>
-          <input
-            type="tel"
-            required
-            v-model="regForm.tel"
-            maxlength="16"
-            v-phone
-          />
-          <div class="errmsg" :v-show="errs.tel">{{ errs.tel }}</div>
-        </div>
+      <profile-registration
+        :usedMails="usedMails"
+        :selectedCity="selectedCity"
+        @regForm="getRegistration"
+        v-if="states.registrationUser.value"
+      />
+      <animal-registration
+        v-if="states.registrationAnimal1.value"
+        @animalForm1="getRegistrationAnimal1"
+      />
 
-        <div class="user name">
-          <p>Введите ваше имя:</p>
-          <input type="text" v-model="regForm.name" maxlength="12" />
-          <div class="errmsg" :v-show="errs.name">{{ errs.name }}</div>
-        </div>
-        <div class="user city">
-          <p>Город</p>
-          <select v-model="regForm.city" placeholder="город">
-            <option
-              :value="city"
-              v-for="(city, ind) in selectedCity"
-              :key="ind"
-              >{{ city }}</option
-            >
-          </select>
-          <div class="errmsg" :v-show="errs.city">{{ errs.city }}</div>
-        </div>
-        <div class="user psw">
-          <p>Пароль (не меньше 6 символов):</p>
-          <input
-            type="text"
-            minlength="6"
-            maxlength="11"
-            required
-            v-model="regForm.pass"
-          />
-          <div class="errmsg" :v-show="errs.pswd">{{ errs.pswd }}</div>
-        </div>
-        <button class="next-btn" @click.stop="getRegistration">
-          <p>Далее</p>
-        </button>
-      </section>
-      <section class="registration-animal1" v-if="states.registrationAnimal1.value">
-        <div class="animal type">
-          <p>Вид животного</p>
-          <select v-model="animalType">
-            <option value="cat">Кошка </option>
-            <option value="dog">Собака</option>
-          </select>
-          <div class="errmsg" :v-show="errs.type">{{ errs.type }}</div>
-        </div>
-        <div class="animal male">
-          <p>Пол</p>
-          <select v-model="animalForm.male">
-            <option value="мужской">мужской </option>
-            <option value="Женский">Женский</option>
-          </select>
-          <div class="errmsg" :v-show="errs.male">{{ errs.male }}</div>
-        </div>
-
-        <div class="animal age">
-          <p>Возраст</p>
-          <input type="number" v-model="animalForm.age" />
-        </div>
-        <div class="animal breed">
-          <p>Порода</p>
-          <select v-model="animalForm.breed" placeholder="порода">
-            <option :value="bred" v-for="(bred, ind) in breedList" :key="ind">{{
-              bred
-            }}</option>
-          </select>
-          <div class="errmsg" :v-show="errs.breed">{{ errs.breed }}</div>
-        </div>
-        <div class="animal name">
-          <p>Имя животного</p>
-          <input type="text" v-model="animalForm.name" />
-           <div class="errmsg" :v-show="errs.nameAnimal">{{ errs.nameAnimal }}</div>
-        </div>
-        <button class="next-btn" @click.stop="getRegistrationAnimal1">
-          <p>Далее</p>
-        </button>
-      </section>
-      <section class="registration-animal2" v-if="states.registrationAnimal2.value">
-        <div class="animal mating">
-          <p>Предположительная дата вязки</p>
-          <input type="date" v-model="animalForm.dateMating" />
-        </div>
-        <div class="animal awards">
-          <p>Награды, титулы, медали</p>
-          <input type="text" v-model="animalForm.awards" />
-        </div>
-        <div class="animal vaccine">
-          <p>Прививки</p>
-          <input type="text" v-model="animalForm.vaccination" />
-        </div>
-        <div class="animal color">
-          <p>Окрас</p>
-          <input type="text" v-model="animalForm.color" />
-        </div>
-        <div class="animal circumstances-mating">
-          <p>Условия вязки</p>
-          <input type="text" v-model="animalForm.matingConditions" />
-        </div>
-        <button class="next-btn" @click.stop="getRegistrationAnimal2">
-          <p>Далее</p>
-        </button>
-        
-      </section>
-      <section class="registration-animal3" v-if="states.registrationAnimal3.value">
-        <PhotoAdd :message="'Фото животных'" @photo="getPhotoAnimal" />
-       
-        <div class="animal personal_data">
-          <div
-            class="personal_data_checkbox"
-            @click="licenseAgreement"
-            :class="{ checked: regForm['licenseAgreement'] }"
-          ></div>
-          <div class="personal_data_text">
-            <div><p>Я принимаю Соглашение на обработку персональных данных</p></div>
-            <div class="errmsg personal-text_err" :v-show="errs.licenseAgreement">
-              {{ errs.licenseAgreement }}
-            </div>
-          </div>
-        </div>
-        <div class="animal personal_data">
-          <div
-            class="personal_data_checkbox"
-            @click="startTrial"
-            :class="{ checked: regForm['startTrial']['value'] }"
-          ></div>
-          <div class="personal_data_text">
-            <p>Попробовать бесплатно</p>
-            <div class="errmsg" :v-show="errs.startTrial">
-              {{ errs.startTrial }}
-            </div>
-          </div>
-        </div>
-        <button class="next-btn" @click.stop="getRegistrationAnimal3">
-          <p>Зарегестрировать</p>
-        </button>
-        <button class="next-btn" @click.stop="addNewAnimal">
-          <p>Далее</p>
-        </button>
-      </section>
+      <login-form v-if="states.start.value" @signUp="changeStateRegist" />
     </div>
-    <section class="regwindow" v-if="states.start.value">
-     
-      <div class="forinput">
-        <p>ЛОГИН (E-MAIL):</p>
-        <input type="text" v-model="login" />
-        <p>ПАРОЛЬ:</p>
-        <input type="password" v-model="password" />
-      </div>
-      <div class="forbutton">
-        <button class="registr" @click="changeStateRegist">
-          <p>РЕГИСТРАЦИЯ</p>
-        </button>
-        <button class="signin" @click="sign"><p>ВОЙТИ</p></button>
-      </div>
-    </section>
   </div>
 </template>
 <script>
+import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
-import PhotoAdd from "../components/PhotoAdd.vue";
-import BackButton from './BackButton.vue';
+// import PhotoAdd from "../components/PhotoAdd.vue";
+import BackButton from "./BackButton.vue";
+import Header from "./Header.vue";
+import ProfileRegistration from "./ProfileRegistration.vue";
+import AnimalRegistration from "./AnimalRegistration.vue";
+import LoginForm from "./LoginForm.vue";
 export default {
   name: "RegistrationScreen",
   props: {
     city: String,
     substate: String,
-    selectedCity:Array,
+    selectedCity: Array,
   },
   components: {
-    PhotoAdd,
+    // PhotoAdd,
     BackButton,
+    ProfileRegistration,
+    Header,
+    AnimalRegistration,
+    LoginForm,
   },
   data() {
     return {
+      usedMails: null,
       states: {
         // previosState:null,
         start: { value: true, previosState: "start" },
@@ -231,7 +92,7 @@ export default {
         male: "",
         licenseAgreement: "",
         startTrial: "",
-        nameAnimal:""
+        nameAnimal: "",
       },
       regForm: {
         mail: null,
@@ -239,15 +100,14 @@ export default {
         name: null,
         pass: null,
         city: null,
-        id:null,
+        id: null,
         licenseAgreement: false,
         startTrial: { value: false, date: null },
-         hood: "",
-        seenFlags:{seenHoodFlag:true,seenTelFlag:true},
+        hood: "",
+        seenFlags: { seenHoodFlag: true, seenTelFlag: true },
       },
       animalType: null,
-      
-      
+
       animalForm: {
         typeAnimal: null,
         male: null,
@@ -261,14 +121,29 @@ export default {
         matingConditions: null,
         photoAnimal: [],
         photoUrl: [],
-        id:null,
-        owner:null,
-       
+        id: null,
+        owner: null,
       },
-      animals:[]
+      animals: [],
     };
   },
-  mounted() {
+  async mounted() {
+    const headers = {
+      "Content-Type": "application/json",
+    };
+    let { data } = await axios.get(
+      `http://localhost:5000/api/get_mails`,
+
+      {
+        headers: headers,
+      }
+    );
+
+    this.usedMails = data.map((el) => {
+      return el["mail"];
+    });
+    console.log(this.usedMails);
+
     this.regForm.city = this.city;
     if (this.substate == "registrationUser") {
       this.states.start.value = false;
@@ -295,45 +170,43 @@ export default {
       }
     },
   },
-  computed: {
-    
-  },
+  computed: {},
   methods: {
-    addNewAnimal(){
-        this.animalForm.id=uuidv4()
-        const pushedAnimal={...this.animalForm}
-        this.animals.push(pushedAnimal)
-        this.animalForm.typeAnimal=null
-        this.animalForm.male=null
-        this.animalForm.age=1
-        this.animalForm.breed=null
-        this.animalForm.name=null
-        this.animalForm.dateMating=null
-        this.animalForm.awards= null
-        this.animalForm.vaccination=null
-        this.animalForm.color=null
-        this.animalForm.matingConditions=null
-        this.animalForm.photoAnimal=[]
-        this.animalForm.photoUrl=[]
-        this.states.registrationAnimal3.value =false;
-        this.states.registrationAnimal1.value = true;
+    addNewAnimal() {
+      this.animalForm.id = uuidv4();
+      const pushedAnimal = { ...this.animalForm };
+      this.animals.push(pushedAnimal);
+      this.animalForm.typeAnimal = null;
+      this.animalForm.male = null;
+      this.animalForm.age = 1;
+      this.animalForm.breed = null;
+      this.animalForm.name = null;
+      this.animalForm.dateMating = null;
+      this.animalForm.awards = null;
+      this.animalForm.vaccination = null;
+      this.animalForm.color = null;
+      this.animalForm.matingConditions = null;
+      this.animalForm.photoAnimal = [];
+      this.animalForm.photoUrl = [];
+      this.states.registrationAnimal3.value = false;
+      this.states.registrationAnimal1.value = true;
+    },
+    // getPhotoAnimal(value) {
+    //   this.animalForm.photoAnimal = value.photo;
+    //   // console.log(this.animalForm.photoAnimal);
+    // },
 
-    },
-    getPhotoAnimal(value) {
-      this.animalForm.photoAnimal = value.photo;
-      // console.log(this.animalForm.photoAnimal);
-    },
-   
-    licenseAgreement() {
-      this.regForm.licenseAgreement = !this.regForm.licenseAgreement;
-    },
-    startTrial() {
-      this.regForm.startTrial.value = !this.regForm.startTrial.value;
-      if (this.regForm.startTrial.value) {
-        this.regForm.startTrial.dateStart = Date.now();
-        this.regForm.startTrial.dateEnd = this.regForm.startTrial.dateStart + (86400000*15)
-      }
-    },
+    // licenseAgreement() {
+    //   this.regForm.licenseAgreement = !this.regForm.licenseAgreement;
+    // },
+    // startTrial() {
+    //   this.regForm.startTrial.value = !this.regForm.startTrial.value;
+    //   if (this.regForm.startTrial.value) {
+    //     this.regForm.startTrial.dateStart = Date.now();
+    //     this.regForm.startTrial.dateEnd =
+    //       this.regForm.startTrial.dateStart + 86400000 * 15;
+    //   }
+    // },
     getSelfState() {
       let result = "";
       Object.keys(this.states).forEach((key) => {
@@ -349,104 +222,62 @@ export default {
       this.states.registrationUser.value = true;
       // this.states.previosState='start'
     },
-    sendRegisteredData(){
-         if(this.animalForm.name!==null){
-           const pushedAnimal={...this.animalForm}
-           this.animals.push(pushedAnimal)
-           }
-        // console.log(this.animals)
-      this.$emit('registeredData',{profile:this.regForm,id:this.regForm.id,animals:this.animals})
+    sendRegisteredData() {
+      if (this.animalForm.name !== null) {
+        const pushedAnimal = { ...this.animalForm };
+        this.animals.push(pushedAnimal);
+      }
+      // console.log(this.animals)
+      this.$emit("registeredData", {
+        profile: this.regForm,
+        id: this.regForm.id,
+        animals: this.animals,
+      });
     },
-    getRegistration() {
-      let valid = true;
-      if (!this.regForm.mail?.split("@")[1]?.split(".")[1]) {
-        valid = false;
-        this.errs.mail = "Введите корректную почту";
-        setTimeout(() => {
-          this.errs.mail = "";
-        }, 3000);
-      }
-      // const p=document.createElement('p')
-      if (
-        this.regForm.tel?.length < 11 ||
-        !this.regForm.tel ||
-        this.regForm.tel?.length > 15
-      ) {
-        valid = false;
-        this.errs.tel = "Введите корректный номер";
-        setTimeout(() => {
-          this.errs.tel = "";
-        }, 3000);
-      }
-      if (!this.regForm.city) {
-        valid = false;
-        this.errs.city = "Введите город";
-        setTimeout(() => {
-          this.errs.city = "";
-        }, 3000);
-      }
-      if (!this.regForm.name) {
-        valid = false;
-        this.errs.name = "Введите имя";
-        setTimeout(() => {
-          this.errs.name = "";
-        }, 3000);
-      }
-      if (!this.regForm.pass || this.regForm.pass?.length < 6) {
-        valid = false;
-        this.errs.pswd = "Введите пароль";
-        setTimeout(() => {
-          this.errs.pswd = "";
-        }, 3000);
-      }
-      if (!valid) {
-        return;
-      } else {
-        this.regForm.id=uuidv4()
-        this.$emit("regForm", { regForm: this.regForm });
-        //  this.start = true;
-        this.states.registrationUser.value = false;
-        // this.states.previosState='registrationUser'
-        this.states.registrationAnimal1.value = true;
-        // console.log("correct", this.states);
-      }
+    getRegistration(e) {
+      console.log("correct", e);
+      this.states.registrationUser.value = false;
+      // this.states.previosState='registrationUser'
+      this.states.registrationAnimal1.value = true;
+      //
     },
-    getRegistrationAnimal1() {
-      let valid = true;
-      if (!this.animalForm.typeAnimal) {
-        valid = false;
-        this.errs.type = "Выберите тип животного";
-        setTimeout(() => {
-          this.errs.type = "";
-        }, 3000);
-      }
-      if (!this.animalForm.name) {
-        valid = false;
-        this.errs.nameAnimal = "Введите имя животного";
-        setTimeout(() => {
-          this.errs.nameAnimal = "";
-        }, 3000);
-      }
-      if (!this.animalForm.male) {
-        valid = false;
-        this.errs.male = "Выберите пол";
-        setTimeout(() => {
-          this.errs.male = "";
-        }, 3000);
-      }
-      if (!this.animalForm.breed) {
-        valid = false;
-        this.errs.breed = "Выберите породу";
-        setTimeout(() => {
-          this.errs.breed = "";
-        }, 3000);
-      }
-      if (!valid) {
-        return;
-      }
-      this.animalForm.owner=this.regForm.id
+    getRegistrationAnimal1(val) {
+      // let valid = true;
+      // if (!this.animalForm.typeAnimal) {
+      //   valid = false;
+      //   this.errs.type = "Выберите тип животного";
+      //   setTimeout(() => {
+      //     this.errs.type = "";
+      //   }, 3000);
+      // }
+      // if (!this.animalForm.name) {
+      //   valid = false;
+      //   this.errs.nameAnimal = "Введите имя животного";
+      //   setTimeout(() => {
+      //     this.errs.nameAnimal = "";
+      //   }, 3000);
+      // }
+      // if (!this.animalForm.male) {
+      //   valid = false;
+      //   this.errs.male = "Выберите пол";
+      //   setTimeout(() => {
+      //     this.errs.male = "";
+      //   }, 3000);
+      // }
+      // if (!this.animalForm.breed) {
+      //   valid = false;
+      //   this.errs.breed = "Выберите породу";
+      //   setTimeout(() => {
+      //     this.errs.breed = "";
+      //   }, 3000);
+      // }
+      // if (!valid) {
+      //   return;
+      // }
+      console.log(val);
+      // this.animalForm.owner = this.regForm.id;
       this.states.registrationAnimal1.value = false;
-      this.states.registrationAnimal2.value = true;
+      // this.states.registrationAnimal2.value = true;
       //  this.states.previosState='registrationAnimal1'
     },
     getRegistrationAnimal2() {
@@ -470,19 +301,18 @@ export default {
           this.errs.startTrial = "";
         }, 3000);
       }
-      if (!valid){
-        return
+      if (!valid) {
+        return;
       }
-      this.animalForm.owner=this.regForm.id
-      this.animalForm.id=uuidv4()
-      this.sendRegisteredData()
+      this.animalForm.owner = this.regForm.id;
+      this.animalForm.id = uuidv4();
+      this.sendRegisteredData();
     },
     back() {
-      
       let stateKey = this.getSelfState();
-      console.log(stateKey)
+      console.log(stateKey);
       if (stateKey == "registrationUser") {
-        this.$emit('back',null)
+        this.$emit("back", null);
         return;
       }
       this.states[stateKey].value = false;
@@ -493,18 +323,17 @@ export default {
     },
 
     sign() {
-      this.$emit('signUp',{mail:this.login,pass:this.password})
+      this.$emit("signUp", { mail: this.login, pass: this.password });
     },
   },
 };
 </script>
-<style scoped>
+<style lang="scss" scoped>
 .main {
-  background: url("../assets/catreg.svg"), url("../assets/dogreg.svg"),
-    url("../assets/cover.png");
-  background-repeat: no-repeat, no-repeat, no-repeat;
-  background-size: 49vh, 50vh, cover;
-  background-position: 2% 2em, 100% 2em, center;
+  background: url("../assets/cover.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -512,12 +341,39 @@ export default {
   width: 100vw;
   height: 100vh;
 }
+.registration_title {
+  text-shadow: 0px 5px 5px rgba(0, 0, 0, 0.25);
+}
+.registration {
+  background: url("../assets/catreg.svg"), url("../assets/dogreg.svg");
+  background-repeat: no-repeat, no-repeat;
+  background-position: left bottom, right bottom;
+  background-size: 49vh, 50vh;
+  @media screen and (max-width: 820px) {
+    background: url("../assets/cat_transp.png"), url("../assets/dog_transp.png");
+    background-size: max(30vw, 15rem), max(27vw, 13rem);
+    background-repeat: no-repeat, no-repeat;
+    background-position: top left -5vh, bottom right;
+  }
+  @media screen and (max-width: 440px) {
+    background-size: max(29vh, 10rem), max(29vh, 10rem);
+  }
+  @media screen and (orientation: portrait) {
+    background: url("../assets/cat_transp.png"), url("../assets/dog_transp.png"),
+      url("../assets/catreg.svg"), url("../assets/dogreg.svg");
+    background-size: max(30vh, 15rem), max(27vh, 13rem), max(15vh, 5rem),
+      max(16vh, 6rem);
+    background-repeat: no-repeat, no-repeat;
+    background-position: top left -5vh, bottom right, top right -0.5rem,
+      bottom left -1rem;
+  }
+}
 .main p {
   font-family: "Amatic SC";
-  font-size: 36px;
+  font-size: max(2rem, 3vw);
   font-style: normal;
-  font-weight: 700;
-  line-height: 45px;
+  font-weight: 900;
+  // line-height: 45px;
   letter-spacing: 0em;
   text-align: left;
 
@@ -525,54 +381,7 @@ export default {
     0px 4px 4px rgba(0, 0, 0, 0.25);
   transform: matrix(1, 0, 0, 1, 0, 0);
 }
-.user,
-.animal {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
 
-  align-items: center;
-}
-.user > p,
-.animal > p {
-  margin-bottom: 0.5em;
-}
-.type-animal {
-  display: flex;
-  justify-content: center;
-  align-self: center;
-  flex-direction: column;
-  width: 100%;
-  height: 10%;
-}
-.age-animal {
-  display: flex;
-  justify-content: center;
-  align-self: center;
-  flex-direction: column;
-  max-width: 20%;
-  height: 10%;
-}
-.active {
-  display: flex;
-}
-.errmsg {
-  display: flex;
-  font-family: Amatic SC;
-  font-style: normal;
-  font-weight: bold;
-  font-size: 24px;
-  line-height: 30px;
-
-  color: #ff0000;
-
-  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  transform: matrix(1, 0, 0, 1, 0, 0);
-  top: 4.7rem;
-  position: absolute;
-   animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite;
-}
 .registration {
   display: flex;
   flex-direction: column;
@@ -587,16 +396,21 @@ export default {
   position: relative;
 }
 .registration-title {
-  width: 100%;
+  width: 100vw;
   display: flex;
+  height: auto;
   justify-content: space-between;
   align-items: center;
   transition: all 0.3s;
+  @media screen and (max-height: 600px) {
+    max-height: 4rem;
+  }
 }
 
 .registration-title__text {
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.75);
   font-size: 2.5em;
+
   /* flex: 4 1 4; */
   /* justify-self: stretch; */
   width: 57.5vw;
@@ -610,69 +424,6 @@ export default {
   font-size: 1.7em;
 }
 
-.registration-user,
-.registration-animal1,
-.registration-animal2,
-.registration-animal3 {
-  font-size: 2em;
-  /* margin-top:-2em; */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  /* border: 2px solid; */
-  width: 100%;
-  min-height: 90%;
-  /* gap:-0.1rem; */
-  text-align: center;
-  overflow: hidden;
-}
-.user,
-.animal {
-  margin-top:-2rem;
-  height:9rem;
-  min-width: 30%;
-}
-.personal_data {
-  margin-top:2rem;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: 1em;
-}
-.personal_data_checkbox {
-  margin-top: 0.2em;
-  width: 1em;
-  height: 1em;
-  background: #ffffff;
-  opacity: 0.5;
-  border: 1px solid #000000;
-  box-sizing: border-box;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
-    0px 4px 4px rgba(0, 0, 0, 0.25);
-  border-radius: 10px;
-  transition: all 0.2s;
-  cursor:pointer;
-}
-.personal_data_checkbox:hover{
-  width:1.1em;
-  height: 1.1em;
-}
-.personal_data_text {
-  width: 9em;
-  display: flex;
-  position: relative;
-}
-.personal-text_err {
-  margin-top: 4em;
-  position:absolute;
-}
-.checked {
-  background: url("../assets/checked.svg");
-  background-position: center;
-  background-size: 90%;
-  background-repeat: no-repeat;
-}
 .regwindow {
   background: url("../assets/cover1.png");
   background-position: center;
@@ -719,8 +470,7 @@ export default {
   /* flex: auto 0 50%; */
 }
 input,
-select
-{
+select {
   width: 12em;
   height: 1em;
   background: #ffffff;
@@ -729,45 +479,45 @@ select
   box-sizing: border-box;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 10px;
-  text-align: center!important;
+  text-align: center !important;
   font-family: Amatic SC;
   font-style: normal;
   font-weight: 900;
   font-size: 1em;
   line-height: 28px;
-  align-content:center;
+  align-content: center;
   /* identical to box height */
-z-index: 100;
+  z-index: 100;
   color: rgba(0, 0, 0, 1);
-   transition: all 0.5s;
+  transition: all 0.5s;
 }
 input:hover,
-select:hover{
-font-size:1.1em;
-height:1em;
+select:hover {
+  font-size: 1.1em;
+  height: 1em;
 }
 option {
- background: #FFFFFF;
-border: 1px solid #000000;
-box-sizing: border-box;
-box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.75);
-border-radius: 20px;
-font-size: 0.7em;
+  background: #ffffff;
+  border: 1px solid #000000;
+  box-sizing: border-box;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.75);
+  border-radius: 20px;
+  font-size: 0.7em;
 }
-.forinput input{
- width:13em;
- height: 2rem;
- transition: all 0.6s;
+.forinput input {
+  width: 13em;
+  height: 2rem;
+  transition: all 0.6s;
 }
-.forinput input:hover{
-  width:14em;
- height:2.1rem;
+.forinput input:hover {
+  width: 14em;
+  height: 2.1rem;
 }
 button {
   display: flex;
   justify-content: center;
   width: 11rem;
-  height:3rem;
+  height: 3rem;
   border: 1px solid #000000;
   box-sizing: border-box;
   filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
@@ -780,12 +530,12 @@ button {
   align-items: center;
   text-align: center;
   background: transparent;
-  margin-top:1.5rem;
-  cursor:pointer;
+  margin-top: 1.5rem;
+  cursor: pointer;
   color: #000000;
 }
-.registration-user .next-btn{
-  margin-top:1rem;
+.registration-user .next-btn {
+  margin-top: 1rem;
 }
 
 .regwindow:hover {
@@ -815,13 +565,12 @@ button {
   }
 }
 button:hover {
-   /* box-shadow: 7px 12px; */
+  /* box-shadow: 7px 12px; */
   animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite;
   border: 1px solid #000000;
   /* box-sizing: border-box; */
   filter: drop-shadow(0px 4px 4px #00e04c) drop-shadow(0px 4px 4px #09461a)
     drop-shadow(0px 4px 4px #074110);
-    
 
   border-radius: 25px 0px;
 }

@@ -112,9 +112,7 @@ export default {
 
 <style lang="scss" scoped>
 @import "../assets/main.scss";
-.animate{
 
-}
 @keyframes flame {
   0%{
      filter: drop-shadow(0px 4px 4px rgba(13, 100, 20, 0.2))

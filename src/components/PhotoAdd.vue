@@ -11,7 +11,7 @@
         @click="previos"
         v-show="page > 1"
       />
-    
+
       <label
         for="fileupload"
         class="square"
@@ -28,7 +28,7 @@
           @change="onFileChange"
         />
       </label>
-      
+
       <label
         class="square"
         v-if="
@@ -43,7 +43,7 @@
           @change="onFileChange"
         />
       </label>
-      
+
       <label
         class="square"
         v-if="
@@ -98,13 +98,12 @@
         @click="next"
         v-show="photo.length >= 3 && page < 3"
       />
-    </div> 
-    <div class="error" :v-show="error">{{error}}</div>
+    </div>
+    <div class="error" :v-show="error">{{ error }}</div>
   </div>
- 
 </template>
 <script>
-// import {KinesisContainer, KinesisElement} from 'vue-kinesis'
+
 
 export default {
   name: "PhotoAdd",
@@ -115,7 +114,7 @@ export default {
       photo: [],
       page: 1,
       currentposition: 0,
-      error:''
+      error: "",
     };
   },
   watch: {
@@ -125,38 +124,27 @@ export default {
     },
   },
   methods: {
-    validate(fileName){
-      const arrFileName=fileName.split('.')
-      // console.log(arrFileName[arrFileName.length-1])
-      const allowedExt=['jpg', 'gif', 'png','jpeg','bmp']
-      if (allowedExt.includes(arrFileName[arrFileName.length-1])){
-        return true
-      }else{
+    validate(fileName) {
+      const arrFileName = fileName.split(".");
+      const allowedExt = ["jpg", "gif", "png", "jpeg", "bmp"];
+      if (allowedExt.includes(arrFileName[arrFileName.length - 1])) {
+        return true;
+      } else {
         this.error = "Неподдерживаемый тип файлов";
         setTimeout(() => {
           this.error = "";
         }, 3000);
-        return false
+        return false;
       }
     },
     onFileChange(f) {
-      // let file
-      // console.log(f.target.files[0]);
-      if (this.validate(f?.target?.files[0]?.name)){
-   
-        //   this.imageUrl.push(file)
+      if (this.validate(f?.target?.files[0]?.name)) {
         this.photo.push(f.target.files[0]);
         this.imageUrl.push(URL.createObjectURL(f.target.files[0]));
-       this.$emit("photo", { photo: this.photo })
-        }
-        
-      // reader.readAsDataURL(f.target.files[0])  
-      
-      // console.log('photo',this.photo)
-      
-    // ;}
-      
-      return
+        this.$emit("photo", { photo: this.photo });
+      }
+
+      return;
     },
     deletePhoto(n) {
       this.photo.splice(this.currentposition + n, 1);
@@ -177,7 +165,8 @@ export default {
   },
 };
 </script>
-<style scoped>
+<style lang="scss" scoped>
+@import "../assets/main.scss";
 .photo {
   position: relative;
   display: flex;
@@ -185,13 +174,13 @@ export default {
   justify-content: space-between;
 
   align-items: center;
-  gap: 0.3em;
+  gap: 0.3rem;
 }
 .forphoto {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  gap: 1em;
+  gap: max(1rem, 2vw);
   position: relative;
 }
 .arrowL {
@@ -203,8 +192,8 @@ export default {
   left: 104%;
 }
 .square {
-  width: 3em;
-  height: 3em;
+  width: max(3.6rem, 5vw);
+  height: max(3.6rem, 5vw);
   border: 1px solid;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
     0px 4px 4px rgba(0, 0, 0, 0.25);
@@ -213,31 +202,40 @@ export default {
   background: #ffffff;
   opacity: 0.5;
   transition: all 0.3s;
-  cursor:pointer;
+  cursor: pointer;
 }
 .square:after {
   content: "";
   position: absolute;
   /* width:1px; */
   height: 80%;
+   top: 10%;
+  @media screen and (orientation: portrait){
+    height: 83%;
+    top:5%;
+  }
   border: 2px solid;
-  top: 10%;
+ 
 }
 .square:before {
   content: "";
   position: absolute;
   /* width:1px; */
-  width: 80%;
+  width: 80%; 
   border: 2px solid;
   top: 50%;
   left: 10%;
+  @media screen and (orientation: portrait){
+    left:5%;
+    width: 83%;
+  }
+ 
 }
 .square:hover {
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.25), 0px 6px 6px rgba(0, 0, 0, 0.25),
     0px 6px 6px rgba(0, 0, 0, 0.25);
-  width: 3.2em;
-  height: 3.2em;
-  opacity:1;
+  transform: scale(110%);
+  opacity: 1;
 }
 input[type="file"] {
   color: transparent;
@@ -245,30 +243,22 @@ input[type="file"] {
   display: none;
 }
 p {
-  font-family: "Amatic SC";
-  font-size: 36px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 45px;
-  letter-spacing: 0em;
-  text-align: left;
+  font-family: $font-family;
+  text-shadow: $textshadow;
+  font-size: max(2.5vw, 1.7rem);
 
-  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
-    0px 4px 4px rgba(0, 0, 0, 0.25);
-  transform: matrix(1, 0, 0, 1, 0, 0);
+  text-align: left;
 }
 .error {
   display: flex;
-  font-family: Amatic SC;
+  font-family: $font-family;
   font-style: normal;
   font-weight: bold;
-  font-size: 24px;
-  line-height: 30px;
+  font-size: max(1.4vw, 0.9rem);
+  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 
   color: #ff0000;
 
-  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  transform: matrix(1, 0, 0, 1, 0, 0);
   bottom: -1em;
   position: absolute;
 }

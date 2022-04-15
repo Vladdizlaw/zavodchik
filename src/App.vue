@@ -440,6 +440,15 @@ export default {
   },
 
   async mounted() {
+  //  document.onclick=async ()=>{
+  //    try{
+  //       console.log("FULSCR",document.documentElement)
+  //     await document.documentElement.requestFullscreen()
+  //   }catch (e){
+  //     console.log(e)
+  //   }
+  //  }
+   
     this.permissionNotify = await requestPermissionNotification();
     this.mobileUserAgent =
       navigator.userAgentData.mobile ||
@@ -448,7 +457,8 @@ export default {
     // this.addAnimalToVuex()
     // ;
     console.log("start:", this.user);
-
+  
+ 
     if (this.isAutentificate || this.autohorized) {
       try {
         // await sendPush()
@@ -507,7 +517,7 @@ export default {
   box-sizing: border-box;
 }
 html {
-  overflow-y: hidden !important;
+ 
 }
 
 body {
