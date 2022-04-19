@@ -86,10 +86,10 @@ export default {
       this.$emit("animalType", { typeAnimal: value });
     },
     registration() {
-      this.$emit("registration", null);
+      this.$emit("registration","ProfileRegistration");
     },
     sign() {
-      this.$emit("sign", null);
+      this.$emit("sign", "LoginForm");
     },
     signUp() {
       this.$emit("enterProfile", null);
@@ -113,51 +113,7 @@ export default {
 <style lang="scss" scoped>
 @import "../assets/main.scss";
 
-@keyframes flame {
-  0%{
-     filter: drop-shadow(0px 4px 4px rgba(13, 100, 20, 0.2))
-      drop-shadow(10px 10px 4px rgba(15, 92, 15, 0.25));
-    transform: scale(1);
-  }
-  10%
-  {
-    filter: drop-shadow(0px 4px 4px rgba(13, 100, 20, 0.2))
-      drop-shadow(10px 10px 4px rgba(15, 92, 15, 0.25));
-    transform: scale(1.01);
-  }
 
-  30%
-   {
-    filter: drop-shadow(0px 4px 4px rgba(28, 209, 98, 0.3))
-      drop-shadow(10px 10px 4px rgba(15, 82, 15, 0.55));
-    transform: scale(1.03);
-  }
-
-   50%
-   {
-    filter: drop-shadow(0px 4px 4px rgba(28, 209, 98, 0.3))
-      drop-shadow(10px 10px 4px rgba(15, 82, 15, 0.55));
-    transform: scale(1.01);
-  }
-  70%
-   {
-    filter: drop-shadow(0px 6px 4px rgba(17, 173, 38, 0.5))
-      drop-shadow(10px 10px 6px rgba(25, 133, 25, 0.75));
-    transform: scale(1.03);
-  }
-90%
-   {
-    filter: drop-shadow(0px 6px 4px rgba(17, 173, 38, 0.5))
-      drop-shadow(10px 10px 6px rgba(25, 133, 25, 0.75));
-    transform: scale(1.01);
-  }
- 100%
-  {
-    filter: drop-shadow(0px 4px 4px rgba(22, 124, 47, 0.3))
-      drop-shadow(10px 10px 4px rgba(14, 85, 14, 0.55));
-    transform: scale(1.00);
-  }
-}
 .screen {
   position: relative;
   display: flex;
@@ -190,7 +146,7 @@ export default {
     }
 
     @media screen and (orientation: portrait) {
-      animation: flame 2s linear infinite;
+     
       font-size: 6vh;
       top: -30vh;
     }

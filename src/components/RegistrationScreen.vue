@@ -1,45 +1,37 @@
 <template>
   <div class="main">
-    <div
-      class="registration"
-      v-if="
-        states.registrationUser.value ||
-          states.registrationAnimal1.value ||
-          states.registrationAnimal2.value ||
-          states.registrationAnimal3.value ||
-          states.start.value
-      "
-    >
+    <div class="registration">
       <div class="registration-title">
         <Header>
           <template #left>
             <back-button @back="back" />
           </template>
           <template #center>
-            <p class="registration_title" v-show="!states.start.value">Регистрация</p>
-            
+            <p
+              class="registration_title"
+              v-show="currentComponent != 'LoginForm'"
+            >
+              Регистрация
+            </p>
           </template>
         </Header>
       </div>
-      <profile-registration
-        :usedMails="usedMails"
-        :selectedCity="selectedCity"
-        @regForm="getRegistration"
-        v-if="states.registrationUser.value"
-      />
-      <animal-registration
-        v-if="states.registrationAnimal1.value"
-        @animalForm1="getRegistrationAnimal1"
-      />
-
-      <login-form v-if="states.start.value" @signUp="changeStateRegist" />
+      <keep-alive>
+        <component
+          :is="currentComponent"
+          v-bind="{ ...currentPropsValue }"
+          @regForm="getRegistrationProfile"
+          @signUp="currentComponent = 'ProfileRegistration'"
+          @addNewAnimal="addNewAnimal"
+          @completeRegistration="getRegistrationAnimal"
+        ></component>
+      </keep-alive>
     </div>
   </div>
 </template>
 <script>
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
-// import PhotoAdd from "../components/PhotoAdd.vue";
 import BackButton from "./BackButton.vue";
 import Header from "./Header.vue";
 import ProfileRegistration from "./ProfileRegistration.vue";
@@ -47,13 +39,13 @@ import AnimalRegistration from "./AnimalRegistration.vue";
 import LoginForm from "./LoginForm.vue";
 export default {
   name: "RegistrationScreen",
+  //Компонент регистрации юзера, состоит из трех основных компонентов (Профиль,Животное,Вход)
   props: {
     city: String,
-    substate: String,
     selectedCity: Array,
+    startComponentName: String,
   },
   components: {
-    // PhotoAdd,
     BackButton,
     ProfileRegistration,
     Header,
@@ -63,20 +55,9 @@ export default {
   data() {
     return {
       usedMails: null,
-      states: {
-        // previosState:null,
-        start: { value: true, previosState: "start" },
-        registrationUser: { value: false, previosState: "start" },
-        registrationAnimal1: { value: false, previosState: "registrationUser" },
-        registrationAnimal2: {
-          value: false,
-          previosState: "registrationAnimal1",
-        },
-        registrationAnimal3: {
-          value: false,
-          previosState: "registrationAnimal2",
-        },
-      },
+      currentComponent: "",
+      currentPropsValue: {},
+
       signin: false,
       login: null,
       password: null,
@@ -106,7 +87,6 @@ export default {
         hood: "",
         seenFlags: { seenHoodFlag: true, seenTelFlag: true },
       },
-      animalType: null,
 
       animalForm: {
         typeAnimal: null,
@@ -127,6 +107,7 @@ export default {
       animals: [],
     };
   },
+  async created() {},
   async mounted() {
     const headers = {
       "Content-Type": "application/json",
@@ -142,40 +123,56 @@ export default {
     this.usedMails = data.map((el) => {
       return el["mail"];
     });
-    console.log(this.usedMails);
 
-    this.regForm.city = this.city;
-    if (this.substate == "registrationUser") {
-      this.states.start.value = false;
-      // this.states.previosState='start'
-      this.states.registrationUser.value = true;
+    if (this.startComponentName) {
+      if (this.startComponentName == "ProfileRegistration") {
+        this.currentPropsValue = {
+          usedMails: this.usedMails,
+          selectedCity: this.selectedCity,
+        };
+        this.currentComponent = this.startComponentName;
+      }
+
+      console.log("currentValue", this.currentPropsValue);
     }
-    //  console.log(this.getSelfState());
+    if (this.startComponentName == "LoginForm") {
+      this.currentComponent = this.startComponentName;
+    }
   },
   watch: {
-    animalType: function() {
-      this.animalForm.typeAnimal = this.animalType;
-      if (this.animalType == "dog") {
-        //В зависимости от типа животного подгружаем список пород
-        const breed_string = require("!raw-loader!../dog_breed.txt");
-
-        this.breedList = breed_string.default
-          .split("\r\n")
-          .filter((el) => el != "");
+    currentComponent: function(val) {
+      if (val == "LoginForm") {
+        this.currentPropsValue = null;
       }
-      if (this.animalType == "cat") {
-        const breed_string = require("!raw-loader!../cat_breed.txt");
-
-        this.breedList = breed_string.default.split("\r\n");
+      if (val == "ProfileRegistration") {
+        this.currentPropsValue = {
+          usedMails: this.usedMails,
+          selectedCity: this.selectedCity,
+        };
+      }
+      if (val == "AnimalRegistration") {
+        this.currentPropsValue = {
+          startPart: 1,
+          animalsSize: this.animals.length,
+        };
       }
     },
   },
   computed: {},
   methods: {
-    addNewAnimal() {
-      this.animalForm.id = uuidv4();
-      const pushedAnimal = { ...this.animalForm };
-      this.animals.push(pushedAnimal);
+    sendAnimalFormToVuex(){
+      
+      this.$emit('sendAnimalFormToVuex',this.animalForm)
+      console.log("🚀 ~ file: RegistrationScreen.vue ~ line 166 ~ sendAnimalFormToVuex ~ this.animalForm", this.animalForm)
+    },
+    addNewAnimal(animal) {
+      console.log("recived", animal);
+      this.animalToData(animal.animalForm);
+      this.sendAnimalFormToVuex()
+  
+      // const pushedAnimal = JSON.parse(JSON.stringify(this.animalForm));
+     
+      // this.animals.push(pushedAnimal);
       this.animalForm.typeAnimal = null;
       this.animalForm.male = null;
       this.animalForm.age = 1;
@@ -188,138 +185,78 @@ export default {
       this.animalForm.matingConditions = null;
       this.animalForm.photoAnimal = [];
       this.animalForm.photoUrl = [];
-      this.states.registrationAnimal3.value = false;
-      this.states.registrationAnimal1.value = true;
-    },
-    // getPhotoAnimal(value) {
-    //   this.animalForm.photoAnimal = value.photo;
-    //   // console.log(this.animalForm.photoAnimal);
-    // },
-
-    // licenseAgreement() {
-    //   this.regForm.licenseAgreement = !this.regForm.licenseAgreement;
-    // },
-    // startTrial() {
-    //   this.regForm.startTrial.value = !this.regForm.startTrial.value;
-    //   if (this.regForm.startTrial.value) {
-    //     this.regForm.startTrial.dateStart = Date.now();
-    //     this.regForm.startTrial.dateEnd =
-    //       this.regForm.startTrial.dateStart + 86400000 * 15;
-    //   }
-    // },
-    getSelfState() {
-      let result = "";
-      Object.keys(this.states).forEach((key) => {
-        if (this.states[key].value == true) {
-          // console.log('getselfstate:',key);
-          result = key;
-        }
-      });
-      return result;
-    },
-    changeStateRegist() {
-      this.states.start.value = false;
-      this.states.registrationUser.value = true;
-      // this.states.previosState='start'
+      // console.log("animals", this.animals);
+      this.currentPropsValue = {
+        startPart: 1,
+        // animalsSize: this.animals.length,
+      };
+      this.currentComponent = "AnimalRegistration";
     },
     sendRegisteredData() {
-      if (this.animalForm.name !== null) {
-        const pushedAnimal = { ...this.animalForm };
-        this.animals.push(pushedAnimal);
-      }
-      // console.log(this.animals)
+      // if (this.animalForm.name !== null) {
+      //   // const pushedAnimal = JSON.parse(JSON.stringify(this.animalForm));
+      //   // this.animals.push(pushedAnimal);
+      //    this.sendAnimalFormToVuex()
+      // }
+      console.log("sended to App", this.regForm);
       this.$emit("registeredData", {
         profile: this.regForm,
         id: this.regForm.id,
-        animals: this.animals,
+       
       });
     },
-    getRegistration(e) {
-      console.log("correct", e);
-      this.states.registrationUser.value = false;
-      // this.states.previosState='registrationUser'
-      this.states.registrationAnimal1.value = true;
-      //
-    },
-    getRegistrationAnimal1(val) {
-      // let valid = true;
-      // if (!this.animalForm.typeAnimal) {
-      //   valid = false;
-      //   this.errs.type = "Выберите тип животного";
-      //   setTimeout(() => {
-      //     this.errs.type = "";
-      //   }, 3000);
-      // }
-      // if (!this.animalForm.name) {
-      //   valid = false;
-      //   this.errs.nameAnimal = "Введите имя животного";
-      //   setTimeout(() => {
-      //     this.errs.nameAnimal = "";
-      //   }, 3000);
-      // }
-      // if (!this.animalForm.male) {
-      //   valid = false;
-      //   this.errs.male = "Выберите пол";
-      //   setTimeout(() => {
-      //     this.errs.male = "";
-      //   }, 3000);
-      // }
-      // if (!this.animalForm.breed) {
-      //   valid = false;
-      //   this.errs.breed = "Выберите породу";
-      //   setTimeout(() => {
-      //     this.errs.breed = "";
-      //   }, 3000);
-      // }
-      // if (!valid) {
-      //   return;
-      // }
-      console.log(val);
-      // this.animalForm.owner = this.regForm.id;
-      this.states.registrationAnimal1.value = false;
-      // this.states.registrationAnimal2.value = true;
-      //  this.states.previosState='registrationAnimal1'
-    },
-    getRegistrationAnimal2() {
-      this.states.registrationAnimal2.value = false;
-      this.states.registrationAnimal3.value = true;
-    },
-    getRegistrationAnimal3() {
-      let valid = true;
+    getRegistrationProfile(profile) {
+      console.log("prof", profile);
 
-      if (!this.regForm.licenseAgreement) {
-        valid = false;
-        this.errs.licenseAgreement = "Требуется подписать соглашение";
-        setTimeout(() => {
-          this.errs.licenseAgreement = "";
-        }, 3000);
+      Object.keys(profile.regForm).forEach((key) => {
+        this.regForm[key] = profile.regForm[key];
+      });
+      if (this.regForm.id == null) {
+        this.regForm.id = uuidv4();
       }
-      if (!this.regForm.startTrial.value) {
-        valid = false;
-        this.errs.startTrial = "Требуется активировать пробный период";
-        setTimeout(() => {
-          this.errs.startTrial = "";
-        }, 3000);
-      }
-      if (!valid) {
-        return;
-      }
-      this.animalForm.owner = this.regForm.id;
+      this.currentPropsValue = {
+        startPart: 1,
+        animalsSize: this.animals.length,
+      };
+      this.currentComponent = "AnimalRegistration";
+
+      console.log("correct", this.regForm);
+    },
+    animalToData(animalForm) {
+      Object.keys(animalForm).forEach((key) => {
+        if (animalForm[key] instanceof Array){
+          // let newArray=[]
+          console.log("🚀 ~ file: RegistrationScreen.vue ~ line 222 ~ Object.keys ~ animalForm[key]", key,animalForm[key])
+          // animalForm[key].forEach((obj)=>{
+         
+          // newArray.push({...obj})
+          // })
+          this.animalForm[key]=animalForm[key]
+          
+        }else{
+           this.animalForm[key] = animalForm[key];
+        }
+       
+      });
       this.animalForm.id = uuidv4();
+      this.animalForm.owner = this.regForm.id;
+      console.log("animaltodata", this.animalForm);
+    },
+
+    getRegistrationAnimal(profiles) {
+      this.animalToData(profiles.animalForm);
+      this.sendAnimalFormToVuex()
+      this.getRegistrationProfile(profiles);
+
       this.sendRegisteredData();
     },
     back() {
-      let stateKey = this.getSelfState();
-      console.log(stateKey);
-      if (stateKey == "registrationUser") {
-        this.$emit("back", null);
-        return;
+      if (this.currentComponent == "AnimalRegistration") {
+        this.currentComponent = "ProfileRegistration";
       }
-      this.states[stateKey].value = false;
-      // console.log('state now:',stateKey)
-      this.states[this.states[stateKey].previosState].value = true;
-      this.getSelfState();
-      //  console.log('state to:', this.states[this.states[stateKey].previosState])
+      if( this.currentComponent == "ProfileRegistration"){
+        this.$emit('back', null)
+      }
     },
 
     sign() {

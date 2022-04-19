@@ -59,10 +59,7 @@
         <p>Далее</p>
       </button>
     </section>
-    <section
-      class="animal-form1"
-      v-if="currentPartForm == 2 && !notHaveAnimal"
-    >
+    <section class="animal-form1" v-if="currentPartForm == 2 && !notHaveAnimal">
       <div class="animal-form1_block">
         <p>Предположительная дата вязки</p>
         <input type="date" v-model="animalForm.dateMating" />
@@ -126,10 +123,10 @@
       </button>
       <button
         class="animal-form1_btn"
-        v-show="!notHaveAnimal||animalForm.breed"
+        v-show="!notHaveAnimal || animalForm.breed"
         @click.stop="addNewAnimal"
       >
-        <p>Добавить другое животное</p>
+        <p>Добавить {{amountNextAnimal}} животное</p>
       </button>
     </section>
   </div>
@@ -138,13 +135,14 @@
 import PhotoAdd from "../components/PhotoAdd.vue";
 export default {
   name: "AnimalRegistration",
-  props: {},
+  props: {startPart: Number},
   components: {
     PhotoAdd,
   },
 
   data() {
     return {
+      animalsSize:0,
       notHaveAnimal: false,
       newRegistration: true,
       currentPartForm: 1,
@@ -180,7 +178,30 @@ export default {
       },
     };
   },
+  watch:{
+    startPart:function(val){
+       console.log('stsrt',val)
+      this.currentPartForm=val
+    }
+   
+  },
   computed: {
+    amountNextAnimal(){
+      let result=''
+      if (!this.animalsSize||this.animalsSize==0){
+        result= 'второе'
+      }
+      if (this.animalsSize==1){
+        result= 'третье'
+      }
+       if (this.animalsSize==2){
+        result= 'четвертое'
+      }
+       if (this.animalsSize==3){
+        result= 'пятое'
+      }
+      return result 
+    },
     breedList() {
       let breed_list = [];
       if (this.animalForm.typeAnimal == "dog") {
@@ -201,6 +222,12 @@ export default {
       return breed_list;
     },
   },
+  mounted(){
+    if(this.startPart){
+       console.log('start',this.startPart)
+      this.currentPartForm=this.startPart
+    }
+  },
   methods: {
     licenseAgreement() {
       this.regForm.licenseAgreement = !this.regForm.licenseAgreement;
@@ -213,8 +240,11 @@ export default {
           this.regForm.startTrial.dateStart + 86400000 * 15;
       }
     },
-    addNewAnimal(){
-      this.$emit('addNewAnimal',{animalForm:this.animalForm})
+    addNewAnimal() {
+      this.newRegistration=false
+      this.animalsSize=this.animalsSize+1
+      this.$emit("addNewAnimal", { animalForm: this.animalForm }); 
+      this.currentPartForm=1
     },
     getPhotoAnimal(value) {
       this.animalForm.photoAnimal = value.photo;
@@ -266,13 +296,12 @@ export default {
         this.newRegistration = false;
         this.currentPartForm = 3;
       }
-     
     },
     getRegistrationAnimal2() {
       this.currentPartForm = 3;
     },
-    getRegistrationAnimal3(){
-         let valid = true;
+    getRegistrationAnimal3() {
+      let valid = true;
 
       if (!this.regForm.licenseAgreement) {
         valid = false;
@@ -291,8 +320,11 @@ export default {
       if (!valid) {
         return;
       }
-      this.$emit('completeRegistration',{animalForm:this.animalForm,regForm:this.regForm})
-    }
+      this.$emit("completeRegistration", {
+        animalForm: this.animalForm,
+        regForm: this.regForm,
+      });
+    },
   },
 };
 </script>
@@ -304,44 +336,44 @@ export default {
 }
 .wrapper {
   width: 100vw;
-  height:100%;
-  @media screen and (max-height:645px){
-     height: 70%;
+  height: 100%;
+  @media screen and (max-height: 645px) {
+    height: 70%;
   }
- 
+
   // position: relative;
 }
-.trial{
-    @media screen and (orientation: portrait){
-        width:75vw;
-        align-items: start;
-        justify-content: start;
-    }
+.trial {
+  @media screen and (orientation: portrait) {
+    width: 75vw;
+    align-items: start;
+    justify-content: start;
+  }
 }
 .errmsg {
-      color: #ff0000;
-      display: flex;
-      font-family: inherit;
-      font-size: max(1.4vw, 0.9rem);
-      text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-      transform: matrix(1, 0, 0, 1, 0, 0);
-      top: max(1.6vw, 1.4rem);
-      position: absolute;
-      animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite;
-    }
-    .errlicense{
-       left:max(22%,18vw);
-       top: max(1vw, 1rem);
-       @media screen and (max-width: 1000px){
-          left:max(27%,23vw);
-       }
-       @media screen and (max-width: 700px) and (orientation:portrait){
-         left:35%;
-       }
-    }
-    .errtrial{
-      top: max(1vw, 1rem);
-    }
+  color: #ff0000;
+  display: flex;
+  font-family: inherit;
+  font-size: max(1.4vw, 0.9rem);
+  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  transform: matrix(1, 0, 0, 1, 0, 0);
+  top: max(1.6vw, 1.4rem);
+  position: absolute;
+  animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite;
+}
+.errlicense {
+  left: max(22%, 18vw);
+  top: max(1vw, 1rem);
+  @media screen and (max-width: 1000px) {
+    left: max(27%, 23vw);
+  }
+  @media screen and (max-width: 700px) and (orientation: portrait) {
+    left: 35%;
+  }
+}
+.errtrial {
+  top: max(1vw, 1rem);
+}
 .animal-form1 {
   display: flex;
   flex-direction: column;
@@ -354,7 +386,7 @@ export default {
   overflow: auto;
   height: 100%;
   width: 100%;
-    gap: 1vh;
+  gap: 1vh;
   &::-webkit-scrollbar {
     width: 10px;
   }
@@ -370,7 +402,7 @@ export default {
     font-family: $font-family;
     text-shadow: $textshadow;
     &__noanimal {
-         position: relative;
+      position: relative;
       //   width: max(12rem, 25vw);
 
       display: flex;
@@ -408,7 +440,7 @@ export default {
         background-repeat: no-repeat;
       }
     }
-    
+
     p {
       font-size: max(1.9vw, 1.4rem);
       box-sizing: border-box;

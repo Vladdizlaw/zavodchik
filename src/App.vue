@@ -18,6 +18,7 @@
         @viewDetails="viewDetails"
         @myProfile="getMyProfile"
         @updateUser="updateUser"
+        @sendAnimalFormToVuex="sendAnimalFormToVuex"
       >
       </router-view>
     </transition>
@@ -172,6 +173,10 @@ export default {
       this.$store.dispatch("GET_AUTH_USER");
     },
     async senpPhoto(photoArray, animalId) {
+      console.log(
+        "🚀 ~ file: App.vue ~ line 175 ~ senpPhoto ~ (photoArray",
+        photoArray
+      );
       // const PhotoArray = [...this.user.photoAnimal];
       let formData = new FormData();
       photoArray.forEach((photo, ind) => {
@@ -180,7 +185,7 @@ export default {
 
       // formData.append("id", this.user.profile.id);
       formData.append("animalId", animalId);
-      console.log("formData:", formData);
+      // console.log("formData:", formData);
       try {
         await axios.post("http://localhost:5000/api/create_photo", formData, {
           headers: {
@@ -192,8 +197,8 @@ export default {
       }
     },
     async getUser() {
-      this.$store.dispatch("GET_PROFILE",this.user.profile.id);
-      this.$store.dispatch("GET_ANIMALS",this.user.profile.id)
+      this.$store.dispatch("GET_PROFILE", this.user.profile.id);
+      this.$store.dispatch("GET_ANIMALS", this.user.profile.id);
     },
     async sendUser() {
       this.$store.dispatch("POST_PROFILE", this.user.profile);
@@ -288,23 +293,25 @@ export default {
         },
       });
     },
-    getSign() {
+    getSign(componentName) {
       this.$router.push({
         name: "registration",
         params: {
           selectedCity: this.selectedCity,
           city: this.user.profile.city,
-          substate: "start",
+          // substate: "start",
+          startComponentName: componentName,
         },
       });
     },
-    getRegistration() {
+    getRegistration(componentName) {
       this.$router.push({
         name: "registration",
         params: {
           selectedCity: this.selectedCity,
           city: this.user.profile.city,
-          substate: "registrationUser",
+          startComponentName: componentName,
+          // substate: "registrationUser",
         },
       });
     },
@@ -334,42 +341,50 @@ export default {
       const size = Array.from(Object.values(this.user.animals)).length;
       console.log("animals", size);
       this.$store.registerModule(["animals", size], AnimalModule);
+      return size
+    },
+    sendAnimalFormToVuex(el) {
+      console.log("🚀 ~ file: App.vue ~ line 346 ~ sendAnimalFormToVuex ~ el", el)
+      const ind=this.addModuleAnimalToVuex();
+      el.ind=ind
+      this.$store.commit("SAVE_ANIMAL", el);
+      console.log('this.user',this.user)
     },
     async getRegForms(value) {
       console.log("value", value);
       this.$store.commit("SAVE_PROFILE", value.profile);
-      if (value.animals.length > 1) {
-        value.animals.forEach((el, ind) => {
-          el.ind = ind;
-          if (ind > 0) {
-            this.addModuleAnimalToVuex();
-            this.$store.commit("SAVE_ANIMAL", el);
-          } else {
-            this.$store.commit("SAVE_ANIMAL", el);
-          }
-        });
-      } else {
-        const payload = value.animals[0];
-        payload.ind = 0;
-        this.$store.commit("SAVE_ANIMAL", payload);
-      }
+      // if (value.animals.length > 1) {
+      // value.animals.forEach((el, ind) => {
+      //   el.ind = ind;
+      //   // if (ind > 0) {
+
+      //   // } else {
+      //   //   this.$store.commit("SAVE_ANIMAL", el);
+      //   // }
+      // });
+      // } else {
+      //   const payload = value.animals[0];
+      //   payload.ind = 0;
+      //   this.$store.commit("SAVE_ANIMAL", payload);
+      // }
 
       console.log("this.user", this.user);
-      this.$store.commit("ADD_ANIMALS_TO_PROFILE")
+      this.$store.commit("ADD_ANIMALS_TO_PROFILE");
       await this.sendUser();
 
-      setTimeout(async () => {
-        Array.from(Object.keys(this.user.animals)).forEach(async ind=>{
+      setTimeout(() => {
+        Array.from(Object.keys(this.user.animals)).forEach(async (ind) => {
           console.log("recieved", this.user.animals[ind].photoAnimal);
           await this.senpPhoto(
             this.user.animals[ind].photoAnimal,
             this.user.animals[ind]["id"]
           );
           console.log("done", ind);
-        })
-          
-      
-        setTimeout(async()=>{ await this.getUser()},1000)
+        });
+
+        setTimeout(async () => {
+          await this.getUser();
+        }, 1000);
       }, 1000);
 
       // setTimeout(async () => {
@@ -440,15 +455,15 @@ export default {
   },
 
   async mounted() {
-  //  document.onclick=async ()=>{
-  //    try{
-  //       console.log("FULSCR",document.documentElement)
-  //     await document.documentElement.requestFullscreen()
-  //   }catch (e){
-  //     console.log(e)
-  //   }
-  //  }
-   
+    //  document.onclick=async ()=>{
+    //    try{
+    //       console.log("FULSCR",document.documentElement)
+    //     await document.documentElement.requestFullscreen()
+    //   }catch (e){
+    //     console.log(e)
+    //   }
+    //  }
+
     this.permissionNotify = await requestPermissionNotification();
     this.mobileUserAgent =
       navigator.userAgentData.mobile ||
@@ -457,8 +472,7 @@ export default {
     // this.addAnimalToVuex()
     // ;
     console.log("start:", this.user);
-  
- 
+
     if (this.isAutentificate || this.autohorized) {
       try {
         // await sendPush()
@@ -517,7 +531,6 @@ export default {
   box-sizing: border-box;
 }
 html {
- 
 }
 
 body {

@@ -46,7 +46,7 @@
 <script>
 export default {
   name: "ProfileRegistration",
-  props: { selectedCity: { type: Array },usedMails:{type: Array} },
+  props: {usedMails:{type: Array},  selectedCity: { type: Array }},
   data() {
     return {
         usedMail:false,
@@ -56,7 +56,7 @@ export default {
         name: null,
         pass: null,
         city: null,
-        id: null,
+       
       },
       errs: {
         mail: "",
@@ -69,12 +69,16 @@ export default {
   },
   watch: {
       'regForm.mail':function(val){
+        
           if (this.usedMails.includes(val)){
               this.usedMail=true
           }else{
                 this.usedMail=false
           }
       }
+  },
+  mounted(){
+    console.log(this.$props)
   },
   methods: {
     emitProfileForm() {

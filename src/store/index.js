@@ -1,7 +1,7 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import Axios from "axios";
-import AnimalModule from "./modules/animal.js";
+// import AnimalModule from "./modules/animal.js";
 
 import ProfileModule from "./modules/profile.js";
 Vue.use(Vuex);
@@ -9,7 +9,7 @@ export default new Vuex.Store({
   
   modules: {
     
-    animals: { modules:{ 0: AnimalModule}} ,
+    animals: {} ,
     profile: ProfileModule,
    
   },
@@ -30,6 +30,7 @@ export default new Vuex.Store({
       });
     },
     ADD_ANIMALS_TO_PROFILE:(state)=>{
+      //ДОбовляет в профайл список id животных
       Object.keys(state.animals).forEach((key)=>{
         state.profile.animals.push(state.animals[key]['id'])
       })
