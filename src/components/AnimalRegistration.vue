@@ -119,14 +119,14 @@
         </div>
       </div>
       <button class="animal-form1_btn" @click.stop="getRegistrationAnimal3">
-        <p>Зарегестрировать</p>
+        <p>Сохранить животное и зарегестрировать аккаунт </p>
       </button>
       <button
         class="animal-form1_btn"
         v-show="!notHaveAnimal || animalForm.breed"
         @click.stop="addNewAnimal"
       >
-        <p>Добавить {{amountNextAnimal}} животное</p>
+        <p>Сохранить животное и добавить {{amountNextAnimal}} </p>
       </button>
     </section>
   </div>
@@ -229,6 +229,24 @@ export default {
     }
   },
   methods: {
+    clearAnimalForm(){
+      this.animalForm={
+        typeAnimal: null,
+        male: null,
+        age: 1,
+        breed: null,
+        name: null,
+        dateMating: null,
+        awards: null,
+        vaccination: null,
+        color: null,
+        matingConditions: null,
+        photoAnimal: [],
+        photoUrl: [],
+        id: null,
+        owner: null,
+      }
+    },
     licenseAgreement() {
       this.regForm.licenseAgreement = !this.regForm.licenseAgreement;
     },

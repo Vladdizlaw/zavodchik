@@ -18,12 +18,14 @@
       </div>
       <keep-alive>
         <component
-          :is="currentComponent"
+         :is="currentComponent"
           v-bind="{ ...currentPropsValue }"
           @regForm="getRegistrationProfile"
           @signUp="currentComponent = 'ProfileRegistration'"
+          @signIn="signIn"
           @addNewAnimal="addNewAnimal"
           @completeRegistration="getRegistrationAnimal"
+          :ref="currentComponent"
         ></component>
       </keep-alive>
     </div>
@@ -57,7 +59,7 @@ export default {
       usedMails: null,
       currentComponent: "",
       currentPropsValue: {},
-
+      successExit:false,
       signin: false,
       login: null,
       password: null,
@@ -107,7 +109,13 @@ export default {
       animals: [],
     };
   },
-  async created() {},
+  async beforeDestroy() {
+console.log('deletting')
+    if (!this.successExit){
+      
+    this.$store.commit('DELETE_ALL_ANIMALS')
+    }
+  },
   async mounted() {
     const headers = {
       "Content-Type": "application/json",
@@ -153,26 +161,25 @@ export default {
       if (val == "AnimalRegistration") {
         this.currentPropsValue = {
           startPart: 1,
-          animalsSize: this.animals.length,
+         
         };
       }
     },
   },
   computed: {},
   methods: {
+    signIn(){},
     sendAnimalFormToVuex(){
       
       this.$emit('sendAnimalFormToVuex',this.animalForm)
       console.log("🚀 ~ file: RegistrationScreen.vue ~ line 166 ~ sendAnimalFormToVuex ~ this.animalForm", this.animalForm)
+      
     },
     addNewAnimal(animal) {
       console.log("recived", animal);
       this.animalToData(animal.animalForm);
       this.sendAnimalFormToVuex()
   
-      // const pushedAnimal = JSON.parse(JSON.stringify(this.animalForm));
-     
-      // this.animals.push(pushedAnimal);
       this.animalForm.typeAnimal = null;
       this.animalForm.male = null;
       this.animalForm.age = 1;
@@ -185,7 +192,7 @@ export default {
       this.animalForm.matingConditions = null;
       this.animalForm.photoAnimal = [];
       this.animalForm.photoUrl = [];
-      // console.log("animals", this.animals);
+   this.$refs.AnimalRegistration.clearAnimalForm()
       this.currentPropsValue = {
         startPart: 1,
         // animalsSize: this.animals.length,
@@ -193,12 +200,9 @@ export default {
       this.currentComponent = "AnimalRegistration";
     },
     sendRegisteredData() {
-      // if (this.animalForm.name !== null) {
-      //   // const pushedAnimal = JSON.parse(JSON.stringify(this.animalForm));
-      //   // this.animals.push(pushedAnimal);
-      //    this.sendAnimalFormToVuex()
-      // }
+    
       console.log("sended to App", this.regForm);
+      this.successExit=true
       this.$emit("registeredData", {
         profile: this.regForm,
         id: this.regForm.id,
@@ -216,7 +220,7 @@ export default {
       }
       this.currentPropsValue = {
         startPart: 1,
-        animalsSize: this.animals.length,
+       
       };
       this.currentComponent = "AnimalRegistration";
 
@@ -225,12 +229,7 @@ export default {
     animalToData(animalForm) {
       Object.keys(animalForm).forEach((key) => {
         if (animalForm[key] instanceof Array){
-          // let newArray=[]
-          console.log("🚀 ~ file: RegistrationScreen.vue ~ line 222 ~ Object.keys ~ animalForm[key]", key,animalForm[key])
-          // animalForm[key].forEach((obj)=>{
-         
-          // newArray.push({...obj})
-          // })
+        
           this.animalForm[key]=animalForm[key]
           
         }else{
@@ -252,9 +251,8 @@ export default {
     },
     back() {
       if (this.currentComponent == "AnimalRegistration") {
-        this.currentComponent = "ProfileRegistration";
-      }
-      if( this.currentComponent == "ProfileRegistration"){
+        this.$refs.AnimalRegistration.currentPartForm>1?this.$refs.AnimalRegistration.currentPartForm-- :this.currentComponent = "ProfileRegistration";
+      }else {
         this.$emit('back', null)
       }
     },

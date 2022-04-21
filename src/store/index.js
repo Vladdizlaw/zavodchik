@@ -19,6 +19,10 @@ export default new Vuex.Store({
     },
   },
   mutations:{
+    DELETE_ALL_ANIMALS: (state)=>{
+      console.log(' DELETE_ALL_ANIMALS')
+      state.animals={}
+    },
     SAVE_ANIMAL: (state,payload)=>{
       const ind=payload.ind
       console.log('ind-',ind)
