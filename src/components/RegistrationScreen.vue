@@ -18,7 +18,7 @@
       </div>
       <keep-alive>
         <component
-         :is="currentComponent"
+          :is="currentComponent"
           v-bind="{ ...currentPropsValue }"
           @regForm="getRegistrationProfile"
           @signUp="currentComponent = 'ProfileRegistration'"
@@ -59,7 +59,7 @@ export default {
       usedMails: null,
       currentComponent: "",
       currentPropsValue: {},
-      successExit:false,
+      successExit: false,
       signin: false,
       login: null,
       password: null,
@@ -110,10 +110,9 @@ export default {
     };
   },
   async beforeDestroy() {
-console.log('deletting')
-    if (!this.successExit){
-      
-    this.$store.commit('DELETE_ALL_ANIMALS')
+    console.log("deletting");
+    if (!this.successExit) {
+      this.$store.commit("DELETE_ALL_ANIMALS");
     }
   },
   async mounted() {
@@ -161,25 +160,25 @@ console.log('deletting')
       if (val == "AnimalRegistration") {
         this.currentPropsValue = {
           startPart: 1,
-         
         };
       }
     },
   },
   computed: {},
   methods: {
-    signIn(){},
-    sendAnimalFormToVuex(){
+    signIn(loginForm) {
       
-      this.$emit('sendAnimalFormToVuex',this.animalForm)
-      console.log("🚀 ~ file: RegistrationScreen.vue ~ line 166 ~ sendAnimalFormToVuex ~ this.animalForm", this.animalForm)
-      
+      this.$emit('signIn',loginForm)
+
+    },
+    sendAnimalFormToVuex() {
+      this.$emit("sendAnimalFormToVuex", this.animalForm);
     },
     addNewAnimal(animal) {
       console.log("recived", animal);
       this.animalToData(animal.animalForm);
-      this.sendAnimalFormToVuex()
-  
+      this.sendAnimalFormToVuex();
+
       this.animalForm.typeAnimal = null;
       this.animalForm.male = null;
       this.animalForm.age = 1;
@@ -192,7 +191,7 @@ console.log('deletting')
       this.animalForm.matingConditions = null;
       this.animalForm.photoAnimal = [];
       this.animalForm.photoUrl = [];
-   this.$refs.AnimalRegistration.clearAnimalForm()
+      this.$refs.AnimalRegistration.clearAnimalForm();
       this.currentPropsValue = {
         startPart: 1,
         // animalsSize: this.animals.length,
@@ -200,13 +199,11 @@ console.log('deletting')
       this.currentComponent = "AnimalRegistration";
     },
     sendRegisteredData() {
-    
       console.log("sended to App", this.regForm);
-      this.successExit=true
+      this.successExit = true;
       this.$emit("registeredData", {
         profile: this.regForm,
         id: this.regForm.id,
-       
       });
     },
     getRegistrationProfile(profile) {
@@ -220,7 +217,6 @@ console.log('deletting')
       }
       this.currentPropsValue = {
         startPart: 1,
-       
       };
       this.currentComponent = "AnimalRegistration";
 
@@ -228,14 +224,11 @@ console.log('deletting')
     },
     animalToData(animalForm) {
       Object.keys(animalForm).forEach((key) => {
-        if (animalForm[key] instanceof Array){
-        
-          this.animalForm[key]=animalForm[key]
-          
-        }else{
-           this.animalForm[key] = animalForm[key];
+        if (animalForm[key] instanceof Array) {
+          this.animalForm[key] = animalForm[key];
+        } else {
+          this.animalForm[key] = animalForm[key];
         }
-       
       });
       this.animalForm.id = uuidv4();
       this.animalForm.owner = this.regForm.id;
@@ -243,17 +236,21 @@ console.log('deletting')
     },
 
     getRegistrationAnimal(profiles) {
-      this.animalToData(profiles.animalForm);
-      this.sendAnimalFormToVuex()
+      if (profiles.animalForm) {
+        this.animalToData(profiles.animalForm);
+        this.sendAnimalFormToVuex();
+      }
       this.getRegistrationProfile(profiles);
 
       this.sendRegisteredData();
     },
     back() {
       if (this.currentComponent == "AnimalRegistration") {
-        this.$refs.AnimalRegistration.currentPartForm>1?this.$refs.AnimalRegistration.currentPartForm-- :this.currentComponent = "ProfileRegistration";
-      }else {
-        this.$emit('back', null)
+        this.$refs.AnimalRegistration.currentPartForm > 1
+          ? this.$refs.AnimalRegistration.currentPartForm--
+          : (this.currentComponent = "ProfileRegistration");
+      } else {
+        this.$emit("back", null);
       }
     },
 

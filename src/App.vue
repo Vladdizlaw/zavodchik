@@ -13,7 +13,7 @@
         @sign="getSign"
         @registration="getRegistration"
         @registeredData="getRegForms"
-        @signUp="Sign"
+        @signIn="SignIn"
         @saveProfile="updateProfile"
         @viewDetails="viewDetails"
         @myProfile="getMyProfile"
@@ -173,11 +173,7 @@ export default {
       this.$store.dispatch("GET_AUTH_USER");
     },
     async senpPhoto(photoArray, animalId) {
-      console.log(
-        "🚀 ~ file: App.vue ~ line 175 ~ senpPhoto ~ (photoArray",
-        photoArray
-      );
-      // const PhotoArray = [...this.user.photoAnimal];
+     
       let formData = new FormData();
       photoArray.forEach((photo, ind) => {
         formData.append(`file[${ind}]`, photo);
@@ -353,21 +349,7 @@ export default {
     async getRegForms(value) {
       console.log("value", value);
       this.$store.commit("SAVE_PROFILE", value.profile);
-      // if (value.animals.length > 1) {
-      // value.animals.forEach((el, ind) => {
-      //   el.ind = ind;
-      //   // if (ind > 0) {
-
-      //   // } else {
-      //   //   this.$store.commit("SAVE_ANIMAL", el);
-      //   // }
-      // });
-      // } else {
-      //   const payload = value.animals[0];
-      //   payload.ind = 0;
-      //   this.$store.commit("SAVE_ANIMAL", payload);
-      // }
-
+    //
       console.log("this.user", this.user);
       this.$store.commit("ADD_ANIMALS_TO_PROFILE");
       await this.sendUser();
@@ -414,26 +396,27 @@ export default {
       await this.updateUser();
     },
 
-    async Sign(e) {
-      const user = await axios.post("http://localhost:5000/api/login", e);
-      this.$store.commit("SAVE_USER", user.data);
-      document.cookie = `access_token=${this.user.token}`;
+    async SignIn() {
+      
+      // var user = await axios.post("http://localhost:5000/api/login", loginForm);
+      // 
+      document.cookie = `access_token=${this.user.profile.token}`;
       console.log("from Sign", document.cookie);
       // window.location.reload(true);
-      if (!this.pusher) {
-        this.startPusher();
-      }
-      this.autohorized = true;
-      this.$router.push({
-        name: "profile",
-        params: {
-          pusher: this.pusher,
-          user: this.user,
-          selectedCity: this.selectedCity,
-        },
-      });
+      // if (!this.pusher) {
+      //   this.startPusher();
+      // }
+      // this.autohorized = true;
+      // this.$router.push({
+      //   name: "profile",
+      //   params: {
+      //     pusher: this.pusher,
+      //     user: this.user,
+      //     selectedCity: this.selectedCity,
+      //   },
+      // });
       // window.location.reload(true)
-      console.log("SIGN-----", user);
+      // console.log("SIGNIN-----", user);
     },
     pay() {
       console.log("pay");

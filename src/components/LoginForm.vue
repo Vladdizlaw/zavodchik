@@ -12,7 +12,7 @@
       <button class="login_form_forbutton_btn" @click="registration">
         <p>РЕГИСТРАЦИЯ</p>
       </button>
-      <button class="login_form_forbutton_btn" @click="sign">
+      <button class="login_form_forbutton_btn" @click="signIn">
         <p>ВОЙТИ</p>
       </button>
     </div>
@@ -20,6 +20,7 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   name: "LoginForm",
   data() {
@@ -34,12 +35,12 @@ export default {
   },
   methods: {
     registration() {
-      this.$emit('signUp',null)
+      this.$emit("signUp", null);
     },
-    sign() {
+    async signIn() {
       let valid = true;
 
-      if ((!this.login)||(!this.login.split("@")[1]?.split(".")[1])) {
+      if (!this.login || !this.login.split("@")[1]?.split(".")[1]) {
         valid = false;
         this.errs.login = "Введите корректный логин";
         setTimeout(() => {
@@ -57,7 +58,27 @@ export default {
         return;
       } else {
         // this.regForm.id = uuidv4();
-        this.$emit("signIn", {login: this.login, password:this.password });
+        const loginForm = {mail: this.login, pass: this.password };
+        try {
+          var user = await axios.post(
+            "http://localhost:5000/api/login",
+            loginForm
+          );
+          this.$store.commit("SAVE_PROFILE", user.data);
+           this.$emit("signIn");
+           console.log("user", this.user);
+        } catch (user) {
+           console.log("user", user.status);
+
+            this.errs.login = "такой пользователь не найден";
+            setTimeout(() => {
+              this.errs.login = "";
+            }, 3000);
+
+
+
+
+        }
       }
     },
   },
@@ -99,7 +120,7 @@ export default {
       text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
       transform: matrix(1, 0, 0, 1, 0, 0);
       // top: 50%;
-      left:30%;
+      left: 30%;
       position: absolute;
       animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite;
     }

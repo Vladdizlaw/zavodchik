@@ -179,10 +179,7 @@ export default {
     };
   },
   watch:{
-    startPart:function(val){
-       console.log('stsrt',val)
-      this.currentPartForm=val
-    }
+   
    
   },
   computed: {
@@ -339,7 +336,7 @@ export default {
         return;
       }
       this.$emit("completeRegistration", {
-        animalForm: this.animalForm,
+        animalForm: !this.notHaveAnimal?this.animalForm:null,
         regForm: this.regForm,
       });
     },
