@@ -224,11 +224,9 @@ export default {
     },
     animalToData(animalForm) {
       Object.keys(animalForm).forEach((key) => {
-        if (animalForm[key] instanceof Array) {
+        
           this.animalForm[key] = animalForm[key];
-        } else {
-          this.animalForm[key] = animalForm[key];
-        }
+        
       });
       this.animalForm.id = uuidv4();
       this.animalForm.owner = this.regForm.id;
@@ -246,7 +244,7 @@ export default {
     },
     back() {
       if (this.currentComponent == "AnimalRegistration") {
-        this.$refs.AnimalRegistration.currentPartForm > 1
+        this.$refs.AnimalRegistration.currentPartForm > 1&& !this.$refs.AnimalRegistration.notHaveAnimal
           ? this.$refs.AnimalRegistration.currentPartForm--
           : (this.currentComponent = "ProfileRegistration");
       } else {

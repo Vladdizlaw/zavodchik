@@ -170,7 +170,20 @@ export default {
     },
 
     async getAuthUser() {
-      this.$store.dispatch("GET_AUTH_USER");
+     await this.$store.dispatch("GET_AUTH_PROFILE");
+     const headers = {
+        "Content-Type": "application/json",
+      };
+      let { data } = await axios.get(
+        `http://localhost:5000/api/get_animals${this.user.profile.id}`,
+        {
+          headers: headers,
+        }
+      );
+      data.forEach(animal=>{
+        this.sendAnimalFormToVuex(animal)
+      })
+     
     },
     async senpPhoto(photoArray, animalId) {
      
@@ -205,7 +218,7 @@ export default {
     },
     async updateUser() {
       console.log("userupdated", this.user);
-      this.$store.dispatch("UPDATE_USER", this.user);
+      this.$store.dispatch("UPDATE_PROFILE", this.user);
     },
     async getLocation() {
       return new Promise((resolve, reject) => {
@@ -369,24 +382,25 @@ export default {
         }, 1000);
       }, 1000);
 
-      // setTimeout(async () => {
+      setTimeout( () => {
 
-      //   setTimeout(() => {
-      //     document.cookie = `access_token=${this.user.token}`;
-      //     this.autohorized = true;
-      //     if (!this.pusher) {
-      //       this.startPusher();
-      //     }
-      //     this.$router.push({
-      //       name: "profile",
-      //       params: {
-      //         pusher: this.pusher,
-      //         user: this.user,
-      //         selectedCity: this.selectedCity,
-      //       },
-      //     });
-      //   }, 1000);
-      // }, 1000);
+        setTimeout(() => {
+          document.cookie = `access_token=${this.user.profile.token}`;
+          this.autohorized = true;
+          console.log()
+          if (!this.pusher) {
+            this.startPusher();
+          }
+          this.$router.push({
+            name: "profile",
+            params: {
+              pusher: this.pusher,
+              user: this.user,
+              selectedCity: this.selectedCity,
+            },
+          });
+        }, 1000);
+      }, 1000);
 
       console.log("get reg form this.user", this.user);
     },
@@ -403,18 +417,18 @@ export default {
       document.cookie = `access_token=${this.user.profile.token}`;
       console.log("from Sign", document.cookie);
       // window.location.reload(true);
-      // if (!this.pusher) {
-      //   this.startPusher();
-      // }
-      // this.autohorized = true;
-      // this.$router.push({
-      //   name: "profile",
-      //   params: {
-      //     pusher: this.pusher,
-      //     user: this.user,
-      //     selectedCity: this.selectedCity,
-      //   },
-      // });
+      if (!this.pusher) {
+        this.startPusher();
+      }
+      this.autohorized = true;
+      this.$router.push({
+        name: "profile",
+        params: {
+          pusher: this.pusher,
+          user: this.user,
+          selectedCity: this.selectedCity,
+        },
+      });
       // window.location.reload(true)
       // console.log("SIGNIN-----", user);
     },
@@ -489,7 +503,7 @@ export default {
     if (!this.isAutentificate) {
       try {
         const city = await this.getCity();
-        this.$store.commit("SAVE_USER_PROFILE", { city: city });
+        this.$store.commit("SAVE_PROFILE", { city: city });
       } catch (e) {
         console.log(e);
       }

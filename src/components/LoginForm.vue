@@ -58,26 +58,22 @@ export default {
         return;
       } else {
         // this.regForm.id = uuidv4();
-        const loginForm = {mail: this.login, pass: this.password };
+        const loginForm = { mail: this.login, pass: this.password };
         try {
           var user = await axios.post(
             "http://localhost:5000/api/login",
             loginForm
           );
           this.$store.commit("SAVE_PROFILE", user.data);
-           this.$emit("signIn");
-           console.log("user", this.user);
+          this.$emit("signIn");
+          console.log("user", this.user);
         } catch (user) {
-           console.log("user", user.status);
+          console.log("user", user.status);
 
-            this.errs.login = "такой пользователь не найден";
-            setTimeout(() => {
-              this.errs.login = "";
-            }, 3000);
-
-
-
-
+          this.errs.login = "пользователь  не найден";
+          setTimeout(() => {
+            this.errs.login = "";
+          }, 3000);
         }
       }
     },
@@ -123,6 +119,9 @@ export default {
       left: 30%;
       position: absolute;
       animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite;
+      @media screen and(orientation:portrait){
+        left:center;
+      }
     }
 
     input {

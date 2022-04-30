@@ -29,8 +29,9 @@ export default new Vuex.Store({
       Object.keys(payload).forEach((key) => {
         if (!(key=="_id"||key=="__v")){
         state.animals[ind][key] = payload[key];
+        console.log("save animal -",ind, key);
         }
-        // console.log("save animal -", key);
+        
       });
     },
     ADD_ANIMALS_TO_PROFILE:(state)=>{
@@ -54,6 +55,7 @@ export default new Vuex.Store({
       );
       console.log("GET_Animals-", data);
       data.forEach((el)=>{
+
         context.commit("SAVE_ANIMAL", el);
       })
       
