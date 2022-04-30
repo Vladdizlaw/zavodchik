@@ -38,7 +38,7 @@ export default {
   width: 100%;
   /* max-height: 3rem; */
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
 }
 .header__left {
@@ -56,12 +56,12 @@ export default {
 .header__center {
   width: 60%;
   justify-self: center;
-  font-size: 3.3rem;
+  display: flex;
   justify-content: center;
   align-items: center;
   align-content: center;
   text-align: center;
-  text-wrap: none;
+ 
 }
 .header__right {
   /* font-size: 1.4em; */

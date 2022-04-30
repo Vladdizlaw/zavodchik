@@ -2,34 +2,64 @@
   <div
     class="wrapper"
     :class="{
-      dog: this.user && this.user.animal.typeAnimal == 'dog',
-      cat: this.user && this.user.animal.typeAnimal == 'cat',
+      dog:
+        this.user &&
+        this.user.animals[currentAnimal] &&
+        this.user.animals[currentAnimal].typeAnimal == 'dog',
+      cat:
+        this.user &&
+        this.user.animals[currentAnimal] &&
+        this.user.animals[currentAnimal].typeAnimal == 'cat',
     }"
   >
-      
     <Modal ref="modal">
       <template #content>
-     
         <img :src="url" class="image" alt="" />
-        
       </template>
     </Modal>
- <slot name="modalAnother"></slot>
+    <slot name="modalAnother"></slot>
     <div class="header">
       <slot name="header"></slot>
     </div>
     <div class="main">
-     
       <div class="main-left">
         <div class="main-left__name">
           <p>
-            {{ user ? user.animal.name : null }},
-            {{ user ? user.animal.age : null }} {{ pluralize }}
+            {{
+              user && user.animals[currentAnimal]
+                ? user.animals[currentAnimal].name
+                : null
+            }},
+            {{
+              user && user.animals[currentAnimal]
+                ? user.animals[currentAnimal].age
+                : null
+            }}
+            {{ pluralize }}
           </p>
         </div>
         <div class="main-left__data">
-          <p>Пол:{{ user ? user.animal.male : null }}</p>
-          <p>Порода:{{ user ? user.animal.breed : null }}</p>
+          <p>
+            Тип:{{
+              user && user.animals[currentAnimal]
+                ? user.animals[currentAnimal].typeAnimal
+                : null
+            }}
+          </p>
+          <p>
+            Пол:{{
+              user && user.animals[currentAnimal]
+                ? user.animals[currentAnimal].male
+                : null
+            }}
+          </p>
+          <p>
+            Порода:{{
+              user && user.animals[currentAnimal]
+                ? user.animals[currentAnimal].breed
+                : null
+            }}
+          </p>
           <p>Город:{{ user ? user.profile.city : null }}</p>
           <p
             v-if="
@@ -38,18 +68,50 @@
           >
             Район:{{ user ? user.profile.hood : null }}
           </p>
-          <p v-if="user && user.animal.color">Окрас:{{ user.animal.color }}</p>
-          <p v-if="user && user.animal.awards">
-            Награды:{{ user.animal.awards }}
+          <p
+            v-if="
+              user &&
+                user.animals[currentAnimal] &&
+                user.animals[currentAnimal].color
+            "
+          >
+            Окрас:{{ user.animals[currentAnimal].color }}
           </p>
-          <p v-if="user && user.animal.vaccination">
-            Прививки:{{ user.animal.vaccination }}
+          <p
+            v-if="
+              user &&
+                user.animals[currentAnimal] &&
+                user.animals[currentAnimal].awards
+            "
+          >
+            Награды:{{ user.aanimals[currentAnimal].awards }}
           </p>
-          <p v-if="user && user.animal.dateMating">
-            Возможный период случки:{{ user.animal.dateMating }}
+          <p
+            v-if="
+              user &&
+                user.animals[currentAnimal] &&
+                user.animals[currentAnimal].vaccination
+            "
+          >
+            Прививки:{{ user.animals[currentAnimal].vaccination }}
           </p>
-          <p v-if="user && user.animal.matingConditions">
-            Условие вязки:{{ user.animal.matingConditions }}
+          <p
+            v-if="
+              user &&
+                user.animals[currentAnimal] &&
+                user.animals[currentAnimal].dateMating
+            "
+          >
+            Возможный период случки:{{ user.animals[currentAnimal].dateMating }}
+          </p>
+          <p
+            v-if="
+              user &&
+                user.animals[currentAnimal] &&
+                user.animals[currentAnimal].matingConditions
+            "
+          >
+            Условие вязки:{{ user.animals[currentAnimal].matingConditions }}
           </p>
           <p>
             Контактные данные:{{ user ? user.profile.name : null }},{{
@@ -190,6 +252,7 @@ export default {
   },
   data() {
     return {
+      currentAnimal: 0,
       url: null,
       // modalPhoto: false,
     };
@@ -214,9 +277,16 @@ export default {
   computed: {
     pluralize() {
       let res;
-      if (this.user?.animal?.age > 1 && this.user?.animal?.age < 5) {
+      if (
+        this.user.animals[this.currentAnimal] &&
+        this.user?.animals[this.currentAnimal].age > 1 &&
+        this.user?.animals[this.currentAnimal].age < 5
+      ) {
         res = "года";
-      } else if (this.user?.animal?.age == 1) {
+      } else if (
+        this.user.animals[this.currentAnimal] &&
+        this.user?.animals[this.currentAnimal].age == 1
+      ) {
         res = "год";
       } else {
         res = "лет";
@@ -225,20 +295,24 @@ export default {
     },
 
     urls() {
-      if (!this.user?.photoUrl?.length) {
+      if (
+        this.user.animals[this.currentAnimal] &&
+        !this.user?.animals[this.currentAnimal].photoUrl?.length
+      ) {
         return null;
       }
       const urls = [];
-      this.user?.photoUrl?.forEach((u) => {
-        urls.push("http://localhost:5000/" + u);
-      });
+      this.user.animals[this.currentAnimal] &&
+        this.user?.animals[this.currentAnimal].photoUrl?.forEach((u) => {
+          urls.push("http://localhost:5000/" + u);
+        });
 
       return urls;
     },
   },
 };
 </script>
-<style scoped>
+<style lang="scss" scoped>
 .dog {
   background: url("../assets/cover_dog_acc.svg"), url("../assets/cover_dog.png");
   background-position: center, center;
@@ -253,69 +327,113 @@ export default {
 }
 .wrapper {
   font-family: "Amatic SC";
-  font-size: 2.5rem;
+  font-size: max(2rem, 3vw);
   font-style: normal;
-  font-weight: 700;
-  line-height: 45px;
+  font-weight: 900;
+  // line-height: 45px;
   letter-spacing: 0em;
   text-align: left;
+
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
     0px 4px 4px rgba(0, 0, 0, 0.25);
   transform: matrix(1, 0, 0, 1, 0, 0);
-
+  
   width: 100vw;
-  height: 100%;
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: start;
-  justify-content: start;
+  align-items: center;
+  justify-content: space-between;
   position: relative;
 }
 
 .header {
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+  margin-top: 0rem;
+  // margin-bottom: 1rem;
   width: 100%;
-  height: 2em;
+  max-height: 3rem;
   display: flex;
   justify-content: start;
   align-items: center;
+  @media screen and (orientation: portrait) {
+    margin-top: 0rem;
+    margin-bottom: 0rem;
+  }
 }
 
 .main {
   display: flex;
   width: 90vw;
-  height: 65vh;
+  min-height: 70vh;
   justify-content: start;
+  overflow: auto;
   align-items: center;
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+  &::-webkit-scrollbar {
+    background: transparent;
+  }
+  @media screen and (orientation: portrait) {
+    width: 100%;
+    height: 100%;
+  }
+  @media screen and (max-height: 540px) {
+    height: 90vh;
+  }
+  .main-left {
+    margin-left: 2em;
+    width: 50%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: flex-start;
+    @media screen and (orientation: portrait) {
+      // justify-content: center;
+      margin-left: 1rem;
+    }
+    .main-left__name {
+      box-sizing: border-box;
+      margin: 0px;
+      height: auto;
+      // max-height: 10%;
+      p {
+        font-size: max(4vw, 2rem);
+      }
+      @media screen and (orientation: portrait) {
+      margin-left: 1rem;
+
+        display: flex;
+      }
+      @media screen and (max-height: 540px) {
+    margin: 0 0 0 0;
+  }
+      /* margin-bottom: 1em; */
+    }
+    .main-left__data {
+      flex: 1 1 35vh;
+      max-height: 70%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: flex-start;
+      // margin-top: 2rem;
+      overflow: auto;
+      @media screen and (orientation: portrait) {
+        margin-top: 0rem;
+        // justify-content: center;
+      }
+      p {
+        margin: 0 0 0 0;
+        display:flex;
+        // margin-top: -2rem;
+        font-size: max(2vw, 1.3rem);
+      }
+    }
+  }
 }
-.main-left {
-  margin-left: 2em;
-  width: 50%;
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: start;
-  align-items: space-around;
-}
-.main-left__name {
-  max-height: 10%;
-  font-size: 3.5rem;
-  /* margin-bottom: 1em; */
-}
-.main-left__data {
-  flex: 1 1 35vh;
-  max-height: 70%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: start;
-  margin-top: 2rem;
-  font-size: 2rem;
-}
-.main-left__data > p {
-  margin-top: -2rem;
-}
+
 .main-right {
   width: 40%;
   height: 100%;
@@ -351,7 +469,6 @@ export default {
 .LU__UP {
   width: 100%;
   height: 45%;
- 
 }
 .LU__DOWN {
   width: 100%;
@@ -447,14 +564,18 @@ export default {
 }
 .footer {
   /* margin-top: 1rem; */
-  /* margin-bottom: 1rem; */
-  position: absolute;
-  bottom: 0.5rem;
+   margin-bottom: 1rem;
+  // position: absolute;
+  // bottom: 0.5rem;
   display: flex;
   width: 100vw;
-  height: auto;
+  max-height: 3rem;
   justify-content: space-around;
-  align-items: center;
+  align-items: flex-end;
   flex-wrap: nowrap;
+  // justify-self: end;
+}
+.image {
+  object-fit: fill;
 }
 </style>

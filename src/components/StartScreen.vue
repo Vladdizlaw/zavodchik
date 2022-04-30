@@ -1,20 +1,20 @@
 <template>
   <div class="screen">
     <kinesis-container
-      v-if="!mobileUserAgent"
+      v-if="!mobileUserAgent&&!portaitOrient"
       :duration="300"
-      :perspective="10000"
+      :perspective="1000"
     >
-      <kinesis-element :strength="29" type="depth">
+      <kinesis-element :strength="15" type="depth">
         <div class="screen_text">
           <p>Выбор животного</p>
         </div></kinesis-element
       >
       <div class="screen_image">
-        <kinesis-element :strength="25" type="depth">
+        <kinesis-element :strength="15" type="depth">
           <div class="screen_image__dog" @click="chooseTypeAnimal('dog')"></div>
         </kinesis-element>
-        <kinesis-element :strength="25" type="depth">
+        <kinesis-element :strength="15" type="depth">
           <div class="screen_image__cat" @click="chooseTypeAnimal('cat')"></div>
         </kinesis-element>
       </div>
@@ -36,8 +36,8 @@
       </div>
     </kinesis-container>
 
-    <div v-if="mobileUserAgent">
-      <div class="screen_text">
+    <div v-if="mobileUserAgent|| portaitOrient">
+      <div class="screen_text animate">
         <p>Выбор животного</p>
       </div>
 
@@ -55,7 +55,9 @@
           <a class="sign" @click="sign">Вход</a>
         </div>
         <div class="screen_r__registration" v-if="authentification">
-          <a class="signup" @click="signUp"> Войти как {{ nameStart }} </a>
+          <a class="signup" @click="signUp">
+            Войти как <strong>{{ nameStart }}</strong>
+          </a>
         </div>
       </div>
     </div>
@@ -66,12 +68,12 @@
 export default {
   //Стартовый экран с выбором типа животного, кнопкой входа или регистрации .
   //Принимает булевое значение мобильный ли клиент, имя юзера и аутентификацию. Выдает соответствующие события "animalType"
-  //"registration" , "sign","enterProfile" 
+  //"registration" , "sign","enterProfile"
   name: "StartScreen",
   props: {
-    mobileUserAgent: { type: Boolean },
-    nameStart: { type: String },
-    authentification: { type: Boolean },
+    mobileUserAgent: { type: Boolean }, //В зависимости от значения показывается шаблон экрана с анимацией ховера или нет
+    nameStart: { type: String }, //Имя авторизованого пользователя
+    authentification: { type: Boolean }, //авторизован ли пользователь
   },
 
   data() {
@@ -84,54 +86,34 @@ export default {
       this.$emit("animalType", { typeAnimal: value });
     },
     registration() {
-      this.$emit("registration", null);
+      this.$emit("registration","ProfileRegistration");
     },
     sign() {
-      this.$emit("sign", null);
+      this.$emit("sign", "LoginForm");
     },
     signUp() {
       this.$emit("enterProfile", null);
     },
   },
-  mounted() {
-   
+  computed:{
+    portaitOrient(){
+      if (screen.orientation.type=='portrait-primary'){
+        console.log(screen.orientation.type)
+        return true
+      }else{
+         console.log(screen.orientation.type)
+        return false
+      }
+    }
   },
+  mounted() {},
 };
 </script>
 
 <style lang="scss" scoped>
 @import "../assets/main.scss";
 
-@keyframes flame {
-  10%,
-  90% {
-    filter: drop-shadow(0px 4px 4px rgba(13, 100, 20, 0.2))
-      drop-shadow(10px 10px 4px rgba(15, 92, 15, 0.25));
-    transform: scale(1.01);
-  }
 
-  20%,
-  80% {
-    filter: drop-shadow(0px 4px 4px rgba(28, 209, 98, 0.3))
-      drop-shadow(10px 10px 4px rgba(15, 82, 15, 0.55));
-    transform: scale(1.05);
-  }
-
-  30%,
-  50%,
-  70% {
-    filter: drop-shadow(0px 6px 4px rgba(17, 173, 38, 0.5))
-      drop-shadow(10px 10px 6px rgba(25, 133, 25, 0.75));
-    transform: scale(1.07);
-  }
-
-  40%,
-  60% {
-    filter: drop-shadow(0px 4px 4px rgba(22, 124, 47, 0.3))
-      drop-shadow(10px 10px 4px rgba(14, 85, 14, 0.55));
-    transform: scale(1.05);
-  }
-}
 .screen {
   position: relative;
   display: flex;
@@ -163,23 +145,21 @@ export default {
       top: -10rem;
     }
 
-     @media screen and (orientation: portrait){
+    @media screen and (orientation: portrait) {
+     
       font-size: 6vh;
-       top: -20vh;
-    }
-    @media screen and (orientation: portrait) and (max-height: 1000px) {
-      margin: 0;
       top: -30vh;
+    }
+    @media screen and (orientation: portrait) and (max-height: 670px) {
+      margin: 0;
+      top: -35vh;
       font-size: 6vh;
     }
-   
   }
 
   .screen_image {
     position: relative;
-    // align-self: center;
-    // top: 20%;
-    // left: 10%;
+
     display: flex;
     height: 70%;
     width: 100%;
@@ -200,9 +180,10 @@ export default {
       height: 21vw;
       background: no-repeat url("../assets/cat.svg");
       background-size: cover;
-      opacity: 0.8;
+      opacity: 0.95;
       transition: 1.2s;
       margin-right: 5vw;
+      cursor:pointer;
       @media screen and (orientation: portrait) {
         width: 25vh;
         height: 26vh;
@@ -225,7 +206,7 @@ export default {
       &:active:after {
         content: "";
         border-radius: 50%;
-        height: 88%;
+        height: 87.5%;
         border: 2px solid green;
         box-shadow: 7px 7px black;
         position: absolute;
@@ -237,6 +218,10 @@ export default {
         opacity: 1;
         width: 22vw;
         height: 23vw;
+          @media screen and (orientation: portrait) {
+        width: 27vh;
+        height: 28vh;
+                }
       }
     }
     .screen_image__dog {
@@ -245,9 +230,10 @@ export default {
       height: 20vw;
       background: no-repeat url("../assets/dog.svg");
       background-size: cover;
-      opacity: 0.8;
+      opacity: 0.95;
       transition: 1.2s;
       margin-left: 5vw;
+      cursor:pointer;
       @media screen and (orientation: portrait) {
         margin-right: 10vh;
         justify-self: flex-start;
@@ -258,7 +244,7 @@ export default {
       &:hover:after {
         content: "";
         border-radius: 50%;
-        height: 83%;
+        height: 82.7%;
         border: 2px solid green;
         box-shadow: 5px 5px rgb(2, 95, 2);
         position: absolute;
@@ -271,7 +257,7 @@ export default {
       &:active:after {
         content: "";
         border-radius: 50%;
-        height: 85%;
+        height: 83%;
         border: 2px solid green;
         box-shadow: 7px 7px black;
         position: absolute;
@@ -284,14 +270,13 @@ export default {
         opacity: 1;
         width: 22vw;
         height: 22vw;
-      }
+        @media screen and (orientation: portrait) {
+        width: 28vh;
+        height: 28vh;
+                }
     }
 
-    .screen-image__cat:hover {
-      opacity: 1.2;
-      width: 25em;
-      height: 26.5em;
-    }
+ }
   }
 
   .screen_r {
@@ -310,15 +295,19 @@ export default {
     @media screen and (orientation: portrait) {
       margin: 0;
 
-      bottom: -17vh;
-      // left: 10vh;
-      font-size: 3.5vh;
+      bottom: -5vh;
+
+      font-size: 4vh;
+    }
+    @media screen and (max-height: 490px) {
+      bottom: 30vh;
     }
     .reg,
     .sign {
       margin-left: 0.2em;
       margin-right: 0.2em;
       transition: all 0.5s;
+      cursor:pointer;
     }
     .reg:hover {
       text-shadow: 5px 5px 4px #003902;
@@ -338,8 +327,9 @@ export default {
     }
   }
 }
+
 .signup {
-  font-size: 3vw;
+  font-size: 2.8vw;
   animation: flame 2s linear infinite;
   text-transform: uppercase;
   cursor: pointer;
@@ -350,9 +340,11 @@ export default {
     text-shadow: 5px 5px 4px #003902;
   }
 }
+ 
 @media only screen and (max-width: 1300px) {
   .screen-text {
     margin-top: -2em;
   }
 }
+
 </style>

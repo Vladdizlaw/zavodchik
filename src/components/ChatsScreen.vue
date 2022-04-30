@@ -37,8 +37,8 @@
         class="chats_block_chat__new"
         v-show="newMessage(chat.chatId) || newestChat(chat)"
       >
-        {{ newMessage(chat.chatId) || newestChat(chat)
-        }}<img src="../assets/message.svg" alt="" />Новое сообщение
+       <p> {{ newMessage(chat.chatId) || newestChat(chat)
+        }}</p><img src="../assets/message.svg" alt="" /> <p> Новое сообщение</p>
       </div>
      
       <div class="chats_block__delete"  @click.stop="deleteConfirmation=!deleteConfirmation"> 
@@ -241,9 +241,10 @@ export default {
       });
       chat = await chat.json();
       user = await user.json();
-      this.allChats.push(chat);
+      // this.allChats.push(chat);
        this.realAllChats.push(chat);
       this.opponentUsers.push(user);
+      console.log("opponent users",this.opponentUsers)
     },
   },
   async mounted() {
@@ -259,8 +260,8 @@ export default {
       },
     });
     response = await response.json();
-    this.allChats = response.chats;
-    this.realAllChats = response.allChats;
+    this.allChats = response.chats;//чаты у юзера
+    this.realAllChats = response.allChats;//все чаты с юзером
     this.oldChatsIds = this.allChats.map((c) => c.chatId);
     console.log("oldchats", this.oldChatsIds);
     const arrIdsChats = this.realAllChats.map((c) => c.chatId);
@@ -358,6 +359,9 @@ export default {
   }
   &_chat__new {
     display: flex;
+    
+    justify-content: center;
+    align-items: center;
     flex-direction: row;
     justify-self: flex-end;
     align-self: center;
@@ -365,7 +369,12 @@ export default {
     transition: all 0.4s;
     opacity: 0.9;
     margin-left: auto;
-    margin-right: 40%;
+    margin-right: 25%;
+    p{
+       font-size:  max(1.8vw,2rem);
+       box-sizing: border-box;
+       padding: 0;
+    }
     img {
       margin-top: 0.5rem;
     }

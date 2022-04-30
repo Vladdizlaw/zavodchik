@@ -6,20 +6,30 @@
     }"
   >
     <div class="formap">
+      <Header class="formap_header">
+        <template #left>
+          <back-button @back="back" />
+        </template>
+        <template #center>
+          <div class="formap_header_message">
+            <p>{{ message }}</p>
+          </div>
+        </template>
+      </Header>
+
       <div id="map"></div>
       <div class="logo" v-for="user in users" :key="user.profile.id">
-        <div :id="user.animal.name" class="forimage">
+        <div :id="'b' + user.profile.id" class="forimage">
           <img
             :src="require(`../assets/${srcpic}.svg`)"
             class="catlogo"
+            :data="user.profile.id"
             :alt="user.animal.name"
-            @mouseenter="clack = true"
-            @mouseleave="clack = false"
+            @click="showLogoMsg(user.profile.id)"
           />
           <div
             class="logomsg"
-            @mouseenter="(clack = true), upElement($event)"
-            @mouseleave="(clack = false), downElement($event)"
+            :id="'a' + user.profile.id"
             :class="{ active: clack }"
           >
             <p>
@@ -35,9 +45,12 @@
               Возраст: <span>{{ user.animal.age }}</span>
             </p>
             <p v-if="user.animal.dateMating">
-              Вязка: <span>{{ user.animal.dateMating }}</span>
+              Вязка: <span><br>{{ user.animal.dateMating }}</span>
             </p>
-            <button class="logomsg_button" @click.stop="viewDetails(user.profile.id)">
+            <button
+              class="logomsg_button"
+              @click.stop="viewDetails(user.profile.id)"
+            >
               <p>Детали</p>
             </button>
           </div>
@@ -52,25 +65,36 @@ import Map from "ol/Map";
 import View from "ol/View";
 import OSM from "ol/source/OSM";
 import TileLayer from "ol/layer/Tile";
-// import axios from "axios";
 import "ol/ol.css";
 import { fromLonLat } from "ol/proj";
+import BackButton from "./BackButton.vue";
+import Header from "./Header.vue";
 export default {
-  //Компонент отрисовывает карту ставит метки на ней, принимает тип животного и геопозицию
+  components: { Header, BackButton },
+  //Компонент отрисовывает карту ставит метки на ней, принимает массив юзеров  и геопозицию
   name: "MapScreen",
   props: {
     location: Object,
     searchParams: Object,
-    users:Array,
+    users: Array,
   },
   data() {
     return {
-     
-
-      clack: false, //aфлаг для отображения деталей на карте
+      map:null,//Объект карты
+      clack: false, //флаг для отображения деталей на карте
     };
   },
+
   computed: {
+    message() {
+      //Показывает сообщение о найденых юзерах
+      if (!this.users.length) {
+        return "По вашему запросу ничего не найдено , попробуйте другой запрос";
+      } else {
+        return `По вашему запросу  найдено ${this.users.length} пользователей `;
+      }
+    },
+
     srcpic() {
       //Random иконок на карте
       if (this.searchParams.animalType == "dog") {
@@ -117,99 +141,123 @@ export default {
   },
   async created() {},
   async mounted() {
-    // await this.getUsersData();
     let projection = fromLonLat(
       //Позиция для центра карты по текущей геопозиции
       [this.location.longitude, this.location.latitude],
       "EPSG:3857"
     );
-    const map = new Map({ target: "map" }); //Создаем карту
+   this.map = new Map({ target: "map" }); //Создаем карту
     const view = new View({
       center: projection,
       zoom: 16,
       constrainResolution: true,
     });
 
-    map.setView(view);
+    this.map.setView(view);
     const osmSource = new OSM();
     const osmLayer = new TileLayer({ source: osmSource });
-    map.addLayer(osmLayer);
-    console.log('users',this.users);
+    this.map.addLayer(osmLayer);
     this.users.forEach((user) => {
-      console.log("user", user);
       //выводим на карту всех юзеров
       const catlogo = new Overlay({
-        element: document.getElementById(user.animal.name),
+        element: document.getElementById('b' + user.profile.id),
       });
       catlogo.setPosition(
         fromLonLat([user.location.longitude, user.location.latitude])
       );
-      map.addOverlay(catlogo);
+      this.map.addOverlay(catlogo);
     });
+    window.addEventListener("resize",this.updateMap,true)
+  },
+  beforeDestroy(){
+     window.removeEventListener("resize",this.updateMap)
   },
 
   methods: {
+    updateMap(){
+    
+      setTimeout(()=>{ this.map.updateSize()},400)
+     
+    },
+    showLogoMsg(id) {
+      // Делает видимым/невидимым logomsg
+      const div = document.querySelector(`#a${String(id)}`);
+      if (div.style.opacity == 0) {
+        div.style.opacity = 1;
+        div.classList.add("active");
+      } else {
+        div.style.opacity = 0;
+        div.classList.remove("active");
+      }
+    },
+    back() {
+      this.$emit("back", "map");
+    },
     getUrl(user) {
+      //Возращает url фото юзера на сервере
       if (!user.photoUrl[0]) {
         return;
       } else {
-        // let binaryData = null;
-        // let binarydata = [];
-        // binarydata.push(user.photoAnimal[0].data);
-        // let reader = new FileReader();
-        // reader.readAsDataURL(new Blob(binarydata, { type: user.photoAnimal[0].mimetype })); // converts the blob to base64 and calls onload
-
-        // reader.onload = function() {
-        //   binaryData = reader.result;
-        //   console.log("binarydata", reader.result);
-
-          return 'http://localhost:5000/'+user.photoUrl[0]
-          // }
-          // const url= URL.createObjectURL(user.photoAnimal[0])
-          //  let blob = new Blob(Array.from(user.photoAnimal[0]),{type:user.photoAnimal[0].mimetype})
-          //  console.log(blob)
-          // const url= URL.createObjectURL(blob
-          // );
-
-          //
-        }
-      
+        return "http://localhost:5000/" + user.photoUrl[0];
+      }
     },
-    upElement(f) {
-      //отображение деталей на карте без opacity
 
-      f.path[0].style.opacity = 1;
-    },
-    downElement(f) {
-      f.path[0].style.opacity = 0.2;
-    },
-    
     viewDetails(data) {
       this.$emit("viewDetails", { id: data });
-      // console.log(data);
     },
   },
 };
 </script>
-<style scoped>
+<style lang="scss" scoped>
+@import "../assets/main.scss";
 .formap {
-  padding-top: 2em;
+  padding-top: 2rem;
   width: 100vw;
   height: 100vh;
   display: flex;
   justify-content: center;
-  /* margin-top: 2em; */
+  align-items: center;
+  flex-direction: column;
+  position: relative;
+  &_header {
+    position: absolute;
+    top: -1rem;
+    object-fit:cover;
+    @media screen and(orientation:portrait) {
+      top: 1rem;
+    }
+    &_message {
+      p {
+        font-family: $font-family;
+        text-shadow: $textshadow;
+        font-size: max(2vw, 1rem);
+      }
+    }
+  }
 }
+
 #map {
-  width: 90%;
-  height: 90vh;
+  
+  width: 80vw;
+  height: 80vh;
   border: 1px solid;
-  border-radius: 5px;
-  box-shadow: 4px 6px rgb(38, 44, 11);
+  border-radius: 3px;
+  transition: 0.4s;
+  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))
+    drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))
+    drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+  @media screen and(orientation:portrait) and (max-height: 750px) {
+    height: 70vh;
+  }
+  @media screen and(max-height:340px) {
+    height: 60vh;
+  }
+  &:hover {
+    filter: drop-shadow(0px 6px 6px rgba(0, 0, 0, 0.55))
+      drop-shadow(0px 8px 8px rgba(0, 0, 0, 0.25));
+  }
 }
-#map:hover {
-  box-shadow: 5px 7px black;
-}
+
 .dog {
   height: 100vh;
   background: url("../assets/cover_dog.png");
@@ -224,25 +272,21 @@ export default {
 }
 .forimage {
   position: relative;
-  z-index: 100;
 }
 .catlogo {
-  width: 7em;
-  height: 5em;
+  width: max(5vw, 2.8rem);
+  height: max(6vh, 2.8rem);
   transition: all 1s;
-  /* font-size: 1rem; */
-}
-.catlogo:hover {
-  width: 8em;
-  height: 6em;
-  /* color: rgb(9, 39, 9); */
-}
-.catlogo:active {
-  transform: rotate(180deg);
+  &:hover {
+    width: max(6vw, 2rem);
+    height: 6vh;
+  }
+  &:active {
+    transform: rotate(180deg);
+  }
 }
 
 .logomsg {
-  /* border: 2px solid; */
   filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))
     drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))
     drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
@@ -251,37 +295,91 @@ export default {
   background: url("../assets/cover1.png");
   background-position: center;
   background-size: cover;
-  min-width: 10em;
-  min-height: 5em;
-  /* color: rgb(41, 3, 3); */
-  z-index: -1;
+  width: fit-content;
+  height:fit-content;
+  // object-fit:cover;
+  z-index: 1;
   display: none;
-  box-shadow: 5px 7px rgb(3, 73, 3);
   font-family: Amatic SC;
   font-style: normal;
   font-weight: bold;
-  font-size: 1rem;
-  line-height: 23px;
+  font-size:max(1.3vw,1.3rem);
+  line-height: 1rem;
   position: relative;
-  opacity: 1;
+  opacity: 0;
   transition: all 0.5s;
+  @media screen and (orientation:portrait){
+    font-size:max(1.3vh,1rem);
+    line-height: 0.7rem;
+  }
+  &:hover {
+    font-size:max(1.3vw,1.3rem);
+   
+   
+    transform: scaleZ(11rem);
+    z-index: 1000;
+    filter: drop-shadow(0px 6px 6px rgba(0, 0, 0, 0.55))
+      drop-shadow(0px 8px 8px rgba(0, 0, 0, 0.25));
+  }
+  &__image {
+    width: 30%;
+    height: 52%;
+    position: absolute;
+    top: 35%;
+    left: 1em;
+    border: 1px solid black;
+    transition: all 0.5s;
+    border-radius: 10px 10px;
+    overflow: hidden;
+    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))
+      drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))
+      drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+      &:hover{
+          width:40%;
+      }
+    img {
+      object-fit: cover;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 10px 10px;
+      transition: 0.5s;
+      &:hover {
+      
+        transform: scale(1.1);
+      }
+    }
+  }
+  &_button {
+  font: inherit;
+  font-size: 1em;
+  /* align-self: center; */
+  border: 1px solid;
+  width:auto;
+  margin-right: 1rem;
+  height: 2em;
+  border-radius: 0px 10px;
+  background-color: transparent;
+  text-align: center;
+  align-content: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))
+    drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))
+    drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+  &:hover {
+    animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite;
+    filter: drop-shadow(0px 6px 6px rgba(0, 0, 0, 0.55))
+      drop-shadow(0px 8px 8px rgba(0, 0, 0, 0.25));
+  }
+  &:active {
+    box-shadow: 4px 3px black;
+  }
 }
-.logomsg__image {
-  width: 30%;
-  height: 52%;
-  position: absolute;
-  top: 35%;
-  left: 1em;
-  border: 1px solid black;
-  transition: all 0.5s;
-   border-radius: 10px 10px;
-  /* position: relative; */
-  overflow: hidden;
  
 }
-.logomsg__button:hover{
- animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite;
-}
+
 @keyframes shake {
   10%,
   90% {
@@ -304,23 +402,7 @@ export default {
     transform: translate3d(4px, 0, 0);
   }
 }
-.logomsg__image > img {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-    border-radius: 10px 10px;
-}
-.logomsg:hover {
-  font-size: 1.3em;
-  min-width: 11em;
-  min-height: 8em;
-  transform:scaleZ( 11em) ;
-}
-.logomsg__image:hover {
-  width: 35%;
-  height: 57%;
-  transform:r (40%);
-}
+
 .active {
   background: url("../assets/cover1.png");
   background-position: center;
@@ -329,42 +411,15 @@ export default {
   flex-direction: column;
   justify-content: space-around;
   align-items: flex-end;
-  /* opacity: 1; */
   position: relative;
-  opacity: 0.2;
-
-  z-index: 1000;
   overflow: hidden;
 }
 
 .logo {
   display: none;
 }
-button {
-  font: inherit;
-  font-size: 1em;
-  /* align-self: center; */
-  border: 1px solid;
-  width: 35%;
-  margin-right: 1rem;
-  height: 2em;
-  border-radius: 0 50px;
-  background-color: transparent;
-  text-align: center;
-  align-content: center;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  /* box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25); */
-  /* font-size: 0.7em; */
-}
-button:hover {
-  animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite;
-  box-shadow: 3px 4px black;
-}
-button:active {
-  box-shadow: 4px 3px black;
-}
+
+
 span {
   text-shadow: 0px 4px 4px #013309, 0px 4px 4px #025e00, 0px 4px 4px #00ff38;
 }

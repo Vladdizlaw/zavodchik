@@ -2,8 +2,8 @@
   <div class="app">
     <transition name="no-mode-translate-fade" mode="in-out">
       <router-view
-        :authentification="isAutentificate"
-        :nameStart="user.profile.mail"
+        :authentification="isAutentificate || autohorized"
+        :nameStart="user.profile.name"
         :mobileUserAgent="mobileUserAgent"
         @animalType="getAnimalType"
         @enterProfile="getMyProfile"
@@ -13,11 +13,12 @@
         @sign="getSign"
         @registration="getRegistration"
         @registeredData="getRegForms"
-        @signUp="Sign"
+        @signIn="SignIn"
         @saveProfile="updateProfile"
         @viewDetails="viewDetails"
         @myProfile="getMyProfile"
         @updateUser="updateUser"
+        @sendAnimalFormToVuex="sendAnimalFormToVuex"
       >
       </router-view>
     </transition>
@@ -25,6 +26,7 @@
 </template>
 
 <script>
+import AnimalModule from "./store/modules/animal.js";
 //import Pusher from  'pusher'
 import axios from "axios";
 import {
@@ -37,7 +39,7 @@ export default {
 
   data() {
     return {
-      pusher: null,
+      pusher: null, //Объект
       searchParams: {},
       autohorized: false,
       idSelected: false,
@@ -48,7 +50,8 @@ export default {
       permissionNotify: null,
       subscriptionPush: null,
       pusherMessage: null,
-      mobileUserAgent:null
+      mobileUserAgent: null,
+      entered: false,
     };
   },
   computed: {
@@ -79,10 +82,11 @@ export default {
     startPusher() {
       this.pusher = this.$pusher.subscribe(`${this.user.profile.id}`);
     },
-    back() {
+    back(e) {
       console.log(this.$route.name);
       if (
         (this.isAutentificate || this.autohorized) &&
+        this.entered &&
         (this.$route.name == "search" || this.$route.name == "settings")
       ) {
         this.$router.push({
@@ -91,6 +95,29 @@ export default {
             user: this.user,
             selectedCity: this.selectedCity,
             pusher: this.pusher,
+          },
+        });
+      } else if (
+        (this.isAutentificate || this.autohorized) &&
+        this.$route.name == "search" &&
+        !this.entered
+      ) {
+        this.$router.push({
+          name: "start",
+          params: {
+            user: this.user,
+            selectedCity: this.selectedCity,
+            pusher: this.pusher,
+          },
+        });
+      } else if (e == "map") {
+        this.$router.push({
+          name: "search",
+          params: {
+            animalType: this.user.animals[0].typeAnimal,
+            city: this.user.profile.city,
+            selectedCity: this.selectedCity,
+            // isAutentificate: this.isAutentificate,
           },
         });
       } else if (
@@ -110,6 +137,11 @@ export default {
       }
     },
     getMyProfile() {
+      console.log("entered", this.entered);
+      if (!this.entered) {
+        this.entered = true;
+        console.log("entered", this.entered);
+      }
       this.$router.push({
         name: "profile",
         params: {
@@ -132,41 +164,61 @@ export default {
       );
       this.$store.commit("DELETE_USER");
       this.$router.push({ name: "start" });
+      this.entered = false;
       window.location.reload(true);
       // console.log(this.user)
     },
 
     async getAuthUser() {
-      this.$store.dispatch("GET_AUTH_USER");
+     await this.$store.dispatch("GET_AUTH_PROFILE");
+     const headers = {
+        "Content-Type": "application/json",
+      };
+      let { data } = await axios.get(
+        `http://localhost:5000/api/get_animals${this.user.profile.id}`,
+        {
+          headers: headers,
+        }
+      );
+      data.forEach(animal=>{
+        this.sendAnimalFormToVuex(animal)
+      })
+     
     },
-    async senpPhoto() {
-      const PhotoArray = [...this.user.photoAnimal];
+    async senpPhoto(photoArray, animalId) {
+     
       let formData = new FormData();
-      PhotoArray.forEach((photo, ind) => {
+      photoArray.forEach((photo, ind) => {
         formData.append(`file[${ind}]`, photo);
       });
 
-      formData.append("id", this.user.profile.id);
-      const answer = await axios.post(
-        "http://localhost:5000/api/create_photo",
-        formData,
-        {
+      // formData.append("id", this.user.profile.id);
+      formData.append("animalId", animalId);
+      // console.log("formData:", formData);
+      try {
+        await axios.post("http://localhost:5000/api/create_photo", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-        }
-      );
-      console.log(answer, "formData:", formData);
+        });
+      } catch (e) {
+        console.log("sendPhoto", e);
+      }
     },
     async getUser() {
-      this.$store.dispatch("GET_USER", this.user.profile.id);
+      this.$store.dispatch("GET_PROFILE", this.user.profile.id);
+      this.$store.dispatch("GET_ANIMALS", this.user.profile.id);
     },
     async sendUser() {
-      this.$store.dispatch("POST_USER", this.user);
+      this.$store.dispatch("POST_PROFILE", this.user.profile);
+      for (let key in this.user.animals) {
+        console.log("key", this.user.animals[key]);
+        this.$store.dispatch("POST_ANIMAL", this.user.animals[key]);
+      }
     },
     async updateUser() {
       console.log("userupdated", this.user);
-      this.$store.dispatch("UPDATE_USER", this.user);
+      this.$store.dispatch("UPDATE_PROFILE", this.user);
     },
     async getLocation() {
       return new Promise((resolve, reject) => {
@@ -188,7 +240,7 @@ export default {
       try {
         const location = await this.getLocation();
 
-        this.$store.commit("SAVE_USER", {
+        this.$store.commit("SAVE_PROFILE", {
           location: {
             latitude: location.coords.latitude,
             longitude: location.coords.longitude,
@@ -208,18 +260,23 @@ export default {
     },
     getAnimalType(value) {
       // this.user.animal.animalType = value.animalType;
-      this.$store.commit("SAVE_USER_ANIMAL", value);
+      if (!(this.isAutentificate || this.autohorized))
+        console.log("not autentificate");
+      {
+        this.$store.commit("SAVE_USER_ANIMAL", value, 0);
+      }
       this.$router.push({
         name: "search",
         params: {
-          animalType: this.user.animal.typeAnimal,
+          animalType: this.users.animals[0].typeAnimal,
           city: this.user.profile.city,
           selectedCity: this.selectedCity,
-          isAutentificate: this.isAutentificate,
+          // isAutentificate: this.isAutentificate,
         },
       });
     },
     async getSearchResult(value) {
+      console.log("value", value);
       this.searchParams.animalType = this.user.animal.typeAnimal;
       this.searchParams.startAge = value.animalProperty.startAge;
       this.searchParams.stopAge = value.animalProperty.stopAge;
@@ -245,23 +302,25 @@ export default {
         },
       });
     },
-    getSign() {
+    getSign(componentName) {
       this.$router.push({
         name: "registration",
         params: {
           selectedCity: this.selectedCity,
           city: this.user.profile.city,
-          substate: "start",
+          // substate: "start",
+          startComponentName: componentName,
         },
       });
     },
-    getRegistration() {
+    getRegistration(componentName) {
       this.$router.push({
         name: "registration",
         params: {
           selectedCity: this.selectedCity,
           city: this.user.profile.city,
-          substate: "registrationUser",
+          startComponentName: componentName,
+          // substate: "registrationUser",
         },
       });
     },
@@ -287,18 +346,48 @@ export default {
         return;
       }
     },
-
+    addModuleAnimalToVuex() {
+      const size = Array.from(Object.values(this.user.animals)).length;
+      console.log("animals", size);
+      this.$store.registerModule(["animals", size], AnimalModule);
+      return size
+    },
+    sendAnimalFormToVuex(el) {
+      console.log("🚀 ~ file: App.vue ~ line 346 ~ sendAnimalFormToVuex ~ el", el)
+      const ind=this.addModuleAnimalToVuex();
+      el.ind=ind
+      this.$store.commit("SAVE_ANIMAL", el);
+      console.log('this.user',this.user)
+    },
     async getRegForms(value) {
-      this.$store.commit("SAVE_USER", value);
+      console.log("value", value);
+      this.$store.commit("SAVE_PROFILE", value.profile);
+    //
+      console.log("this.user", this.user);
+      this.$store.commit("ADD_ANIMALS_TO_PROFILE");
       await this.sendUser();
-      setTimeout(async () => {
-        await this.senpPhoto();
+
+      setTimeout(() => {
+        Array.from(Object.keys(this.user.animals)).forEach(async (ind) => {
+          console.log("recieved", this.user.animals[ind].photoAnimal);
+          await this.senpPhoto(
+            this.user.animals[ind].photoAnimal,
+            this.user.animals[ind]["id"]
+          );
+          console.log("done", ind);
+        });
+
+        setTimeout(async () => {
+          await this.getUser();
+        }, 1000);
       }, 1000);
-      setTimeout(async () => {
-        await this.getUser();
+
+      setTimeout( () => {
+
         setTimeout(() => {
-          document.cookie = `access_token=${this.user.token}`;
+          document.cookie = `access_token=${this.user.profile.token}`;
           this.autohorized = true;
+          console.log()
           if (!this.pusher) {
             this.startPusher();
           }
@@ -321,10 +410,11 @@ export default {
       await this.updateUser();
     },
 
-    async Sign(e) {
-      const user = await axios.post("http://localhost:5000/api/login", e);
-      this.$store.commit("SAVE_USER", user.data);
-      document.cookie = `access_token=${this.user.token}`;
+    async SignIn() {
+      
+      // var user = await axios.post("http://localhost:5000/api/login", loginForm);
+      // 
+      document.cookie = `access_token=${this.user.profile.token}`;
       console.log("from Sign", document.cookie);
       // window.location.reload(true);
       if (!this.pusher) {
@@ -340,7 +430,7 @@ export default {
         },
       });
       // window.location.reload(true)
-      console.log("SIGN-----", user);
+      // console.log("SIGNIN-----", user);
     },
     pay() {
       console.log("pay");
@@ -362,10 +452,23 @@ export default {
   },
 
   async mounted() {
-    this.permissionNotify = await requestPermissionNotification();
-    this.mobileUserAgent=!navigator.userAgentData.mobile
+    //  document.onclick=async ()=>{
+    //    try{
+    //       console.log("FULSCR",document.documentElement)
+    //     await document.documentElement.requestFullscreen()
+    //   }catch (e){
+    //     console.log(e)
+    //   }
+    //  }
 
-   
+    this.permissionNotify = await requestPermissionNotification();
+    this.mobileUserAgent =
+      navigator.userAgentData.mobile ||
+      screen.orientation.type == "portrait-primary";
+    console.log("start:", this.user);
+    // this.addAnimalToVuex()
+    // ;
+    console.log("start:", this.user);
 
     if (this.isAutentificate || this.autohorized) {
       try {
@@ -400,7 +503,7 @@ export default {
     if (!this.isAutentificate) {
       try {
         const city = await this.getCity();
-        this.$store.commit("SAVE_USER_PROFILE", { city: city });
+        this.$store.commit("SAVE_PROFILE", { city: city });
       } catch (e) {
         console.log(e);
       }
@@ -411,7 +514,6 @@ export default {
       console.log("params auth", this.isAutentificate);
       this.$router.push({
         name: "start",
-        params: { authentification: this.isAutentificate || this.autohorized },
       });
     }
     // this.$router.push({ name: "start", params:{ authentification: this.isAutentificate|| this.autohorized}})
@@ -426,7 +528,6 @@ export default {
   box-sizing: border-box;
 }
 html {
-  overflow-y: hidden !important;
 }
 
 body {

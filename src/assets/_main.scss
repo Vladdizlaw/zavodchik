@@ -1,3 +1,10 @@
-@import url("https://fonts.googleapis.com/css2?family=Amatic+SC:wght@700&display=swap");
-$font-family:'Amatic SC';
-$textshadow:0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),0px 4px 4px rgba(0, 0, 0, 0.25);
+// @import url("https://fonts.googleapis.com/css2?family=Amatic+SC:wght@700&display=swap");
+// @import url("../assets/AmaticSC-Regular.ttf") format('truetype');
+@font-face {
+    font-family:'Amatic SC' ;
+    src: url("../assets/AmaticSC-Regular.ttf") format('truetype');
+    src: url("../assets/AmaticSC-Bold.ttf") format('truetype');
+    
+}
+$font-family:'Amatic SC' ;
+$textshadow: 0px 5px 5px rgba(0, 0, 0, 0.25);

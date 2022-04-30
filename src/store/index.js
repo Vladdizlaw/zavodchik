@@ -1,135 +1,75 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import Axios from "axios";
+// import AnimalModule from "./modules/animal.js";
+
+import ProfileModule from "./modules/profile.js";
 Vue.use(Vuex);
 export default new Vuex.Store({
-  state: {
-    user: {
-      animal: {
-        typeAnimal: null,
-        male: null,
-        age: null,
-        breed: null,
-        name: null,
-        dateMating: null,
-        awards: null,
-        vaccination: null,
-        color: null,
-        matingConditions: null,
-        licenseAgreement: false,
-        startTrial: {
-          value: false,
-          date: null,
-          dateStart: null,
-          dateEnd: null,
-        },
-      },
-      id: null,
-      location: null,
-      token: null,
-      noticeBreed: {value:false,mail:false,push:false},
-      noticeMatingDate: {value:false,mail:false,push:false},
-      chats: [],
-      photoAnimal: [],
-      photoUrl: [],
-      profile: {
-        mail: null,
-        tel: null,
-        name: null,
-        pass:null,
-        city: null,
-        id: null,
-        hood:null,
-        seenFlags: { seenHoodFlag: true, seenTelFlag: true },
-      },
-    },
+  
+  modules: {
+    
+    animals: {} ,
+    profile: ProfileModule,
+   
   },
   getters: {
     USER: (state) => {
-      return state.user;
+      return state;
     },
   },
-  mutations: {
-    SAVE_USER_PROFILE: (state, payload) => {
-      Object.keys(payload).forEach((key) => {
-        state.user.profile[key] = payload[key];
-        console.log("save profile -", key);
-      });
+  mutations:{
+    DELETE_ALL_ANIMALS: (state)=>{
+      console.log(' DELETE_ALL_ANIMALS')
+      state.animals={}
     },
-    SAVE_USER_ANIMAL: (state, payload) => {
+    SAVE_ANIMAL: (state,payload)=>{
+      const ind=payload.ind
+      console.log('ind-',ind)
       Object.keys(payload).forEach((key) => {
-        state.user.animal[key] = payload[key];
-        console.log("save animal -", key);
-      });
-    },
-    SAVE_USER: (state, payload) => {
-      Object.keys(payload).forEach((key) => {
-        if (key !== "_id") {
-          state.user[key] = payload[key];
-          console.log("save user", key);
+        if (!(key=="_id"||key=="__v")){
+        state.animals[ind][key] = payload[key];
+        console.log("save animal -",ind, key);
         }
+        
       });
     },
-    DELETE_USER: (state) => {
-      Object.keys(state.user).forEach((key) => {
-        typeof state.user[key] === "object"
-          ? Object.keys(state.user[key]).forEach((e) => {
-              state.user[key][e] = null;
-            })
-          : (state.user[key] = null);
+    ADD_ANIMALS_TO_PROFILE:(state)=>{
+      //ДОбовляет в профайл список id животных
+      Object.keys(state.animals).forEach((key)=>{
+        state.profile.animals.push(state.animals[key]['id'])
+      })
+      console.log('ADD_ANIMALS_TO_PROFILE', state.profile.animals)
+    }
+  },
+  actions:{
+    GET_ANIMALS: async (context, payload) => {
+      const headers = {
+        "Content-Type": "application/json",
+      };
+      let { data } = await Axios.get(
+        `http://localhost:5000/api/get_animals${payload}`,
+        {
+          headers: headers,
+        }
+      );
+      console.log("GET_Animals-", data);
+      data.forEach((el)=>{
 
-        console.log("delete user", key, typeof state.user[key]);
-      });
+        context.commit("SAVE_ANIMAL", el);
+      })
+      
     },
-  },
-  actions: {
-    GET_AUTH_USER: async (context) => {
+    POST_ANIMAL: async (context, payload) => {
       const headers = {
         "Content-Type": "application/json",
       };
-      let { data } = await Axios.get(
-        `http://localhost:5000/api/get_auth_user`,
-        { withCredentials: true },
-        {
-          headers: headers,
-        }
-      );
-      console.log("GET_AUTH_USER-", data);
-      context.commit("SAVE_USER", data);
-    },
-    GET_USER: async (context, payload) => {
-      const headers = {
-        "Content-Type": "application/json",
-      };
-      let { data } = await Axios.get(
-        `http://localhost:5000/api/get_user${payload}`,
-        {
-          headers: headers,
-        }
-      );
-      console.log("GET_USER-", data);
-      context.commit("SAVE_USER", data);
-    },
-    POST_USER: async (context, payload) => {
-      const headers = {
-        "Content-Type": "application/json",
-      };
-      // console.log("Vuex payload:", payload);
-      await Axios.post("http://localhost:5000/api/create_user", payload, {
+      console.log("Vuex payload:", payload);
+      await Axios.post("http://localhost:5000/api/create_animal", payload, {
         headers: headers,
       });
-      context.commit("SAVE_USER", payload);
+
+      // context.commit("SAVE_ANIMAL", payload);
     },
-    UPDATE_USER: async (context, payload) => {
-      const headers = {
-        "Content-Type": "application/json",
-      };
-      let { data } = await Axios.put(
-        "http://localhost:5000/api/update_user",
-        payload,
-        { headers: headers }
-      );
-      context.commit("SAVE_USER", data);
-    },
-  },
+  }
 });

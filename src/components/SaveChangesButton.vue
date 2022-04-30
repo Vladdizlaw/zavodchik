@@ -21,7 +21,7 @@ export default {
   },
 };
 </script>
-<style scoped>
+<style lang="scss" scoped>
 .savebutton {
   display: flex;
   flex-wrap: nowrap;
@@ -30,18 +30,34 @@ export default {
   justify-content: flex-start;
   transition: all 0.3s;
   cursor: pointer;
-  
-}
-.savebutton:hover img{
+  p{
+     font-size: max(2.7vw, 2rem);
+  @media screen and (max-width:450px) {
+     display: none;
+     
+  }
+   }
+  img {
+    padding-top: 0.25rem;
+    max-height: max(2.7vw, 1.8rem);
+     @media screen and (max-width:600px) {
+       height:2.5rem;
+        
+      
+    }
+  }
+
+&:hover img{
   filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.5))
     drop-shadow(10px 10px 4px rgba(9, 112, 7, 0.75));
 }
-.savebutton:hover {
+&:hover {
     filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.5))
     drop-shadow(10px 10px 4px rgba(9, 112, 7, 0.75));
 }
-.savebutton :active {
+& :active {
   filter: drop-shadow(0px 4px 4px rgba(39, 33, 33, 0.5))
     drop-shadow(10px 10px 4px rgba(4, 24, 4, 0.75));
+}
 }
 </style>
