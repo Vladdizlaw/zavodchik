@@ -64,7 +64,7 @@ export default {
   },
 };
 </script>
-<style scoped>
+<style lang="scss" scoped>
 .modal {
   position: absolute;
   background: rgba(235, 222, 42, 0.863),
@@ -93,6 +93,10 @@ export default {
   transition: all 0.4s;
   box-shadow: 5px 6px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
     0px 4px 4px rgba(0, 0, 0, 0.25);
+    @media screen and (orientation: portrait){
+      max-height:70%;
+      max-width:90%;
+    }
     
 }
 

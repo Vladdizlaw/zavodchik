@@ -12,7 +12,7 @@ export default {
 <style scoped lang="scss">
 .backbutton {
   font-family: "Amatic SC";
-  font-size: max(2.7vw, 2rem);
+   font-size: max(2.7vw, 1.4rem);
   font-style: normal;
   font-weight: 900;
  

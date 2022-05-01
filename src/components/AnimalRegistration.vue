@@ -119,7 +119,8 @@
         </div>
       </div>
       <button class="animal-form1_btn" @click.stop="getRegistrationAnimal3">
-        <p>Сохранить животное и зарегестрировать аккаунт </p>
+        <p v-if="!notHaveAnimal">Сохранить животное и зарегестрировать аккаунт </p>
+         <p v-if="notHaveAnimal">Зарегестрировать аккаунт без животного </p>
       </button>
       <button
         class="animal-form1_btn"

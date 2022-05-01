@@ -207,8 +207,8 @@
           <div class="animal__input">
             <p>Пол</p>
             <select v-model="user.animal.male">
-              <option value="мужской">мужской </option>
-              <option value="Женский">Женский</option>
+              <option value="male">мужской </option>
+              <option value="female">Женский</option>
             </select>
           </div>
           <div class="animal__input">

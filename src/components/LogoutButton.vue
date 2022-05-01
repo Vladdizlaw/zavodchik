@@ -1,8 +1,8 @@
 <template>
   <div class="logout__button" @click="logout">
+      <img src="../assets/exit.svg" alt="" />
     <p>Выйти из аккаунта</p>
-    <img src="../assets/exit.svg" alt="" />
-  </div>
+    </div>
 </template>
 <script>
 export default {
@@ -21,14 +21,16 @@ export default {
 <style lang="scss" scoped>
 .logout__button {
   flex-wrap: nowrap;
-  font-size: max(2.7vw, 2rem);
+  font-size: max(2.7vw, 1.4rem);
   display: flex;
-  justify-content: center;
+  justify-content: start;
   align-items: center;
   cursor: pointer;
   transition: 0.3s;
+  
   p {
      line-height: 1.4rem;
+    
     @media screen and (max-width: 600px) {
       display: none;
       }

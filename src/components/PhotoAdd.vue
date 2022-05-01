@@ -185,11 +185,24 @@ export default {
 }
 .arrowL {
   position: absolute;
-  left: -1em;
+  left: -1.5rem;
+  cursor:pointer;
+  transition: all 0.3s;
+  &:hover{
+    transform: scale(1.2)
+  }
 }
 .arrowR {
   position: absolute;
-  left: 104%;
+  left: calc(100% + 0.5rem);
+  cursor:pointer;
+  transition: all 0.3s;
+  
+    
+  
+   &:hover{
+    transform: scale(1.2)
+  }
 }
 .square {
   width: max(3.6rem, 5vw);

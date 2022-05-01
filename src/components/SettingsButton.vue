@@ -19,14 +19,14 @@ export default {
 </script>
 <style lang="scss" scoped>
 .setings_button {
-  font-size: 2.7rem;
+ 
   display: flex;
   justify-content: center;
   align-items: center;
   transition: 0.3s;
   cursor: pointer;
   p {
-    font-size: max(2.7vw, 2rem);
+    font-size: max(2.7vw, 1.4rem);
     @media screen and (max-width: 600px) {
       display: none;
     }

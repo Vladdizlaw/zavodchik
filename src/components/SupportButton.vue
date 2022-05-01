@@ -22,7 +22,7 @@ export default {
 .supportbutton {
   display: flex;
   justify-content: center;
-  font-size: max(2.7vw,2rem);
+   font-size: max(2.7vw, 1.4rem);
   // min-width: 10rem;
   margin-left: 0.3rem;
   align-items: center;

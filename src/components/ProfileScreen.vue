@@ -7,14 +7,15 @@
         this.user.animals[currentAnimal] &&
         this.user.animals[currentAnimal].typeAnimal == 'dog',
       cat:
-        this.user &&
-        this.user.animals[currentAnimal] &&
-        this.user.animals[currentAnimal].typeAnimal == 'cat',
+        (this.user &&
+          this.user.animals[currentAnimal] &&
+          this.user.animals[currentAnimal].typeAnimal == 'cat') ||
+        !Object.keys(user.animals).length,
     }"
   >
     <Modal ref="modal">
       <template #content>
-        <img :src="url" class="image" alt="" />
+        <img :src="url" class="image" alt="view photo" />
       </template>
     </Modal>
     <slot name="modalAnother"></slot>
@@ -24,7 +25,7 @@
     <div class="main">
       <div class="main-left">
         <div class="main-left__name">
-          <p>
+          <p v-show="Object.keys(user.animals).length">
             {{
               user && user.animals[currentAnimal]
                 ? user.animals[currentAnimal].name
@@ -37,6 +38,7 @@
             }}
             {{ pluralize }}
           </p>
+          <p v-show="!Object.keys(user.animals).length">НЕТ ЖИВОТНОГО</p>
           <img
             class="arrowR"
             src="../assets/ArrowR.svg"
@@ -46,20 +48,8 @@
           />
         </div>
         <div class="main-left__data">
-          <p>
-            Тип:{{
-              user && user.animals[currentAnimal]
-                ? user.animals[currentAnimal].typeAnimal
-                : null
-            }}
-          </p>
-          <p>
-            Пол:{{
-              user && user.animals[currentAnimal]
-                ? user.animals[currentAnimal].male
-                : null
-            }}
-          </p>
+          <p>Тип:{{ typeValue }}</p>
+          <p>Пол:{{ maleValue }}</p>
           <p>
             Порода:{{
               user && user.animals[currentAnimal]
@@ -128,8 +118,8 @@
           </p>
         </div>
       </div>
-      <div class="main-right" v-show="urls">
-        <div class="main-right__photos" @click="сheckPhotos($event)">
+      <div class="main-center" v-show="urls">
+        <div class="main-center__photos" @click="сheckPhotos($event)">
           <div class="photo__LU">
             <div class="LU__UP photo" v-show="urls && urls[0]">
               <img
@@ -243,6 +233,11 @@
           </div>
         </div>
       </div>
+      <div class="main-right">
+        <slot name="main_right_top"></slot>
+        <slot name="main_right_center"></slot>
+        <slot name="main_right_bottom"></slot>
+      </div>
     </div>
     <div class="footer">
       <slot name="footer"> </slot>
@@ -290,6 +285,23 @@ export default {
     },
   },
   computed: {
+    typeValue() {
+      if (
+        this.user &&
+        this.user.animals[this.currentAnimal].typeAnimal == "dog"
+      ) {
+        return "собака";
+      } else {
+        return "кошка";
+      }
+    },
+    maleValue() {
+      if (this.user && this.user.animals[this.currentAnimal].male == "male") {
+        return "мужской";
+      } else {
+        return "женский";
+      }
+    },
     pluralize() {
       let res;
       if (
@@ -333,12 +345,18 @@ export default {
   background-position: center, center;
   background-size: 100vh, cover;
   background-repeat: no-repeat, no-repeat;
+  @media screen and (orientation: portrait) {
+    background-size: 100vw, cover;
+  }
 }
 .cat {
   background: url("../assets/cover_cat_acc.svg"), url("../assets/cover_cat.png");
   background-position: center, center;
   background-size: 100vh, cover;
   background-repeat: no-repeat, no-repeat;
+  @media screen and (orientation: portrait) {
+    background-size: 100vw, cover;
+  }
 }
 .wrapper {
   font-family: "Amatic SC";
@@ -380,7 +398,7 @@ export default {
   display: flex;
   width: 90vw;
   height: 70vh;
-  justify-content: space-around;
+  justify-content: flex-start;
   overflow-y: auto;
   align-items: center;
   &::-webkit-scrollbar {
@@ -398,7 +416,7 @@ export default {
   }
   .main-left {
     margin-left: 2em;
-    width: 50%;
+    width: 40%;
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -448,6 +466,7 @@ export default {
       flex-direction: column;
       justify-content: flex-start;
       align-items: flex-start;
+      align-self: start;
       // margin-top: 2rem;
       overflow: auto;
       @media screen and (orientation: portrait) {
@@ -462,137 +481,135 @@ export default {
       }
     }
   }
+  .main-center {
+    width: 40%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    // margin-left: 2em;
+    // margin-top: 2rem;
+    .main-center__photos {
+      width: 90%;
+      height: 90%;
+
+      display: flex;
+      flex-wrap: nowrap;
+      flex-direction: row;
+      /* z-index: 100; */
+      position: relative;
+      justify-content: center;
+      align-items: start;
+      padding: 0;
+      margin: 0;
+      cursor: pointer;
+      .photo__LU {
+        width: 50%;
+        height: 100%;
+        /* border: 2px dashed black; */
+        display: flex;
+        flex-direction: column;
+        flex-wrap: nowrap;
+      }
+      .LU__UP {
+        width: 100%;
+        height: 45%;
+      }
+      .LU__DOWN {
+        width: 100%;
+        height: 55%;
+        /* border: 1px dashed black; */
+        display: flex;
+      }
+      .LU__DOWN_left {
+        height: 100%;
+        width: 45%;
+        /* border: 1px dashed; */
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+      }
+      .LU__DOWN_right {
+        height: 100%;
+        width: 55%;
+        /* border: 1px dashed; */
+        display: flex;
+        flex-direction: column;
+      }
+      .LU__DOWN_left_1,
+      .LU__DOWN_left_2,
+      .LU__DOWN_left_3,
+      .RU__UP_right_1,
+      .RU__UP_right_2,
+      .RU__UP_right_3 {
+        height: 33%;
+        width: 100%;
+      }
+      .LU__DOWN_right_1,
+      .LU__DOWN_right_2,
+      .RU__UP_left_1,
+      .RU__UP_left_2 {
+        height: 50%;
+        width: 100%;
+      }
+      .photo__RU {
+        width: 50%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        flex-wrap: nowrap;
+      }
+      .RU__UP {
+        height: 55%;
+        width: 100%;
+        /* border: 1px dashed; */
+        display: flex;
+      }
+      .RU__UP_left {
+        height: 100%;
+        width: 55%;
+        /* border: 1px dashed; */
+        display: flex;
+        flex-direction: column;
+      }
+      .RU__UP_right {
+        height: 100%;
+        width: 45%;
+        /* border: 1px dashed; */
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+      }
+      .RU__DOWN {
+        height: 55%;
+        width: 100%;
+      }
+      .photo {
+        position: relative;
+
+        /* overflow:hidden; */
+
+        img {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          object-position: cover;
+          box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.75);
+          border: 0.5px solid green;
+          border-radius: 10px;
+          transition: all 0.4s;
+          &:hover {
+            z-index: 100;
+            transform: scale(1.2);
+          }
+          // @media screen and ()
+        }
+      }
+    }
+  }
 }
 
-.main-right {
-  width: 50%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  // margin-left: 2em;
-  // margin-top: 2rem;
-}
-
-.main-right__photos {
-  width: 90%;
-  height: 90%;
-
-  display: flex;
-  flex-wrap: nowrap;
-  flex-direction: row;
-  /* z-index: 100; */
-  position: relative;
-  justify-content: center;
-  align-items: start;
-  padding: 0;
-  margin: 0;
-  cursor: pointer;
-}
-.photo__LU {
-  width: 50%;
-  height: 100%;
-  /* border: 2px dashed black; */
-  display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-}
-.LU__UP {
-  width: 100%;
-  height: 45%;
-}
-.LU__DOWN {
-  width: 100%;
-  height: 55%;
-  /* border: 1px dashed black; */
-  display: flex;
-}
-.LU__DOWN_left {
-  height: 100%;
-  width: 45%;
-  /* border: 1px dashed; */
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-}
-.LU__DOWN_right {
-  height: 100%;
-  width: 55%;
-  /* border: 1px dashed; */
-  display: flex;
-  flex-direction: column;
-}
-.LU__DOWN_left_1,
-.LU__DOWN_left_2,
-.LU__DOWN_left_3,
-.RU__UP_right_1,
-.RU__UP_right_2,
-.RU__UP_right_3 {
-  height: 33%;
-  width: 100%;
-}
-.LU__DOWN_right_1,
-.LU__DOWN_right_2,
-.RU__UP_left_1,
-.RU__UP_left_2 {
-  height: 50%;
-  width: 100%;
-}
-.photo__RU {
-  width: 50%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-}
-.RU__UP {
-  height: 55%;
-  width: 100%;
-  /* border: 1px dashed; */
-  display: flex;
-}
-.RU__UP_left {
-  height: 100%;
-  width: 55%;
-  /* border: 1px dashed; */
-  display: flex;
-  flex-direction: column;
-}
-.RU__UP_right {
-  height: 100%;
-  width: 45%;
-  /* border: 1px dashed; */
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-}
-.RU__DOWN {
-  height: 55%;
-  width: 100%;
-}
-.photo {
-  position: relative;
-
-  /* overflow:hidden; */
-}
-.photo > img {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.75);
-  border: 0.5px solid green;
-  border-radius: 10px;
-  transition: all 0.4s;
-}
-.photo > img:hover {
-  /* width: 110%;
-  height: 120%; */
-  z-index: 100;
-  transform: scale(1.2);
-  /* border:1px green;
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.75); */
-}
 .footer {
   /* margin-top: 1rem; */
   margin-bottom: 1rem;
@@ -607,6 +624,13 @@ export default {
   // justify-self: end;
 }
 .image {
-  object-fit: fill;
+  width: 100%;
+  height: auto;
+  @media screen and (orientation: portrait) {
+    object-fit: fill;
+    // object-position:50% 50%;
+  }
+  // border-radius: 10%;
+  // object-position: 100% 100%;
 }
 </style>

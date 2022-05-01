@@ -30,7 +30,7 @@ export default {
   cursor: pointer;
   
    p{
-     font-size: max(2.7vw, 2rem);
+      font-size: max(2.7vw, 1.4rem);
   @media screen and (max-width:450px) {
      display: none;
      

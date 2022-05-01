@@ -205,9 +205,9 @@ export default {
         console.log("sendPhoto", e);
       }
     },
-    async getUser() {
-      this.$store.dispatch("GET_PROFILE", this.user.profile.id);
-      this.$store.dispatch("GET_ANIMALS", this.user.profile.id);
+    async getUser(userId) {
+      this.$store.dispatch("GET_PROFILE",userId);
+      this.$store.dispatch("GET_ANIMALS",userId);
     },
     async sendUser() {
       this.$store.dispatch("POST_PROFILE", this.user.profile);
@@ -369,23 +369,24 @@ export default {
 
       setTimeout(() => {
         Array.from(Object.keys(this.user.animals)).forEach(async (ind) => {
-          console.log("recieved", this.user.animals[ind].photoAnimal);
+       
           await this.senpPhoto(
             this.user.animals[ind].photoAnimal,
             this.user.animals[ind]["id"]
           );
-          console.log("done", ind);
+        
         });
 
         setTimeout(async () => {
-          await this.getUser();
+          await this.getUser(this.user.profile.id);
         }, 1000);
       }, 1000);
 
-      setTimeout( () => {
+      // setTimeout( () => {
 
         setTimeout(() => {
-          document.cookie = `access_token=${this.user.profile.token}`;
+         
+         
           this.autohorized = true;
           // console.log()
           if (!this.pusher) {
@@ -399,9 +400,11 @@ export default {
               selectedCity: this.selectedCity,
             },
           });
-        }, 1000);
-      }, 1000);
-
+          document.cookie = `access_token=${this.user?.profile?.token}`;
+        console.log("🚀 ~ file: App.vue ~ line 389 ~ setTimeout ~ this.user.profile.token", this.user.profile.token)
+        }, 2200);
+      // }, 1000);
+       
       console.log("get reg form this.user", this.user);
     },
 

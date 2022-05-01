@@ -21,7 +21,7 @@ export default {
 <style lang="scss" scoped>
 .search {
   font-family: "Amatic SC";
-  font-size: max(2.7vw, 2rem);
+  font-size: max(2.7vw, 1.4rem);
   font-style: normal;
   font-weight: 900;
   width: auto;
@@ -46,7 +46,7 @@ export default {
     }
   }
   img {
-    height: object-fit;
+    height: max(2.5vw, 1.4rem);
   }
 }
 
