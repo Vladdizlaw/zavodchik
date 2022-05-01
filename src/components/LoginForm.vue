@@ -66,7 +66,7 @@ export default {
           );
           this.$store.commit("SAVE_PROFILE", user.data);
           this.$emit("signIn");
-          console.log("user", this.user);
+          // console.log("user", this.$store.user);
         } catch (user) {
           console.log("user", user.status);
 

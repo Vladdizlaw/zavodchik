@@ -19,10 +19,10 @@ export default {
   },
   computed: {
     lastTrialTime() {
-      console.log('trial-block',this.startTrial)
+      console.log('trial-block',Date(this.startTrial?.dateEnd),Date.now())
       const timestampNow = Date.now();
       let result = Math.round(
-        (this.startTrial?.dateEnd - timestampNow) / 86_400_000
+        (Date.parse(this.startTrial?.dateEnd) - timestampNow) / 86_400_000
       );
       return result;
     },

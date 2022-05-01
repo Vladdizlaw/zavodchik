@@ -387,7 +387,7 @@ export default {
         setTimeout(() => {
           document.cookie = `access_token=${this.user.profile.token}`;
           this.autohorized = true;
-          console.log()
+          // console.log()
           if (!this.pusher) {
             this.startPusher();
           }
@@ -415,7 +415,19 @@ export default {
       // var user = await axios.post("http://localhost:5000/api/login", loginForm);
       // 
       document.cookie = `access_token=${this.user.profile.token}`;
-      console.log("from Sign", document.cookie);
+      const headers = {
+        "Content-Type": "application/json",
+      };
+      let { data } = await axios.get(
+        `http://localhost:5000/api/get_animals${this.user.profile.id}`,
+        {
+          headers: headers,
+        }
+      );
+      data.forEach(animal=>{
+        this.sendAnimalFormToVuex(animal)
+      })
+     
       // window.location.reload(true);
       if (!this.pusher) {
         this.startPusher();

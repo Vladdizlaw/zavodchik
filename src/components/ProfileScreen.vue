@@ -37,6 +37,13 @@
             }}
             {{ pluralize }}
           </p>
+          <img
+            class="arrowR"
+            src="../assets/ArrowR.svg"
+            alt="previos"
+            @click="showNextAnimal"
+            v-show="Object.keys(user.animals).length > 1"
+          />
         </div>
         <div class="main-left__data">
           <p>
@@ -84,7 +91,7 @@
                 user.animals[currentAnimal].awards
             "
           >
-            Награды:{{ user.aanimals[currentAnimal].awards }}
+            Награды:{{ user.animals[currentAnimal].awards }}
           </p>
           <p
             v-if="
@@ -257,8 +264,16 @@ export default {
       // modalPhoto: false,
     };
   },
+  mounted() {
+    console.log("profile", this.user);
+  },
 
   methods: {
+    showNextAnimal() {
+      this.currentAnimal < Object.keys(this.user.animals).length - 1
+        ? ++this.currentAnimal
+        : (this.currentAnimal = 0);
+    },
     async сheckPhotos(e) {
       // console.log('check',e)
       if (!e?.target?.name) {
@@ -278,13 +293,13 @@ export default {
     pluralize() {
       let res;
       if (
-        this.user.animals[this.currentAnimal] &&
+        this.user?.animals[this.currentAnimal] &&
         this.user?.animals[this.currentAnimal].age > 1 &&
         this.user?.animals[this.currentAnimal].age < 5
       ) {
         res = "года";
       } else if (
-        this.user.animals[this.currentAnimal] &&
+        this.user?.animals[this.currentAnimal] &&
         this.user?.animals[this.currentAnimal].age == 1
       ) {
         res = "год";
@@ -296,13 +311,13 @@ export default {
 
     urls() {
       if (
-        this.user.animals[this.currentAnimal] &&
+        this.user?.animals[this.currentAnimal] &&
         !this.user?.animals[this.currentAnimal].photoUrl?.length
       ) {
         return null;
       }
       const urls = [];
-      this.user.animals[this.currentAnimal] &&
+      this.user?.animals[this.currentAnimal] &&
         this.user?.animals[this.currentAnimal].photoUrl?.forEach((u) => {
           urls.push("http://localhost:5000/" + u);
         });
@@ -337,13 +352,13 @@ export default {
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
     0px 4px 4px rgba(0, 0, 0, 0.25);
   transform: matrix(1, 0, 0, 1, 0, 0);
-  
+
   width: 100vw;
   height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-around;
   position: relative;
 }
 
@@ -364,9 +379,9 @@ export default {
 .main {
   display: flex;
   width: 90vw;
-  min-height: 70vh;
-  justify-content: start;
-  overflow: auto;
+  height: 70vh;
+  justify-content: space-around;
+  overflow-y: auto;
   align-items: center;
   &::-webkit-scrollbar {
     width: 10px;
@@ -397,18 +412,33 @@ export default {
       box-sizing: border-box;
       margin: 0px;
       height: auto;
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
       // max-height: 10%;
       p {
         font-size: max(4vw, 2rem);
       }
+      .arrowR {
+        width: max(1vw, 1rem);
+        text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25),
+          0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25);
+        cursor: pointer;
+        transition: all 0.3s;
+        opacity: 0.7;
+        &:hover {
+          transform: scale(1.2);
+          opacity: 0.8;
+        }
+      }
       @media screen and (orientation: portrait) {
-      margin-left: 1rem;
+        margin-left: 1rem;
 
         display: flex;
       }
       @media screen and (max-height: 540px) {
-    margin: 0 0 0 0;
-  }
+        margin: 0 0 0 0;
+      }
       /* margin-bottom: 1em; */
     }
     .main-left__data {
@@ -426,7 +456,7 @@ export default {
       }
       p {
         margin: 0 0 0 0;
-        display:flex;
+        display: flex;
         // margin-top: -2rem;
         font-size: max(2vw, 1.3rem);
       }
@@ -435,17 +465,18 @@ export default {
 }
 
 .main-right {
-  width: 40%;
+  width: 50%;
   height: 100%;
   display: flex;
-  justify-content: end;
-  margin-left: 2em;
-  margin-top: 2rem;
+  justify-content: center;
+  align-items: center;
+  // margin-left: 2em;
+  // margin-top: 2rem;
 }
 
 .main-right__photos {
-  width: 100%;
-  height: 100%;
+  width: 90%;
+  height: 90%;
 
   display: flex;
   flex-wrap: nowrap;
@@ -564,7 +595,7 @@ export default {
 }
 .footer {
   /* margin-top: 1rem; */
-   margin-bottom: 1rem;
+  margin-bottom: 1rem;
   // position: absolute;
   // bottom: 0.5rem;
   display: flex;

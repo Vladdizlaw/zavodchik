@@ -110,8 +110,8 @@ export default {
     };
   },
   async beforeDestroy() {
-    console.log("deletting");
-    if (!this.successExit) {
+   
+    if (!this.successExit) { console.log("deletting");
       this.$store.commit("DELETE_ALL_ANIMALS");
     }
   },
@@ -167,7 +167,7 @@ export default {
   computed: {},
   methods: {
     signIn(loginForm) {
-      
+      this.successExit=true;
       this.$emit('signIn',loginForm)
 
     },
