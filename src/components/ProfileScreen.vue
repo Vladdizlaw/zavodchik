@@ -234,9 +234,15 @@
         </div>
       </div>
       <div class="main-right">
-        <slot name="main_right_top"></slot>
-        <slot name="main_right_center"></slot>
-        <slot name="main_right_bottom"></slot>
+        <div class="main-right_top">
+          <slot name="main_right_top"></slot>
+        </div>
+        <div class="main-right_center">
+          <slot name="main_right_center"></slot>
+        </div>
+        <div class="main-right_bottom">
+          <slot name="main_right_bottom"></slot>
+        </div>
       </div>
     </div>
     <div class="footer">
@@ -251,16 +257,20 @@ export default {
   components: { Modal },
   props: {
     user: { type: Object, require: true },
+    mobileUserAgent: { type:Boolean}
   },
   data() {
     return {
       currentAnimal: 0,
       url: null,
+      // orientationScreen: null,
       // modalPhoto: false,
     };
   },
+ 
   mounted() {
-    console.log("profile", this.user);
+    
+    // console.log("mUA", this.orientationScreen);
   },
 
   methods: {
@@ -285,21 +295,45 @@ export default {
     },
   },
   computed: {
+     
     typeValue() {
+      if (!Object.keys(this.user.animals).length) {
+        return "нет животного";
+      }
       if (
         this.user &&
+        this.user.animals &&
         this.user.animals[this.currentAnimal].typeAnimal == "dog"
       ) {
         return "собака";
-      } else {
+      }
+      if (
+        this.user &&
+        this.user.animals &&
+        this.user.animals[this.currentAnimal].typeAnimal == "cat"
+      ) {
         return "кошка";
       }
+      return "нет животного";
     },
     maleValue() {
-      if (this.user && this.user.animals[this.currentAnimal].male == "male") {
+      if (!Object.keys(this.user.animals).length) {
+        return "нет животного";
+      }
+      if (
+        this.user &&
+        this.user.animals &&
+        this.user.animals[this.currentAnimal].male == "male"
+      ) {
         return "мужской";
-      } else {
+      }  if (
+        this.user &&
+        this.user.animals &&
+        this.user.animals[this.currentAnimal].male == "female"
+      ) {
         return "женский";
+      } else {
+        return "нет животного";
       }
     },
     pluralize() {
@@ -396,10 +430,10 @@ export default {
 
 .main {
   display: flex;
-  width: 90vw;
+  width: 95vw;
   height: 70vh;
   justify-content: flex-start;
-  overflow-y: auto;
+  overflow: hidden;
   align-items: center;
   &::-webkit-scrollbar {
     width: 10px;
@@ -416,7 +450,7 @@ export default {
   }
   .main-left {
     margin-left: 2em;
-    width: 40%;
+    width: 35%;
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -435,7 +469,7 @@ export default {
       gap: 0.5rem;
       // max-height: 10%;
       p {
-        font-size: max(4vw, 2rem);
+        font-size: max(4vw, 1.7rem);
       }
       .arrowR {
         width: max(1vw, 1rem);
@@ -598,14 +632,30 @@ export default {
           box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.75);
           border: 0.5px solid green;
           border-radius: 10px;
-          transition: all 0.4s;
+          transition: all 0.5s;
           &:hover {
             z-index: 100;
-            transform: scale(1.2);
+            transform: scale(1.1);
           }
           // @media screen and ()
         }
       }
+    }
+  }
+  .main-right {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    width: 25%;
+    height: 80%;
+    &_top,
+    &_center,
+    &_bottom {
+      width: 100%;
+      height: 33%;
+      position: relative;
     }
   }
 }

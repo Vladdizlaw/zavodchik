@@ -79,6 +79,18 @@ export default {
     },
   },
   methods: {
+    getScreenOrientation(){
+      console.log("this.mobileUserAgent",this.mobileUserAgent)
+      const orient=screen.msOrientation ||
+            (screen.orientation || screen.mozOrientation).type
+
+      if (orient.split('-')[0]=="portrait"||navigator.userAgentData.mobile ){
+        this.mobileUserAgent=true
+      }   else{
+         this.mobileUserAgent=false
+      }   
+      
+    },
     startPusher() {
       this.pusher = this.$pusher.subscribe(`${this.user.profile.id}`);
     },
@@ -401,7 +413,7 @@ export default {
             },
           });
           document.cookie = `access_token=${this.user?.profile?.token}`;
-        console.log("🚀 ~ file: App.vue ~ line 389 ~ setTimeout ~ this.user.profile.token", this.user.profile.token)
+        
         }, 2200);
       // }, 1000);
        
@@ -475,12 +487,13 @@ export default {
     //     console.log(e)
     //   }
     //  }
-
+    this.getScreenOrientation()
+    document.addEventListener('orientationchange',this.getScreenOrientation())
     this.permissionNotify = await requestPermissionNotification();
-    this.mobileUserAgent =
-      navigator.userAgentData.mobile ||
-      screen.orientation.type == "portrait-primary";
-    console.log("start:", this.user);
+    // this.mobileUserAgent =
+    //   navigator.userAgentData.mobile ||
+    //   screen.orientation.type == "portrait-primary";
+    // console.log("start:", this.mobileUserAgent);
     // this.addAnimalToVuex()
     // ;
     console.log("start:", this.user);
@@ -489,9 +502,9 @@ export default {
       try {
         // await sendPush()
 
-        console.log("cookie:", document.cookie);
+        // console.log("cookie:", document.cookie);
         await this.getAuthUser();
-        console.log("user get from server");
+        // console.log("user get from server");
         this.subscriptionPush = await getPushSubscription();
         setTimeout(async () => {
           this.startPusher();
@@ -533,6 +546,9 @@ export default {
     }
     // this.$router.push({ name: "start", params:{ authentification: this.isAutentificate|| this.autohorized}})
   },
+  beforeDestroy() {
+     document.removeEventListener('orientationchange',this.getScreenOrientation)
+  }
 };
 </script>
 <style lang="scss" scoped>

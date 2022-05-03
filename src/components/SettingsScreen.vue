@@ -2,8 +2,8 @@
   <div
     class="wrapper"
     :class="{
-      dog: user.animal.typeAnimal == 'dog',
-      cat: user.animal.typeAnimal == 'cat',
+      dog: user.animals[0].typeAnimal == 'dog',
+      cat: user.animals[0].typeAnimal == 'cat',
     }"
   >
     <Modal ref="supportModal">
