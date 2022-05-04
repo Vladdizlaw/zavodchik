@@ -1,7 +1,7 @@
 <template>
   <div
-    class="animalproperty"
-    :class="{ dog: animalType == 'dog', cat: animalType == 'cat' }"
+    class="animalproperty "
+    :class="{ dog: animalProperty.typeAnimal == 'dog', cat: animalProperty.typeAnimal == 'cat'}"
   >
     <div class="animalproperty-fortext">
       <Header>
@@ -13,13 +13,28 @@
         </template>
       </Header>
     </div>
+    
+       
 
     <div class="animalproperty-forinput">
+      <div class="input male" v-if="authentification && animals[0]">
+        <p>Подобрать автоматически для животного</p>
+        <select v-model="chosenAnimal" >
+          <option v-for="animal,ind in animals" :key="ind" :value="animal.ind">{{animal.name}}</option>
+         </select>
+      </div>
+       <div class="input male">
+        <p>Тип искомого животного</p>
+        <select v-model="animalProperty.typeAnimal">
+          <option value="cat">кошка</option>
+          <option value="dog">собака</option>
+        </select>
+      </div>
       <div class="input male">
         <p>Пол искомого животного</p>
         <select v-model="animalProperty.male">
-          <option value="мужской">мужской </option>
-          <option value="Женский">женский</option>
+          <option value="male">мужской </option>
+          <option value="female">женский</option>
         </select>
       </div>
 
@@ -28,7 +43,7 @@
 
         <select v-model="animalProperty.breed" placeholder="порода">
           <option :value="bred" v-for="(bred, ind) in breedList" :key="ind">{{
-            bred 
+            bred
           }}</option>
         </select>
       </div>
@@ -80,17 +95,20 @@ import Header from "./Header.vue";
 export default {
   name: "AnimalProperty",
   components: { Header, BackButton },
-  //Компонент выбора свойств животного, принимает тип животного (cat,dog) и геопозицию,
+  //Компонент выбора свойств животного для поиска пары, принимает тип животного (cat,dog) и геопозицию,
   //отдает событие "animalProperty" с обектом собранных данных animalProperty
   props: {
-   authentification: Boolean,
+    authentification: Boolean,
     animalType: String,
     selectedCity: Array,
     city: String,
+    animals: Object,
   },
   data() {
     return {
+      chosenAnimal:null,
       animalProperty: {
+        typeAnimal:null,
         male: null,
         breed: null,
         startAge: null,
@@ -99,61 +117,74 @@ export default {
         place: null,
         dateMating: null,
       },
-      breedList: [],
+      // breedList: [],
       cityList: [],
     };
   },
   async mounted() {
-    console.log('auth',this.authentification)
+    console.log("auth", this.authentification, this.animals);
     this.cityList = require("../cities.json");
 
-    this.animalProperty.place = this.city;
+    // this.animalProperty.place = this.city;
+    this.animalProperty.typeAnimal=this.animalType
 
-    if (this.animalType == "dog") {
+
+    
+  },
+  computed: {
+    breedList() {
+        if (this.animalProperty.typeAnimal == "dog") {
       //В зависимости от типа животного подгружаем список пород
       const breed_string = require("!raw-loader!../dog_breed.txt");
 
-      this.breedList = breed_string.default
+     return breed_string.default
         .split("\r\n")
         .filter((el) => el != "");
     }
-    if (this.animalType == "cat") {
+    if (this.animalProperty.typeAnimal == "cat") {
       const breed_string = require("!raw-loader!../cat_breed.txt");
 
-      this.breedList = breed_string.default.split("\r\n");
+      return  breed_string.default.split("\r\n");
+    } else{
+      return null
     }
-    // console.log(this.breedList)
+    }
   },
-  computed: {},
+  watch: {
+    chosenAnimal: function(ind){
+      console.log(ind)
+     this.animalProperty.breed=this.animals[ind].breed
+     this.animalProperty.typeAnimal=this.animals[ind].typeAnimal
+     this.animalProperty.male=this.animals[ind].male=='male'?'female':this.animals[ind].male
+    //  this.animalProperty.breed=this.animals[ind].breed
 
+    }
+  },
   methods: {
     submit() {
       //Отправляем в App
       if (
         Number(this.animalProperty.startAge) >
-        Number(this.animalProperty.stopAge)&& Number(this.animalProperty.stopAge)!==0
+          Number(this.animalProperty.stopAge) &&
+        Number(this.animalProperty.stopAge) !== 0
       ) {
-        console.log( Number(this.animalProperty.startAge)>Number(this.animalProperty.stopAge));
+        console.log(
+          Number(this.animalProperty.startAge) >
+            Number(this.animalProperty.stopAge)
+        );
         return;
       } else {
         // console.log(new Date(this.animalProperty.dateMating),new Date())
-
         this.$emit("animalProperty", { animalProperty: this.animalProperty });
       }
     },
     back() {
-     
-      // if (!this.autentification) {
-      //   this.$router.push({name:'start'});
-      // } else { 
-      //   console.log('from back isAutentificate')
-        this.$emit("back", null);
-      // }
+      this.$emit("back", null);
     },
   },
 };
 </script>
-<style scoped>
+<style lang="scss" scoped>
 .dog {
   background-image: url("../assets/dog1w.svg"), url("../assets/dog1w.svg"),
     url("../assets/cover_dog.png");
@@ -194,9 +225,6 @@ export default {
   line-height: 182px;
   top: 1rem;
   width: 100%;
-  /* left: 50vh; */
-  /* bottom: 1em; */
-  /* padding-bottom: 1.5em; */
   margin-bottom: -0.5em;
   color: #000000;
   max-height: 3rem;
@@ -212,10 +240,8 @@ export default {
   width: auto;
   justify-content: center;
   align-items: center;
-  /* margin-top: -3rem; */
 }
 .input {
-  /* flex:1 1 6rem; */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -230,16 +256,12 @@ export default {
   height: 6rem;
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
     0px 4px 4px rgba(0, 0, 0, 0.25);
-  /* margin-bottom:0.5rem; */
 }
 .input > p {
   margin-top: -1.4rem;
   margin-bottom: 1.4rem;
 }
 .age {
-  /* margin-top: 1rem; */
-  /* margin-bottom: 0.5rem; */
-  /* padding-top: 1rem; */
   max-height: 4rem;
   width: 100%;
   display: flex;
@@ -250,7 +272,6 @@ export default {
 }
 .age > p {
   margin-top: 1rem;
-  /* padding-bottom: 10px; */
   height: 3rem;
 }
 .ageinput {
@@ -286,7 +307,6 @@ input {
 }
 select:hover,
 input:hover {
-  /* transform: rotate3d(20); */
   width: 17.1em;
   height: 1.4em;
   font-size: 1.7rem;
@@ -379,7 +399,6 @@ option {
 
 button {
   position: relative;
-  /* bottom: 2rem; */
   margin-top: 1rem;
   width: 8rem;
   height: 4rem;

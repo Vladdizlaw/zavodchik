@@ -5,28 +5,32 @@
     </template>
     <template #header>
       <Header>
+        <template #left>
+          <back-button @back="back" />
+        </template>
         <template #center>
-         
-            <p v-show="mobileUserAgent">Мой профиль</p>
-          
-          
+          <p>Мой профиль</p>
         </template>
         <template #right> </template>
       </Header>
     </template>
     <template #main_right_top>
-      <button  @click="toSearchScreen" class="search-button">
-     <p>Поиск пары</p> 
+      <button @click="toSearchScreen" class="search-button">
+        <p>Поиск пары</p>
       </button>
     </template>
     <template #main_right_center>
-      <button  @click="toChatScreen" class="search-button">
-     <p>Мои чаты</p> 
+      <button @click="toChatScreen" class="search-button">
+        <p>Мои чаты</p>
       </button>
     </template>
     <template #main_right_bottom>
-      <button  v-if="!Object.keys(user.animals).length " @click="addNewAnimal" class="search-button">
-     <p> Добавить животное</p> 
+      <button
+        v-if="!Object.keys(user.animals).length"
+        @click="addNewAnimal"
+        class="search-button"
+      >
+        <p>Добавить животное</p>
       </button>
     </template>
     <template #footer>
@@ -48,17 +52,18 @@
 import ProfileScreen from "./ProfileScreen.vue";
 import Header from "./Header.vue";
 import SettingsButton from "./SettingsButton.vue";
-// import SearchButton from "./SearchButton.vue";
 import LogoutButton from "./LogoutButton.vue";
+import BackButton from "./BackButton.vue";
 import TrialBlock from "./TrialBlock.vue";
 import { requestPermissionNotification } from "../api.js";
 import ChatFull from "./ChatFull.vue";
 export default {
+  //Component to show your profile(this.user)
   name: "ProfileUserScreen",
   components: {
     ProfileScreen,
     SettingsButton,
-    // SearchButton,
+    BackButton,
     TrialBlock,
     LogoutButton,
     Header,
@@ -68,23 +73,18 @@ export default {
     user: Object,
     selectedCity: Array,
     pusher: Object,
-    mobileUserAgent: { type: Boolean },
-    // currentAnimal:String,
+    mobileUserAgent: Boolean,
   },
   data() {
-    return {
-      // orientationScreenPortrait:screen.orientation.type,
-    };
+    return {};
   },
-  watch: {
-    // orientationScreenPortrait: function(val) {
-    //   console.log('val',val)
-
-    // }
-  },
+  watch: {},
 
   methods: {
-      
+    back() {
+      this.$emit('back','profile')
+    },
+
     logout() {
       this.$emit("logout", null);
     },
@@ -102,38 +102,24 @@ export default {
         },
       });
     },
-    toChatScreen(){
-      
-    },
+    toChatScreen() {},
     toSearchScreen() {
-      console.log('click')
+      console.log("click");
       this.$router.push({
         name: "search",
         params: {
-          animalType: this.user.animals[0].typeAnimal,
+          animalType: this.user.animals&&this.user.animals[0]?this.user?.animals[0].typeAnimal:'dog',
           city: this.user.profile.city,
           selectedCity: this.selectedCity,
           isAutentificate: true,
+          animals:this.user.animals
         },
       });
     },
-    addNewAnimal() {
-
-    }
+    addNewAnimal() {},
   },
-  computed: {
-  // orientationScreenPortrait(){
-  //       console.log(screen.orientation.type)
-  //      if (screen.orientation.type == "portrait-primary") {
-  //         return true
-  //      }else{
-  //        return false
-  //      }
-     
-  //   },
-  },
+  computed: {},
   async mounted() {
-    // console.log(this.orientationScreenPortrait)
     await requestPermissionNotification();
     if (this.pusher == null) {
       this.$emit("nopusher", null);
@@ -143,8 +129,8 @@ export default {
 </script>
 <style lang="scss" scoped>
 .search-button {
-  position:absolute;
-  left:clamp(0.5rem,1vw,2vw);
+  position: absolute;
+  left: clamp(0.5rem, 1vw, 2vw);
   height: max(3rem, 7vh);
   display: flex;
   justify-content: center;
@@ -157,13 +143,16 @@ export default {
   padding: 1rem 1rem 1rem 1rem;
   font-family: Amatic SC;
   font-style: normal;
-  line-height:1.7rem;
+  line-height: 1.7rem;
   font-weight: bold;
   font-size: max(1.7vw, 1.3rem);
   cursor: pointer;
   color: #000000;
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.75);
   transition: 0.3s;
+  @media screen and (max-width: 395px) {
+    font-size: 1rem;
+  }
   @media screen and (orientation: portrait) {
     border-radius: 20px 0px;
   }

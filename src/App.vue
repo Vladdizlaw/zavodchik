@@ -79,17 +79,29 @@ export default {
     },
   },
   methods: {
+    async toggleFullscreen(){
+      if (document.fullscreenElement||document.webkitFullscreenElement||document.mozFullscreenElement||document.msFullscreenElement){
+        document.exitFullscreen()
+      }else{
+      console.log
+     try { 
+        await document.documentElement.requestFullscreen()
+      }catch (e) {
+        console.log(e)
+      }
+      }
+    },
     getScreenOrientation(){
-      console.log("this.mobileUserAgent",this.mobileUserAgent)
-      const orient=screen.msOrientation ||
+           const orient=screen.msOrientation ||
             (screen.orientation || screen.mozOrientation).type
 
       if (orient.split('-')[0]=="portrait"||navigator.userAgentData.mobile ){
+        //
         this.mobileUserAgent=true
       }   else{
          this.mobileUserAgent=false
       }   
-      
+       console.log("this.mobileUserAgent",this.mobileUserAgent)
     },
     startPusher() {
       this.pusher = this.$pusher.subscribe(`${this.user.profile.id}`);
@@ -271,18 +283,20 @@ export default {
       return data;
     },
     getAnimalType(value) {
+      console.log(value)
       // this.user.animal.animalType = value.animalType;
-      if (!(this.isAutentificate || this.autohorized))
-        console.log("not autentificate");
-      {
-        this.$store.commit("SAVE_USER_ANIMAL", value, 0);
-      }
+      // if (!(this.isAutentificate || this.autohorized))
+      //   console.log("not autentificate");
+      // {
+      //   this.$store.commit("SAVE_USER_ANIMAL", value, 0);
+      // }
       this.$router.push({
         name: "search",
         params: {
-          animalType: this.users.animals[0].typeAnimal,
+          animalType: value.typeAnimal,
           city: this.user.profile.city,
           selectedCity: this.selectedCity,
+          animals: this.user.animals,
           // isAutentificate: this.isAutentificate,
         },
       });
@@ -488,7 +502,8 @@ export default {
     //   }
     //  }
     this.getScreenOrientation()
-    document.addEventListener('orientationchange',this.getScreenOrientation())
+    window.addEventListener("orientationchange",this.getScreenOrientation)
+    window.addEventListener("dblclick",this.toggleFullscreen)
     this.permissionNotify = await requestPermissionNotification();
     // this.mobileUserAgent =
     //   navigator.userAgentData.mobile ||

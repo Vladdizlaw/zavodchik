@@ -119,6 +119,16 @@
         </div>
       </div>
       <div class="main-center" v-show="urls">
+        <div class="main-center__photos__mobile" @click="сheckPhotos($event)">
+          <div class="photos_mobile" v-show="urls && urls[0]">
+            <img
+              :src="urls ? urls[0] : null"
+              name="0"
+              v-show="urls && urls[0]"
+            />
+            
+          </div>
+        </div>
         <div class="main-center__photos" @click="сheckPhotos($event)">
           <div class="photo__LU">
             <div class="LU__UP photo" v-show="urls && urls[0]">
@@ -245,6 +255,36 @@
         </div>
       </div>
     </div>
+
+    <div class="main_mobile">
+      <img
+        class="arrowR"
+        src="../assets/ArrowL.svg"
+        alt="previos"
+        @click="showPreviosPhoto"
+        v-show="showPhotoMobileStart > 1"
+      />
+      <div
+        class="main_mobile_photo"
+        v-for="(u, ind) in urls.slice(showPhotoMobileStart, showPhotoMobileEnd)"
+        :key="ind"
+      >
+        <img
+          :src="u ? u : null"
+          alt=""
+          :name="ind + showPhotoMobileStart"
+          v-show="u"
+          @click="сheckPhotos($event)"
+        />
+      </div>
+      <img
+        class="arrowR"
+        src="../assets/ArrowR.svg"
+        alt="previos"
+        @click="showNextPhoto"
+        v-show="showPhotoMobileEnd < urls.length"
+      />
+    </div>
     <div class="footer">
       <slot name="footer"> </slot>
     </div>
@@ -253,27 +293,33 @@
 <script>
 import Modal from "./Modal.vue";
 export default {
+  //Component to show profile 
   name: "ProfileScreen",
   components: { Modal },
   props: {
     user: { type: Object, require: true },
-    mobileUserAgent: { type:Boolean}
+    mobileUserAgent: { type: Boolean },
   },
   data() {
     return {
-      currentAnimal: 0,
-      url: null,
-      // orientationScreen: null,
-      // modalPhoto: false,
+      currentAnimal: 0, //Cuurent animal of this.user
+      url: null, //urls to photo at server
+      showPhotoMobileStart: 1, //pagination start of mobile shown photos
+      showPhotoMobileEnd: 4, //pagination end of mobile shown photos
     };
   },
- 
-  mounted() {
-    
-    // console.log("mUA", this.orientationScreen);
-  },
+
+  mounted() {},
 
   methods: {
+    showNextPhoto() {
+      this.showPhotoMobileStart = this.showPhotoMobileStart + 3;
+      this.showPhotoMobileEnd = this.showPhotoMobileEnd + 3;
+    },
+    showPreviosPhoto() {
+      this.showPhotoMobileStart = this.showPhotoMobileStart - 3;
+      this.showPhotoMobileEnd = this.showPhotoMobileEnd - 3;
+    },
     showNextAnimal() {
       this.currentAnimal < Object.keys(this.user.animals).length - 1
         ? ++this.currentAnimal
@@ -295,7 +341,6 @@ export default {
     },
   },
   computed: {
-     
     typeValue() {
       if (!Object.keys(this.user.animals).length) {
         return "нет животного";
@@ -326,7 +371,8 @@ export default {
         this.user.animals[this.currentAnimal].male == "male"
       ) {
         return "мужской";
-      }  if (
+      }
+      if (
         this.user &&
         this.user.animals &&
         this.user.animals[this.currentAnimal].male == "female"
@@ -397,14 +443,11 @@ export default {
   font-size: max(2rem, 3vw);
   font-style: normal;
   font-weight: 900;
-  // line-height: 45px;
   letter-spacing: 0em;
   text-align: left;
-
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
     0px 4px 4px rgba(0, 0, 0, 0.25);
   transform: matrix(1, 0, 0, 1, 0, 0);
-
   width: 100vw;
   height: 100vh;
   display: flex;
@@ -412,26 +455,71 @@ export default {
   align-items: center;
   justify-content: space-around;
   position: relative;
+  @media screen and (orientation: portrait) {
+    justify-content: start;
+  }
 }
 
 .header {
   margin-top: 0rem;
-  // margin-bottom: 1rem;
   width: 100%;
   max-height: 3rem;
   display: flex;
   justify-content: start;
   align-items: center;
   @media screen and (orientation: portrait) {
-    margin-top: 0rem;
+    margin-top: 1vh;
     margin-bottom: 0rem;
+  }
+}
+.main_mobile {
+  width: 100%;
+  height: 20%;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  overflow-x: auto;
+  overflow-y: hidden;
+  gap: 0.5rem;
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+  &::-webkit-scrollbar {
+    background: transparent;
+  }
+  @media screen and (orientation: portrait) {
+    display: flex;
+    flex-direction: row;
+  }
+  &_photo {
+    width: 12vh;
+    height: 12vh;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.5s;
+    img {
+      position: absolute;
+      width: 80%;
+      height: 80%;
+      object-fit: cover;
+      object-position: cover;
+      box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.75);
+      border: 0.5px solid green;
+      border-radius: 10px;
+      transition: all 0.5s;
+      &:hover {
+        transform: scale(1.3);
+      }
+    }
   }
 }
 
 .main {
   display: flex;
   width: 95vw;
-  height: 70vh;
+  height: 80vh;
   justify-content: flex-start;
   overflow: hidden;
   align-items: center;
@@ -443,7 +531,7 @@ export default {
   }
   @media screen and (orientation: portrait) {
     width: 100%;
-    height: 100%;
+    height: 75%;
   }
   @media screen and (max-height: 540px) {
     height: 90vh;
@@ -457,7 +545,6 @@ export default {
     justify-content: start;
     align-items: flex-start;
     @media screen and (orientation: portrait) {
-      // justify-content: center;
       margin-left: 1rem;
     }
     .main-left__name {
@@ -467,9 +554,8 @@ export default {
       display: flex;
       justify-content: center;
       gap: 0.5rem;
-      // max-height: 10%;
       p {
-        font-size: max(4vw, 1.7rem);
+        font-size: max(3vw, 1.7rem);
       }
       .arrowR {
         width: max(1vw, 1rem);
@@ -484,14 +570,11 @@ export default {
         }
       }
       @media screen and (orientation: portrait) {
-        margin-left: 1rem;
-
         display: flex;
       }
       @media screen and (max-height: 540px) {
         margin: 0 0 0 0;
       }
-      /* margin-bottom: 1em; */
     }
     .main-left__data {
       flex: 1 1 35vh;
@@ -501,17 +584,14 @@ export default {
       justify-content: flex-start;
       align-items: flex-start;
       align-self: start;
-      // margin-top: 2rem;
       overflow: auto;
       @media screen and (orientation: portrait) {
         margin-top: 0rem;
-        // justify-content: center;
       }
       p {
         margin: 0 0 0 0;
         display: flex;
-        // margin-top: -2rem;
-        font-size: max(2vw, 1.3rem);
+        font-size: max(1.9vw, 1.3rem);
       }
     }
   }
@@ -521,26 +601,58 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    // margin-left: 2em;
-    // margin-top: 2rem;
+    @media screen and (orientation: portrait) {
+      margin-top: 10rem;
+      align-items: start;
+    }
+    .main-center__photos__mobile {
+      justify-self: start;
+      width: 100%;
+      height: 30%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      @media screen and (orientation: landscape) {
+        display: none;
+      }
+      .photos_mobile {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+        img {
+          position: absolute;
+          width: 80%;
+          height: 80%;
+          object-fit: cover;
+          object-position: cover;
+          box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.75);
+          border: 0.5px solid green;
+          border-radius: 10px;
+          transition: all 0.5s;
+        }
+      }
+    }
     .main-center__photos {
       width: 90%;
       height: 90%;
-
       display: flex;
       flex-wrap: nowrap;
       flex-direction: row;
-      /* z-index: 100; */
       position: relative;
       justify-content: center;
       align-items: start;
       padding: 0;
       margin: 0;
       cursor: pointer;
+      @media screen and (orientation: portrait) {
+        display: none;
+      }
       .photo__LU {
         width: 50%;
         height: 100%;
-        /* border: 2px dashed black; */
         display: flex;
         flex-direction: column;
         flex-wrap: nowrap;
@@ -552,13 +664,11 @@ export default {
       .LU__DOWN {
         width: 100%;
         height: 55%;
-        /* border: 1px dashed black; */
         display: flex;
       }
       .LU__DOWN_left {
         height: 100%;
         width: 45%;
-        /* border: 1px dashed; */
         display: flex;
         flex-direction: column;
         justify-content: space-around;
@@ -566,7 +676,6 @@ export default {
       .LU__DOWN_right {
         height: 100%;
         width: 55%;
-        /* border: 1px dashed; */
         display: flex;
         flex-direction: column;
       }
@@ -596,20 +705,17 @@ export default {
       .RU__UP {
         height: 55%;
         width: 100%;
-        /* border: 1px dashed; */
         display: flex;
       }
       .RU__UP_left {
         height: 100%;
         width: 55%;
-        /* border: 1px dashed; */
         display: flex;
         flex-direction: column;
       }
       .RU__UP_right {
         height: 100%;
         width: 45%;
-        /* border: 1px dashed; */
         display: flex;
         flex-direction: column;
         justify-content: space-around;
@@ -620,9 +726,6 @@ export default {
       }
       .photo {
         position: relative;
-
-        /* overflow:hidden; */
-
         img {
           position: absolute;
           width: 100%;
@@ -637,7 +740,6 @@ export default {
             z-index: 100;
             transform: scale(1.1);
           }
-          // @media screen and ()
         }
       }
     }
@@ -646,41 +748,44 @@ export default {
     display: flex;
     flex-direction: column;
     justify-content: center;
+
     align-items: center;
     position: relative;
     width: 25%;
     height: 80%;
+    @media screen and (orientation: portrait) {
+      gap: 5vh;
+      align-self: start;
+      margin-top: 11vh;
+      margin-right: 1rem;
+      height: 30%;
+    }
     &_top,
     &_center,
     &_bottom {
       width: 100%;
       height: 33%;
       position: relative;
+      @media screen and (orientation: portrait) {
+      }
     }
   }
 }
 
 .footer {
-  /* margin-top: 1rem; */
   margin-bottom: 1rem;
-  // position: absolute;
-  // bottom: 0.5rem;
   display: flex;
   width: 100vw;
   max-height: 3rem;
   justify-content: space-around;
   align-items: flex-end;
   flex-wrap: nowrap;
-  // justify-self: end;
 }
 .image {
   width: 100%;
   height: auto;
   @media screen and (orientation: portrait) {
     object-fit: fill;
-    // object-position:50% 50%;
   }
-  // border-radius: 10%;
-  // object-position: 100% 100%;
 }
 </style>

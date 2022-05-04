@@ -18,7 +18,8 @@
         v-if="
           (photo.length < 1 && page == 1) ||
             (photo.length < 4 && page == 2) ||
-            (photo.length < 7 && page == 3)
+            (photo.length < 7 && page == 3)||
+            (photo.length < 10 && page == 4)
         "
       >
         <input
@@ -34,7 +35,8 @@
         v-if="
           (photo.length < 2 && page == 1) ||
             (photo.length < 5 && page == 2) ||
-            (photo.length < 8 && page == 3)
+            (photo.length < 8 && page == 3)||
+            (photo.length < 11 && page == 4)
         "
       >
         <input
@@ -49,7 +51,8 @@
         v-if="
           (photo.length < 3 && page == 1) ||
             (photo.length < 6 && page == 2) ||
-            (photo.length < 9 && page == 3)
+            (photo.length < 9 && page == 3)||
+            (photo.length < 12 && page == 4)
         "
       >
         <input
@@ -61,42 +64,45 @@
       <img
         class="square"
         :src="imageUrl[currentposition]"
-        :alt="photo"
+        
         v-if="
           (photo.length > 0 && page == 1) ||
             (photo.length > 3 && page == 2) ||
-            (photo.length > 6 && page == 3)
+            (photo.length > 6 && page == 3)||
+            (photo.length > 9 && page == 4)
         "
         @click="deletePhoto(0)"
       />
       <img
         class="square"
         :src="imageUrl[currentposition + 1]"
-        :alt="photo"
+       
         v-if="
           (photo.length > 1 && page == 1) ||
             (photo.length > 4 && page == 2) ||
-            (photo.length > 7 && page == 3)
+            (photo.length > 7 && page == 3)||
+            (photo.length > 10 && page == 4)
         "
         @click="deletePhoto(1)"
       />
       <img
         class="square"
         :src="imageUrl[currentposition + 2]"
-        :alt="photo"
+       
         v-if="
           (photo.length > 2 && page == 1) ||
             (photo.length > 5 && page == 2) ||
-            (photo.length > 8 && page == 3)
+            (photo.length > 8 && page == 3)||
+            (photo.length > 11 && page == 4)
         "
-        @click="deletePhoto(3)"
+        @click="deletePhoto(2)"
       />
       <img
         class="arrowR"
         src="../assets/ArrowR.svg"
         alt="next"
         @click="next"
-        v-show="photo.length >= 3 && page < 3"
+        v-show="photo.length >= 3 && page < 4"
       />
     </div>
     <div class="error" :v-show="error">{{ error }}</div>
@@ -106,6 +112,7 @@
 
 
 export default {
+  //Component to add photo
   name: "PhotoAdd",
   props: { message: String },
   data() {
@@ -119,7 +126,6 @@ export default {
   },
   watch: {
     page() {
-      // console.log((this.page - 1) * 3);
       this.currentposition = (this.page - 1) * 3;
     },
   },
@@ -157,7 +163,7 @@ export default {
       this.page--;
     },
     next() {
-      if (this.page >= 3) {
+      if (this.page >= 4) {
         return;
       }
       this.page++;
@@ -197,9 +203,6 @@ export default {
   left: calc(100% + 0.5rem);
   cursor:pointer;
   transition: all 0.3s;
-  
-    
-  
    &:hover{
     transform: scale(1.2)
   }
@@ -220,7 +223,6 @@ export default {
 .square:after {
   content: "";
   position: absolute;
-  /* width:1px; */
   height: 80%;
    top: 10%;
   @media screen and (orientation: portrait){
@@ -233,7 +235,6 @@ export default {
 .square:before {
   content: "";
   position: absolute;
-  /* width:1px; */
   width: 80%; 
   border: 2px solid;
   top: 50%;
