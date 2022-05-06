@@ -21,6 +21,7 @@
 
 <script>
 import axios from "axios";
+import {URI_SERVER} from "../api.js"
 export default {
   name: "LoginForm",
   data() {
@@ -61,7 +62,7 @@ export default {
         const loginForm = { mail: this.login, pass: this.password };
         try {
           var user = await axios.post(
-            "http://localhost:5000/api/login",
+            `${URI_SERVER}/api/login`,
             loginForm
           );
           this.$store.commit("SAVE_PROFILE", user.data);

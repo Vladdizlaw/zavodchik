@@ -15,7 +15,10 @@
   >
     <Modal ref="modal">
       <template #content>
-        <img :src="url" class="image" alt="view photo" />
+        <div class="modal_image">
+           <img :src="url" class="image" alt="view photo" />
+        </div>
+       
       </template>
     </Modal>
     <slot name="modalAnother"></slot>
@@ -298,7 +301,7 @@ export default {
   components: { Modal },
   props: {
     user: { type: Object, require: true },
-    mobileUserAgent: { type: Boolean },
+   
   },
   data() {
     return {
@@ -781,11 +784,29 @@ export default {
   align-items: flex-end;
   flex-wrap: nowrap;
 }
-.image {
+.modal_image{
+  position:relative;
+  display: flex;
+  max-width: 100%;
+  // height:100vh;
+  justify-content: center;
+  .image {
   width: 100%;
   height: auto;
+  aspect-ratio: auto;
+  object-fit: cover;
+  @media screen and (max-height: 800px) and (orientation: landscape) {
+    left:50px;
+    width:50%;
+  height: auto;
+  aspect-ratio: auto;
+  object-fit: cover;
+  }
   @media screen and (orientation: portrait) {
+    
     object-fit: fill;
   }
 }
+}
+
 </style>

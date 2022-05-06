@@ -475,7 +475,8 @@ export default {
       text-justify: center;
       font-family: $font-family;
       text-shadow: $textshadow;
-      font-size: max(1.8vw, 1.2rem);
+        font-size: max(1rem, 1.4vw);
+      // font-size: max(1.8vw, 1.2rem);
       transition: 0.3s;
       opacity: 0.8;
 
@@ -507,7 +508,7 @@ export default {
       text-justify: center;
       font-family: $font-family;
       text-shadow: $textshadow;
-      font-size: max(1.7vw, 1.1rem);
+        font-size: max(1rem, 1.4vw);
       transition: 0.3s;
       opacity: 0.8;
       &:focus {

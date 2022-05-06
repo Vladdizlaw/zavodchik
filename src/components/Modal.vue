@@ -83,8 +83,8 @@ export default {
 .content {
   transition: all 1s;
   /* padding: 10px 10px 10px 10px; */
-  height: 80%;
-  max-width: 80%;
+  max-height: 100%;
+  max-width: 100%;
   display: flex;
   overflow: hidden;
   border-radius: 10px;

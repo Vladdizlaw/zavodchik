@@ -1,4 +1,4 @@
-
+export const URI_SERVER='http://127.0.0.1:5000'
 export async function requestPermissionNotification() {
   const permisionResult = await Notification.requestPermission()
   // console.log('permission',permisionResult)
@@ -10,10 +10,11 @@ export async function sendPush(subscription,msg) {
    
    // Send Push Notification
     console.log("Sending Push...");
-    await fetch("http://localhost:5000/api/subscribe", {
+    await fetch(`${URI_SERVER}/api/subscribe`, {
       method: "POST",
       body: JSON.stringify({subs:subscription,msg:msg}),
       headers: {
+        // 'Access-Control-Allow-Origin':'*',
         "content-type": "application/json"
       }
     });
@@ -40,3 +41,4 @@ export async function getPushSubscription(){
    
     return subscription
 }
+// "export const URI_SERVER='http://localhost:5000'"

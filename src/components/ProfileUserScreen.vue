@@ -6,7 +6,7 @@
     <template #header>
       <Header>
         <template #left>
-          <back-button @back="back" />
+          <!-- <back-button @back="back" /> -->
         </template>
         <template #center>
           <p>Мой профиль</p>
@@ -53,7 +53,7 @@ import ProfileScreen from "./ProfileScreen.vue";
 import Header from "./Header.vue";
 import SettingsButton from "./SettingsButton.vue";
 import LogoutButton from "./LogoutButton.vue";
-import BackButton from "./BackButton.vue";
+// import BackButton from "./BackButton.vue";
 import TrialBlock from "./TrialBlock.vue";
 import { requestPermissionNotification } from "../api.js";
 import ChatFull from "./ChatFull.vue";
@@ -63,7 +63,7 @@ export default {
   components: {
     ProfileScreen,
     SettingsButton,
-    BackButton,
+    // BackButton,
     TrialBlock,
     LogoutButton,
     Header,
@@ -157,11 +157,16 @@ export default {
     border-radius: 20px 0px;
   }
   &:hover {
-    animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite;
+    animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) ;
     border: 1px solid #000000;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.75);
+    p{ 
+      transform: scale(1.1)
+    }
   }
-
+  p {
+    transition: all 0.4s;
+  }
   @keyframes shake {
     10%,
     90% {

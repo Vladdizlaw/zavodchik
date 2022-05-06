@@ -2,9 +2,8 @@
   <div class="app">
     <transition name="no-mode-translate-fade" mode="in-out">
       <router-view
-        :authentification="isAutentificate || autohorized"
-        :nameStart="user.profile.name"
-        :mobileUserAgent="mobileUserAgent"
+       
+        v-bind="{...startProps}"
         @animalType="getAnimalType"
         @enterProfile="getMyProfile"
         @animalProperty="getSearchResult"
@@ -26,6 +25,7 @@
 </template>
 
 <script>
+import {URI_SERVER} from "./api.js"
 import AnimalModule from "./store/modules/animal.js";
 //import Pusher from  'pusher'
 import axios from "axios";
@@ -52,6 +52,7 @@ export default {
       pusherMessage: null,
       mobileUserAgent: null,
       entered: false,
+      startProps:null
     };
   },
   computed: {
@@ -493,14 +494,8 @@ export default {
   },
 
   async mounted() {
-    //  document.onclick=async ()=>{
-    //    try{
-    //       console.log("FULSCR",document.documentElement)
-    //     await document.documentElement.requestFullscreen()
-    //   }catch (e){
-    //     console.log(e)
-    //   }
-    //  }
+    console.log("URI_SERVER",URI_SERVER)
+    
     this.getScreenOrientation()
     window.addEventListener("orientationchange",this.getScreenOrientation)
     window.addEventListener("dblclick",this.toggleFullscreen)
@@ -519,6 +514,11 @@ export default {
 
         // console.log("cookie:", document.cookie);
         await this.getAuthUser();
+        this.startProps={
+           authentification: this.isAutentificate ?? this.autohorized,
+        nameStart: this.user.profile.name,
+        mobileUserAgent: this.mobileUserAgent
+      }
         // console.log("user get from server");
         this.subscriptionPush = await getPushSubscription();
         setTimeout(async () => {
@@ -530,12 +530,11 @@ export default {
           // });
         }, 500);
       } catch (e) {
-        console.log("error", e);
+        console.log("error pusher start", e);
       }
     }
 
-    console.log("start:", this.user);
-    // this.user=window.localStorage.getItem('user')
+   
     let htmlEl = document.querySelector("html");
     htmlEl.style.overflow = "hidden";
     const body = document.querySelector("body");
@@ -546,7 +545,7 @@ export default {
     if (!this.isAutentificate) {
       try {
         const city = await this.getCity();
-        this.$store.commit("SAVE_PROFILE", { city: city });
+        this.$store.commit("SAVE_PROFILE", { city: city||"Краснодар" });
       } catch (e) {
         console.log(e);
       }
@@ -562,7 +561,8 @@ export default {
     // this.$router.push({ name: "start", params:{ authentification: this.isAutentificate|| this.autohorized}})
   },
   beforeDestroy() {
-     document.removeEventListener('orientationchange',this.getScreenOrientation)
+     window.removeEventListener('orientationchange',this.getScreenOrientation)
+     window.removeEventListener("dblclick",this.toggleFullscreen)
   }
 };
 </script>

@@ -32,6 +32,7 @@
   </div>
 </template>
 <script>
+import {URI_SERVER} from "../api.js"
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 import BackButton from "./BackButton.vue";
@@ -118,14 +119,20 @@ export default {
   async mounted() {
     const headers = {
       "Content-Type": "application/json",
+      // 'Access-Control-Allow-Origin':'*',
     };
-    let { data } = await axios.get(
-      `http://localhost:5000/api/get_mails`,
+    try{ 
+      var { data } = await axios.get(
+      `${URI_SERVER}/api/get_mails`,
 
       {
         headers: headers,
       }
     );
+    }catch(e){
+      console.log("mail",e)
+    }
+    
 
     this.usedMails = data.map((el) => {
       return el["mail"];
