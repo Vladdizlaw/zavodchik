@@ -90,14 +90,19 @@ export default {
   border-radius: 10px;
   
   /* box-shadow: 8px 8px rgba(64, 65, 63, 0.55); */
-  transition: all 0.4s;
-  box-shadow: 5px 6px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
-    0px 4px 4px rgba(0, 0, 0, 0.25);
+  // transition: all 0.4s;
+  // box-shadow: 5px 6px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
+  //   0px 4px 4px rgba(0, 0, 0, 0.25);
     @media screen and (orientation: portrait){
       max-height:70%;
       max-width:90%;
     }
-    
+     @media screen and (max-height: 800px) and (orientation: landscape) {
+    // width:100%;
+    max-height:90%;
+    width:fit-content;
+    justify-content: center;
+  }
 }
 
 .bounce-enter-active {

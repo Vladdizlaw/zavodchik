@@ -1,5 +1,5 @@
 import Axios from "axios";
-
+import {URI_SERVER} from "../../api.js"
 export default {
   state: () => ({
     mail: null,
@@ -57,7 +57,7 @@ export default {
         "Content-Type": "application/json",
       };
       let { data } = await Axios.get(
-        `http://localhost:5000/api/get_user${payload}`,
+        `${URI_SERVER}/api/get_user${payload}`,
         {
           headers: headers,
         }
@@ -67,11 +67,13 @@ export default {
       context.commit("SAVE_PROFILE", data);
     },
     GET_AUTH_PROFILE: async (context) => {
+      console.log("cooookie",document.cookie)
       const headers = {
+     
         "Content-Type": "application/json",
       };
       let { data } = await Axios.get(
-        `http://localhost:5000/api/get_auth_user`,
+        `${URI_SERVER}/api/get_auth_user`,
         { withCredentials: true },
         {
           headers: headers,
@@ -85,7 +87,7 @@ export default {
         "Content-Type": "application/json",
       };
       // console.log("Vuex payload:", payload);
-      await Axios.post("http://localhost:5000/api/create_user", payload, {
+      await Axios.post(`${URI_SERVER}/api/create_user`, payload, {
         headers: headers,
       });
 
@@ -96,7 +98,7 @@ export default {
         "Content-Type": "application/json",
       };
       let { data } = await Axios.put(
-        "http://localhost:5000/api/update_user",
+        `${URI_SERVER}/api/update_user`,
         payload,
         { headers: headers }
       );

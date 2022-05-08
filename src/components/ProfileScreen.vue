@@ -295,6 +295,7 @@
 </template>
 <script>
 import Modal from "./Modal.vue";
+import {URI_SERVER} from "../api.js"
 export default {
   //Component to show profile 
   name: "ProfileScreen",
@@ -414,7 +415,7 @@ export default {
       const urls = [];
       this.user?.animals[this.currentAnimal] &&
         this.user?.animals[this.currentAnimal].photoUrl?.forEach((u) => {
-          urls.push("http://localhost:5000/" + u);
+          urls.push(`${URI_SERVER}/` + u);
         });
 
       return urls;
@@ -786,25 +787,40 @@ export default {
 }
 .modal_image{
   position:relative;
-  display: flex;
   max-width: 100%;
-  // height:100vh;
+  height:auto;
+  display: flex;
   justify-content: center;
+  align-items: center;
+    border-radius: 10px;
+  
+  /* box-shadow: 8px 8px rgba(64, 65, 63, 0.55); */
+  transition: all 0.4s;
+  box-shadow: 5px 6px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25);
+   @media screen and (max-height: 800px) and (orientation: landscape) {
+    //  left:70vh;
+    //  width:30vw;
+    //  height:50%;
+   width:45%;
+    max-height:90%;
+  }
   .image {
+    // position:absolute;
   width: 100%;
   height: auto;
   aspect-ratio: auto;
   object-fit: cover;
   @media screen and (max-height: 800px) and (orientation: landscape) {
-    left:50px;
-    width:50%;
+
+    
+    width:100%;
   height: auto;
   aspect-ratio: auto;
   object-fit: cover;
   }
   @media screen and (orientation: portrait) {
     
-    object-fit: fill;
+    object-fit: cover;
   }
 }
 }

@@ -62,8 +62,10 @@ export default {
         .filter((el) => el.includes("access_token"));
 
       if (!token || token.length <= 0 || token[0].split("=")[1] === "null") {
+        console.log('token',token)
         return false;
       }
+      console.log('token',token)
       return true;
     },
     user() {
@@ -177,11 +179,13 @@ export default {
       });
     },
     async logout() {
+      console.log("cooookie",document.cookie)
       const headers = {
         "Content-Type": "application/json",
+       
       };
       await axios.get(
-        `http://localhost:5000/api/logout`,
+        `${URI_SERVER}/api/logout`,
         { withCredentials: true },
         {
           headers: headers,
@@ -195,12 +199,14 @@ export default {
     },
 
     async getAuthUser() {
+      
      await this.$store.dispatch("GET_AUTH_PROFILE");
      const headers = {
         "Content-Type": "application/json",
       };
       let { data } = await axios.get(
-        `http://localhost:5000/api/get_animals${this.user.profile.id}`,
+        `${URI_SERVER}/api/get_animals${this.user.profile.id}`,
+         { withCredentials: true },
         {
           headers: headers,
         }
@@ -221,7 +227,7 @@ export default {
       formData.append("animalId", animalId);
       // console.log("formData:", formData);
       try {
-        await axios.post("http://localhost:5000/api/create_photo", formData, {
+        await axios.post(`${URI_SERVER}/api/create_photo`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
@@ -278,7 +284,7 @@ export default {
 
     async getCity() {
       const { data } = await axios.get(
-        `http://localhost:5000/api/get_city/${this.user.location.longitude}/${this.user.location.latitude}`
+        `${URI_SERVER}/api/get_city/${this.user.location.longitude}/${this.user.location.latitude}`
       );
 
       return data;
@@ -314,7 +320,7 @@ export default {
       this.searchParams.dateMating = value.animalProperty.dateMating;
       this.searchParams.id = this.user.profile.id;
       const { data } = await axios.get(
-        `http://localhost:5000/api/get_custom_users/${this.searchParams.animalType}/${this.searchParams.startAge}/${this.searchParams.stopAge}/${this.searchParams.male}/${this.searchParams.breed}/${this.searchParams.awards}/${this.searchParams.place}/${this.searchParams.dateMating}/${this.searchParams.id}`
+        `${URI_SERVER}/api/get_custom_users/${this.searchParams.animalType}/${this.searchParams.startAge}/${this.searchParams.stopAge}/${this.searchParams.male}/${this.searchParams.breed}/${this.searchParams.awards}/${this.searchParams.place}/${this.searchParams.dateMating}/${this.searchParams.id}`
       );
       console.log("searchparams id", this.searchParams.id);
       console.log(data);
@@ -355,7 +361,7 @@ export default {
     async viewDetails(value) {
       if (this.isAutentificate || this.autohorized) {
         const { data } = await axios.get(
-          `http://localhost:5000/api/get_user${value.id}`
+          `${URI_SERVER}/api/get_user${value.id}`
         );
 
         this.idSelected = data;
@@ -449,7 +455,7 @@ export default {
         "Content-Type": "application/json",
       };
       let { data } = await axios.get(
-        `http://localhost:5000/api/get_animals${this.user.profile.id}`,
+        `${URI_SERVER}/api/get_animals${this.user.profile.id}`,
         {
           headers: headers,
         }
@@ -483,7 +489,7 @@ export default {
         "Content-Type": "application/json",
       };
       let { data } = await axios.post(
-        `http://localhost:5000/api/message`,
+        `${URI_SERVER}/api/message`,
         { from: this.user.profile.id, to: "someone", msg: msg },
         {
           headers: headers,
@@ -494,7 +500,7 @@ export default {
   },
 
   async mounted() {
-    console.log("URI_SERVER",URI_SERVER)
+    console.log("cookie_SERVER",URI_SERVER)
     
     this.getScreenOrientation()
     window.addEventListener("orientationchange",this.getScreenOrientation)
@@ -512,7 +518,7 @@ export default {
       try {
         // await sendPush()
 
-        // console.log("cookie:", document.cookie);
+        console.log("cookie:", document.cookie);
         await this.getAuthUser();
         this.startProps={
            authentification: this.isAutentificate ?? this.autohorized,

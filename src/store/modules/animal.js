@@ -1,4 +1,5 @@
 import Axios from "axios";
+import {URI_SERVER} from "../../api.js"
 export default {
     
   state: () => ({
@@ -42,7 +43,7 @@ export default {
         "Content-Type": "application/json",
       };
       let { data } = await Axios.put(
-        "http://localhost:5000/api/update_animal",
+        `${URI_SERVER}/api/update_animal`,
         payload,
         { headers: headers }
       );

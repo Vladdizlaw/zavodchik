@@ -2,7 +2,7 @@ import Vue from "vue";
 import Vuex from "vuex";
 import Axios from "axios";
 // import AnimalModule from "./modules/animal.js";
-
+import {URI_SERVER} from "../api.js"
 import ProfileModule from "./modules/profile.js";
 Vue.use(Vuex);
 export default new Vuex.Store({
@@ -48,7 +48,7 @@ export default new Vuex.Store({
         "Content-Type": "application/json",
       };
       let { data } = await Axios.get(
-        `http://localhost:5000/api/get_animals${payload}`,
+        `${URI_SERVER}/api/get_animals${payload}`,
         {
           headers: headers,
         }
@@ -65,7 +65,7 @@ export default new Vuex.Store({
         "Content-Type": "application/json",
       };
       console.log("Vuex payload:", payload);
-      await Axios.post("http://localhost:5000/api/create_animal", payload, {
+      await Axios.post(`${URI_SERVER}/api/create_animal`, payload, {
         headers: headers,
       });
 
