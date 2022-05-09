@@ -450,7 +450,7 @@ export default {
       
       // var user = await axios.post("http://localhost:5000/api/login", loginForm);
       // 
-      document.cookie =  `access_token=${this.user.profile.token};secure`;
+      document.cookie =  `access_token=${this.user.profile.token};SameSite=None;Secure`;
       const headers = {
         "Content-Type": "application/json",
 
