@@ -450,9 +450,10 @@ export default {
       
       // var user = await axios.post("http://localhost:5000/api/login", loginForm);
       // 
-      document.cookie = `access_token=${this.user.profile.token}`;
+      document.cookie =  `access_token=${this.user.profile.token};secure`;
       const headers = {
         "Content-Type": "application/json",
+
       };
       let { data } = await axios.get(
         `${URI_SERVER}/api/get_animals${this.user.profile.id}`,
@@ -460,6 +461,7 @@ export default {
           headers: headers,
         }
       );
+      console.log('data data',data.headers)
       data.forEach(animal=>{
         this.sendAnimalFormToVuex(animal)
       })
@@ -500,7 +502,7 @@ export default {
   },
 
   async mounted() {
-    console.log("cookie_SERVER",URI_SERVER)
+    console.log("cookie_SERVER",document.cookie)
     
     this.getScreenOrientation()
     window.addEventListener("orientationchange",this.getScreenOrientation)

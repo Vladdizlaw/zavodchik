@@ -69,7 +69,7 @@ export default {
     GET_AUTH_PROFILE: async (context) => {
       console.log("cooookie",document.cookie)
       const headers = {
-     
+        // "Origin":"http://192.168.1.38:8080",
         "Content-Type": "application/json",
       };
       let { data } = await Axios.get(

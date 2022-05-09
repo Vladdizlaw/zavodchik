@@ -41,6 +41,6 @@ export async function getPushSubscription(){
    
     return subscription
 }
-export const URI_SERVER='https://fierce-inlet-32650.herokuapp.com'
-// export const URI_SERVER='http://localhost:5000'
+// export const URI_SERVER='https://fierce-inlet-32650.herokuapp.com'
+export const URI_SERVER='http://localhost:5000'
 // export const URI_SERVER='http://127.0.0.1:5000'
