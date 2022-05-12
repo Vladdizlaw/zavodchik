@@ -145,7 +145,7 @@ export default {
       if (this.animalProperty.typeAnimal == "cat") {
         const breed_string = require("!raw-loader!../cat_breed.txt");
 
-        return breed_string.default.split("\r\n");
+        return breed_string.default.split("\r\n").filter((el) => el != "");
       } else {
         return null;
       }
@@ -153,7 +153,7 @@ export default {
   },
   watch: {
     chosenAnimal: function(ind) {
-      console.log(ind);
+      console.log(this.breedList);
       this.animalProperty.breed = this.animals[ind].breed;
       this.animalProperty.typeAnimal = this.animals[ind].typeAnimal;
       this.animalProperty.place = this.city;
@@ -409,20 +409,11 @@ export default {
   .ageinput {
     display: flex;
     flex-direction: row;
-    // justify-content: space-between;
-    //  align-items: center;
-    // gap:1rem;
-    width: 100%;
+      width: 100%;
     .range {
-      // display: flex;
-      // justify-content: center;
-      // align-items: center;
-      // margin-top: -70px;
-      // margin-bottom: -40px;
       text-align: center;
       width: 100%;
-      // gap:1rem;
-      @media screen and (max-height: 610px) {
+       @media screen and (max-height: 610px) {
         margin-top: -1rem;
       }
       input {

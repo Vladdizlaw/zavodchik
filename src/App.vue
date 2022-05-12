@@ -98,7 +98,7 @@ export default {
            const orient=screen.msOrientation ||
             (screen.orientation || screen.mozOrientation).type
 
-      if (orient.split('-')[0]=="portrait"||navigator.userAgentData.mobile ){
+      if (orient.split('-')[0]=="portrait"||navigator?.userAgentData?.mobile ){
         //
         this.mobileUserAgent=true
       }   else{
@@ -309,8 +309,8 @@ export default {
       });
     },
     async getSearchResult(value) {
-      console.log("value", value);
-      this.searchParams.animalType = this.user.animal.typeAnimal;
+      console.log("value", navigator.userAgentData);
+      this.searchParams.animalType = value.animalProperty.typeAnimal;
       this.searchParams.startAge = value.animalProperty.startAge;
       this.searchParams.stopAge = value.animalProperty.stopAge;
       this.searchParams.male = value.animalProperty.male;
@@ -329,7 +329,7 @@ export default {
       this.$router.push({
         name: "map",
         params: {
-          location: this.user.location,
+          location: this.user.profile.location,
           searchParams: this.searchParams,
           users: this.searchUsers,
         },
@@ -450,7 +450,7 @@ export default {
       
       // var user = await axios.post("http://localhost:5000/api/login", loginForm);
       // 
-      document.cookie =  `access_token=${this.user.profile.token};SameSite=None;Secure`;
+      document.cookie =  `access_token=${this.user.profile.token}`;
       const headers = {
         "Content-Type": "application/json",
 
@@ -508,12 +508,7 @@ export default {
     window.addEventListener("orientationchange",this.getScreenOrientation)
     window.addEventListener("dblclick",this.toggleFullscreen)
     this.permissionNotify = await requestPermissionNotification();
-    // this.mobileUserAgent =
-    //   navigator.userAgentData.mobile ||
-    //   screen.orientation.type == "portrait-primary";
-    // console.log("start:", this.mobileUserAgent);
-    // this.addAnimalToVuex()
-    // ;
+   
     console.log("start:", this.user);
 
     if (this.isAutentificate || this.autohorized) {

@@ -32,7 +32,7 @@ export default {
       return promiseModal;
     },
     cancelModal(e) {
-      let res=e.path.filter(el=>el.classList=="content")
+      let res=e.composedPath().filter(el=>el.classList=="content")
 
       // console.log(res)
       if (res.length!==0) {
@@ -44,6 +44,13 @@ export default {
         this.isOpen = false;
       }
     },
+    /**
+     * function used when hit 'esc'
+     *
+     * @param {any} e - 'event'
+     * @returns {any} nothing,just close modal
+     */
+    
     cancelEsc(e) {
       if (e.key == "Escape") {
         this.$options.modalController?.resolve(false);
@@ -82,7 +89,7 @@ export default {
 
 .content {
   transition: all 1s;
-  /* padding: 10px 10px 10px 10px; */
+  padding: 10px 10px 10px 10px; 
   max-height: 100%;
   max-width: 100%;
   display: flex;
@@ -98,9 +105,10 @@ export default {
       max-width:90%;
     }
      @media screen and (max-height: 800px) and (orientation: landscape) {
-    // width:100%;
+       display:flex;
     max-height:90%;
-    width:fit-content;
+  
+     width:auto;
     justify-content: center;
   }
 }

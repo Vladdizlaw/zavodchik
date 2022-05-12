@@ -570,6 +570,7 @@ export default {
         opacity: 0.7;
         &:hover {
           transform: scale(1.2);
+          //  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.75);
           opacity: 0.8;
         }
       }
@@ -787,7 +788,7 @@ export default {
 }
 .modal_image{
   position:relative;
-  max-width: 100%;
+  max-width:auto;
   height:auto;
   display: flex;
   justify-content: center;
@@ -801,11 +802,11 @@ export default {
     //  left:70vh;
     //  width:30vw;
     //  height:50%;
-   width:45%;
+     max-width:fit-content;
     max-height:90%;
   }
   .image {
-    // position:absolute;
+    border-radius: 10px;
   width: 100%;
   height: auto;
   aspect-ratio: auto;
@@ -813,10 +814,10 @@ export default {
   @media screen and (max-height: 800px) and (orientation: landscape) {
 
     
-    width:100%;
-  height: auto;
-  aspect-ratio: auto;
-  object-fit: cover;
+  min-width:40vw;
+  max-height:100%;
+  aspect-ratio: 4/9;
+  object-fit: fill;
   }
   @media screen and (orientation: portrait) {
     
