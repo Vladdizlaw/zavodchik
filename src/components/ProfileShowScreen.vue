@@ -5,8 +5,8 @@
         <template #content>
           <chat-modal
             ref="chat"
-            :name="opponentUser.name"
-            :idOpponent="opponentUser.id"
+            :name="opponentUser.profile.name"
+            :idOpponent="opponentUser.profile.id"
             :chat="chatCurrent"
             :idSelf="userSelf.profile.id"
             :incommingMessage="incommingMessageToChat"
@@ -39,7 +39,7 @@
         @previous="previousProfile"
         @next="nextProfile"
         @clickCenter="openChat"
-        :typeAnimal="showedUser.animal.typeAnimal"
+        :typeAnimal="showedUser.animals['0'].typeAnimal"
         class="profiles-switcher"
       >
       
@@ -66,6 +66,7 @@ import Axios from "axios";
 // import  sendPush from "../api.js"
 // import TrialBlock from "./TrialBlock.vue";
 export default {
+  //Компонент отображения найденных юзеров
   name: "ProfileUserScreen",
   components: {
     ProfileScreen,
@@ -79,7 +80,7 @@ export default {
   props: {
     pusher: { type: Object },
     user: { type: Object, require: true },
-    users: { type: Array },
+    users: { type: Object },
     userSelf: { type: Object },
   },
   data() {
@@ -91,19 +92,20 @@ export default {
       newMessage: false,
       chatCurrent: null,
       idCurrentChat: null,
-      opponentUser: { name: null, id: null },
+      opponentUser:{profile:{ name: null, id: null }},
     };
   },
 
   methods: {
+   
     async openChat(idChat) {
       // this.chatCurrent=null
       // console.log("idChat", idChat);
       if (!idChat) {
         console.log("not IdChat");
         idChat = `${this.userSelf.profile.id}#${this.showedUser.profile.id}`;
-        this.opponentUser.name = this.showedUser.profile.name;
-        this.opponentUser.id = this.showedUser.profile.id;
+        this.opponentUser.profile.name = this.showedUser.profile.name;
+        this.opponentUser.profile.id = this.showedUser.profile.id;
       }
 
       const headers = {
@@ -163,7 +165,7 @@ export default {
         }
       );
       // await sendPush( messageData)
-      let payload = this.userSelf.chats;
+      let payload = this.userSelf.profile.chats;
       payload.push(this.idCurrentChat);
       payload = [...new Set(payload)];
       console.log("adding to user", payload);
@@ -178,22 +180,24 @@ export default {
       this.$emit("myProfile", null);
     },
     nextProfile() {
+       console.log("next",this.showedUser);
       this.getUserIndex();
-      this.showedUser = this.users[
-        this.indexInUsers >= this.users.length - 1 ? 0 : this.indexInUsers + 1
+      this.showedUser = this.agregatedUsers[
+        this.indexInUsers >= this.agregatedUsers.length - 1 ? 0 : this.indexInUsers + 1
       ];
-      console.log("next");
+     
     },
     previousProfile() {
+       console.log("previous",this.showedUser);
       this.getUserIndex();
-      this.showedUser = this.users[
-        this.indexInUsers <= 0 ? this.users.length - 1 : this.indexInUsers - 1
+      this.showedUser = this.agregatedUsers[
+        this.indexInUsers <= 0 ? this.agregatedUsers.length - 1 : this.indexInUsers - 1
       ];
-      console.log("previous");
+     
     },
     getUserIndex() {
-      this.users.forEach((el, ind) => {
-        if (el.id == this.showedUser.id) {
+      this.agregatedUsers.forEach((el, ind) => {
+        if (el.profile.id == this.showedUser.profile.id) {
           console.log(ind);
           this.indexInUsers = ind;
         }
@@ -201,8 +205,8 @@ export default {
     },
     async startChat() {
       const val = this.incommingMessage;
-      this.opponentUser.name = val.name;
-      this.opponentUser.id = val.from;
+      this.opponentUser.profile.name = val.name;
+      this.opponentUser.profile.id = val.from;
       this.incommingMessageToChat = this.incommingMessage;
       await this.openChat(`${this.userSelf.profile.id}#${val.from}`);
 
@@ -211,32 +215,57 @@ export default {
     },
   },
   watch: {},
-  computed: {},
+  computed: {
+     agregatedUsers() {
+      let result = [];
+      if (this.users?.owners?.length == 0) {
+        return null;
+      }
+      this.users?.owners?.forEach((owner) => {
+        let animals = {...this.users.animals.filter((el) => {
+          if (el.owner == owner.id) {
+            return true;
+          }
+        })};
+
+        const aggUser = { profile: owner, animals };
+
+        result.push(aggUser);
+      });
+      return result;
+    },
+  },
   async beforeMount() {
     this.showedUser = this.user;
-    this.opponentUser.name = this.showedUser.profile.name;
-    this.opponentUser.id = this.showedUser.profile.id;
+    this.opponentUser.profile.name = this.showedUser.profile.name;
+    this.opponentUser.profile.id = this.showedUser.profile.id;
 
     this.pusher.bind("message", async (data) => {
       console.log("data incomming", data);
       if (
         this.$refs?.modalChat?.isOpen === false ||
         (this.$refs?.modalChat?.isOpen === true &&
-          this.opponentUser.id != data.from)
+          this.opponentUser.profile.id != data.from)
       ) {
         this.newMessage = true;
         this.incommingMessage = data;
       }
       if (
         this.$refs?.modalChat?.isOpen === true &&
-        this.opponentUser.id == data.from
+        this.opponentUser.profile.id == data.from
       ) {
         this.incommingMessageToChat = data;
       }
       // await sendPush(this.subscriptionPush, data.message);
     });
   },
+  mounted() {
+    console.log(this.agregatedUsers)
+  }
 };
 </script>
 <style lang="scss" scoped>
+.profiles-switcher{
+  height:5vh;
+}
 </style>

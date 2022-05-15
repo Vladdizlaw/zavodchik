@@ -62,29 +62,41 @@ export default {
 .switcher {
   @extend %flex;
   max-width: 100%;
+  gap:1rem;
+
 
   img {
     margin: 0.1rem 0.3rem 0 0.3rem;
   }
   .switcher__help{
   position:absolute;
-  top:-100px;
+  top:0;
+  left:-2rem;
   display: flex;
+  width:190%;  
   justify-content: center;
   align-items: center;
   text-align: center;
   border-radius: 5px 5px;
   border:  1px solid #000;
   background-color: #F6F2AC;
-  font-size: 2rem ;
-  box-shadow: 10px 20px 30px rgba(0, 0, 0, 0.25);
+  font-size: max(1vw, 0.9rem);
+   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.75);
   opacity: 0;
   transition: 0.7s;
+  @media screen and (orientation: portrait){
+
+  }
 }
   .left {
     @extend %flex;
-    max-width: 35%;
+    max-width: 45%;
     user-select: none;
+    font-size: max(2.5vw, 1rem);
+    img{
+      width:max(1vw, 0.9rem);
+      height: max(1vw, 0.9rem);
+    }
     &:hover {
       filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.5))
         drop-shadow(10px 10px 4px rgba(9, 112, 7, 0.75));
@@ -96,15 +108,18 @@ export default {
   }
   .center {
      position :relative;
-    width: 15rem;
-    height: 8.8rem;
+    width: max(8vw,4rem);
+    height: max(8vw,4rem);
+    border-radius: 50%;
+    img{
+      object-fit: cover;
+    }
     
     &:hover {
-      filter: drop-shadow(5px 5px 5px rgba(1, 32, 0, 0.75))
-        drop-shadow(7px 7px 7px rgba(9, 112, 7, 0.75));
+      box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.75);
     }
      &:hover .switcher__help{
-    opacity: 0.8;
+    opacity: 0.7;
      }
     &:active {
       filter: drop-shadow(0px 4px 4px rgba(39, 33, 33, 0.5))
@@ -113,7 +128,12 @@ export default {
   }
   .right {
     @extend %flex;
-    max-width: 35%;
+    max-width: 45%;
+    font-size: max(2.5vw, 1rem);
+    img{
+      width:max(1vw, 0.9rem);
+      height: max(1vw, 0.9rem);
+    }
     &:hover {
       filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.5))
         drop-shadow(10px 10px 4px rgba(9, 112, 7, 0.75));
@@ -128,11 +148,13 @@ export default {
   background: url("../assets/dogSwitcher.png");
   background-repeat: no-repeat;
   background-position: center;
+  background-size: cover;
 }
 .cat {
   // height:15rem;
   background: url("../assets/catSwitcher.png");
   background-repeat: no-repeat;
   background-position: center;
+   background-size: cover;
 }
 </style>

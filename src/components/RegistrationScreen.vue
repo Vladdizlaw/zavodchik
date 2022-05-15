@@ -140,9 +140,11 @@ export default {
 
     if (this.startComponentName) {
       if (this.startComponentName == "ProfileRegistration") {
+        console.log("city to ProfReg",this.city)
         this.currentPropsValue = {
           usedMails: this.usedMails,
           selectedCity: this.selectedCity,
+          city: this.city
         };
         this.currentComponent = this.startComponentName;
       }
@@ -162,6 +164,7 @@ export default {
         this.currentPropsValue = {
           usedMails: this.usedMails,
           selectedCity: this.selectedCity,
+          city:this.city
         };
       }
       if (val == "AnimalRegistration") {

@@ -16,9 +16,8 @@
     <Modal ref="modal">
       <template #content>
         <div class="modal_image">
-           <img :src="url" class="image" alt="view photo" />
+          <img :src="url" class="image" alt="view photo" />
         </div>
-       
       </template>
     </Modal>
     <slot name="modalAnother"></slot>
@@ -102,7 +101,11 @@
                 user.animals[currentAnimal].dateMating
             "
           >
-            Возможный период случки:{{ user.animals[currentAnimal].dateMating }}
+            Возможный период случки:{{
+              new Intl.DateTimeFormat().format(
+                new Date(user.animals[currentAnimal].dateMating)
+              )
+            }}
           </p>
           <p
             v-if="
@@ -129,7 +132,6 @@
               name="0"
               v-show="urls && urls[0]"
             />
-            
           </div>
         </div>
         <div class="main-center__photos" @click="сheckPhotos($event)">
@@ -295,14 +297,13 @@
 </template>
 <script>
 import Modal from "./Modal.vue";
-import {URI_SERVER} from "../api.js"
+import { URI_SERVER } from "../api.js";
 export default {
-  //Component to show profile 
+  //Component to show profile
   name: "ProfileScreen",
   components: { Modal },
   props: {
     user: { type: Object, require: true },
-   
   },
   data() {
     return {
@@ -457,10 +458,12 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-around;
+  justify-content: space-between;
   position: relative;
+  padding-top: 3vh;
+  padding-bottom: 3vh;
   @media screen and (orientation: portrait) {
-    justify-content: start;
+    // justify-content: start;
   }
 }
 
@@ -485,6 +488,7 @@ export default {
   overflow-x: auto;
   overflow-y: hidden;
   gap: 0.5rem;
+  bottom: max(1vw, 1rem);
   &::-webkit-scrollbar {
     width: 10px;
   }
@@ -499,6 +503,7 @@ export default {
     width: 12vh;
     height: 12vh;
     position: relative;
+
     display: flex;
     justify-content: center;
     align-items: center;
@@ -523,7 +528,7 @@ export default {
 .main {
   display: flex;
   width: 95vw;
-  height: 80vh;
+  height: 70vh;
   justify-content: flex-start;
   overflow: hidden;
   align-items: center;
@@ -535,7 +540,8 @@ export default {
   }
   @media screen and (orientation: portrait) {
     width: 100%;
-    height: 75%;
+    height: 55%;
+    // overflow:auto;
   }
   @media screen and (max-height: 540px) {
     height: 90vh;
@@ -593,10 +599,12 @@ export default {
       @media screen and (orientation: portrait) {
         margin-top: 0rem;
       }
+      @media screen and (max-height: 540px) {
+      }
       p {
         margin: 0 0 0 0;
         display: flex;
-        font-size: max(1.9vw, 1.3rem);
+        font-size: max(1.9vw, 1.2rem);
       }
     }
   }
@@ -613,7 +621,7 @@ export default {
     .main-center__photos__mobile {
       justify-self: start;
       width: 100%;
-      height: 30%;
+      height: 50%;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -637,12 +645,15 @@ export default {
           border: 0.5px solid green;
           border-radius: 10px;
           transition: all 0.5s;
+          @media screen and (orientation: portrait) {
+            object-fit: cover;
+          }
         }
       }
     }
     .main-center__photos {
       width: 90%;
-      height: 90%;
+      height: 80%;
       display: flex;
       flex-wrap: nowrap;
       flex-direction: row;
@@ -763,7 +774,7 @@ export default {
       align-self: start;
       margin-top: 11vh;
       margin-right: 1rem;
-      height: 30%;
+      height: 40%;
     }
     &_top,
     &_center,
@@ -781,49 +792,42 @@ export default {
   margin-bottom: 1rem;
   display: flex;
   width: 100vw;
-  max-height: 3rem;
+  // max-height: 3rem;
+  justify-self: flex-end;
   justify-content: space-around;
   align-items: flex-end;
   flex-wrap: nowrap;
 }
-.modal_image{
-  position:relative;
-  max-width:auto;
-  height:auto;
+.modal_image {
+  position: relative;
+  max-width: 80vw;
+  height: auto;
   display: flex;
   justify-content: center;
   align-items: center;
-    border-radius: 10px;
-  
-  /* box-shadow: 8px 8px rgba(64, 65, 63, 0.55); */
+  border-radius: 10px;
   transition: all 0.4s;
   box-shadow: 5px 6px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25);
-   @media screen and (max-height: 800px) and (orientation: landscape) {
-    //  left:70vh;
-    //  width:30vw;
-    //  height:50%;
-     max-width:fit-content;
-    max-height:90%;
+  @media screen and (max-height: 800px) and (orientation: landscape) {
+    max-width: fit-content;
+    max-height: 90%;
   }
   .image {
     border-radius: 10px;
-  width: 100%;
-  height: auto;
-  aspect-ratio: auto;
-  object-fit: cover;
-  @media screen and (max-height: 800px) and (orientation: landscape) {
-
-    
-  min-width:40vw;
-  max-height:100%;
-  aspect-ratio: 4/9;
-  object-fit: fill;
-  }
-  @media screen and (orientation: portrait) {
-    
+    width: 100%;
+    height: auto;
+    aspect-ratio: auto;
     object-fit: cover;
+
+    @media screen and (max-height: 800px) and (orientation: landscape) {
+      min-width: 40vw;
+      max-height: 100%;
+      aspect-ratio: 4/9;
+      object-fit: fill;
+    }
+    @media screen and (orientation: portrait) {
+      object-fit: cover;
+    }
   }
 }
-}
-
 </style>

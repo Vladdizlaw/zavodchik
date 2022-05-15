@@ -2,7 +2,7 @@
   <section class="profile-form">
     <div class="profile-form_block">
       <p>Введите email</p>
-      <input type="email" v-model="regForm.mail" :class="{wrong:usedMail}"/>
+      <input type="email" v-model="regForm.mail" :class="{ wrong: usedMail }" />
       <div class="errmsg" :v-show="errs.mail">
         {{ errs.mail }}
       </div>
@@ -44,20 +44,22 @@
   </section>
 </template>
 <script>
-
 export default {
   name: "ProfileRegistration",
-  props: {usedMails:{type: Array},  selectedCity: { type: Array }},
+  props: {
+    usedMails: { type: Array },
+    selectedCity: { type: Array },
+    city: { type: String },
+  },
   data() {
     return {
-        usedMail:false,
+      usedMail: false,
       regForm: {
         mail: null,
         tel: null,
         name: null,
         pass: null,
         city: null,
-       
       },
       errs: {
         mail: "",
@@ -69,22 +71,22 @@ export default {
     };
   },
   watch: {
-      'regForm.mail':function(val){
-        
-          if (this.usedMails.includes(val)){
-              this.usedMail=true
-          }else{
-                this.usedMail=false
-          }
+    "regForm.mail": function(val) {
+      if (this.usedMails.includes(val)) {
+        this.usedMail = true;
+      } else {
+        this.usedMail = false;
       }
+    },
   },
-  mounted(){
-    console.log(this.$props)
+  mounted() {
+    console.log("prp profile regist", this.$props);
+    this.regForm.city = this.city;
   },
   methods: {
     emitProfileForm() {
       let valid = true;
-      if ((!this.regForm.mail?.split("@")[1]?.split(".")[1])||(this.usedMail)) {
+      if (!this.regForm.mail?.split("@")[1]?.split(".")[1] || this.usedMail) {
         valid = false;
         this.errs.mail = "Введите корректную почту";
         setTimeout(() => {
@@ -139,11 +141,11 @@ export default {
 * {
   box-sizing: border-box;
 }
-.wrong{
-    color: red;
+.wrong {
+  color: red;
 }
 .profile-form {
-    position: relative;
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: start;
@@ -200,10 +202,10 @@ export default {
       text-justify: center;
       font-family: $font-family;
       text-shadow: $textshadow;
-        font-size: max(1rem, 1.4vw);
+      font-size: max(1rem, 1.4vw);
       transition: 0.3s;
       opacity: 0.8;
-      
+
       &:focus {
         transform: scale(110%);
         box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.75);
@@ -230,7 +232,7 @@ export default {
       text-justify: center;
       font-family: $font-family;
       text-shadow: $textshadow;
-       font-size: max(1rem, 1.4vw);
+      font-size: max(1rem, 1.4vw);
       transition: 0.3s;
       opacity: 0.8;
       &:focus {
@@ -248,7 +250,6 @@ export default {
     }
   }
   .profile-form_btn {
-      
     margin-top: max(2rem, 5vh);
     margin-bottom: max(2rem, 5vh);
     height: max(2rem, 6vh);
@@ -269,14 +270,13 @@ export default {
     color: #000000;
     text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.75);
     transition: 0.3s;
-    @media screen and (orientation: portrait){
-            border-radius: 20px 0px;
-      }
+    @media screen and (orientation: portrait) {
+      border-radius: 20px 0px;
+    }
     &:hover {
       animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite;
       border: 1px solid #000000;
       box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.75);
-     
     }
   }
 }

@@ -2,8 +2,7 @@
   <div class="app">
     <transition name="no-mode-translate-fade" mode="in-out">
       <router-view
-       
-        v-bind="{...startProps}"
+        v-bind="{ ...startProps }"
         @animalType="getAnimalType"
         @enterProfile="getMyProfile"
         @animalProperty="getSearchResult"
@@ -25,7 +24,7 @@
 </template>
 
 <script>
-import {URI_SERVER} from "./api.js"
+import { URI_SERVER } from "./api.js";
 import AnimalModule from "./store/modules/animal.js";
 //import Pusher from  'pusher'
 import axios from "axios";
@@ -46,13 +45,13 @@ export default {
       lastEnterTime: null,
       substate: null,
       errorStr: null,
-      searchUsers: null,
+      searchUsers: null, //Список юзеров найденых по запросу
       permissionNotify: null,
       subscriptionPush: null,
       pusherMessage: null,
       mobileUserAgent: null,
       entered: false,
-      startProps:null
+      startProps: null,
     };
   },
   computed: {
@@ -62,10 +61,10 @@ export default {
         .filter((el) => el.includes("access_token"));
 
       if (!token || token.length <= 0 || token[0].split("=")[1] === "null") {
-        console.log('token',token)
+        console.log("token", token);
         return false;
       }
-      console.log('token',token)
+      console.log("token", token);
       return true;
     },
     user() {
@@ -82,29 +81,38 @@ export default {
     },
   },
   methods: {
-    async toggleFullscreen(){
-      if (document.fullscreenElement||document.webkitFullscreenElement||document.mozFullscreenElement||document.msFullscreenElement){
-        document.exitFullscreen()
-      }else{
-      console.log
-     try { 
-        await document.documentElement.requestFullscreen()
-      }catch (e) {
-        console.log(e)
-      }
+    async toggleFullscreen() {
+      if (
+        document.fullscreenElement ||
+        document.webkitFullscreenElement ||
+        document.mozFullscreenElement ||
+        document.msFullscreenElement
+      ) {
+        document.exitFullscreen();
+      } else {
+        console.log;
+        try {
+          await document.documentElement.requestFullscreen();
+        } catch (e) {
+          console.log(e);
+        }
       }
     },
-    getScreenOrientation(){
-           const orient=screen.msOrientation ||
-            (screen.orientation || screen.mozOrientation).type
+    getScreenOrientation() {
+      const orient =
+        screen.msOrientation ||
+        (screen.orientation || screen.mozOrientation).type;
 
-      if (orient.split('-')[0]=="portrait"||navigator?.userAgentData?.mobile ){
+      if (
+        orient.split("-")[0] == "portrait" ||
+        navigator?.userAgentData?.mobile
+      ) {
         //
-        this.mobileUserAgent=true
-      }   else{
-         this.mobileUserAgent=false
-      }   
-       console.log("this.mobileUserAgent",this.mobileUserAgent)
+        this.mobileUserAgent = true;
+      } else {
+        this.mobileUserAgent = false;
+      }
+      console.log("this.mobileUserAgent", this.mobileUserAgent);
     },
     startPusher() {
       this.pusher = this.$pusher.subscribe(`${this.user.profile.id}`);
@@ -124,6 +132,7 @@ export default {
             pusher: this.pusher,
           },
         });
+        return;
       } else if (
         (this.isAutentificate || this.autohorized) &&
         this.$route.name == "search" &&
@@ -137,16 +146,36 @@ export default {
             pusher: this.pusher,
           },
         });
+        return;
+      } else if (
+        !(this.isAutentificate || this.autohorized) &&
+        this.$route.name == "search"
+      ) {
+        this.$router.push({
+          name: "start",
+          params: {
+            user: this.user,
+            selectedCity: this.selectedCity,
+            pusher: this.pusher,
+          },
+        });
+        return;
       } else if (e == "map") {
         this.$router.push({
           name: "search",
           params: {
-            animalType: this.user.animals[0].typeAnimal,
+            animalType:
+              (this.user &&
+                this.user.animals[0] &&
+                this.user.animals[0].typeAnimal) ||
+              "dog",
             city: this.user.profile.city,
             selectedCity: this.selectedCity,
-            // isAutentificate: this.isAutentificate,
+            animals: this.user.animals,
+            // authentification: this.isAutentificate|| this.autohorized,
           },
         });
+        return;
       } else if (
         (this.isAutentificate || this.autohorized) &&
         this.$route.name == "searchResult"
@@ -154,13 +183,15 @@ export default {
         this.$router.push({
           name: "map",
           params: {
-            location: this.user.location,
+            location: this.user.profile.location,
             searchParams: this.searchParams,
             users: this.searchUsers,
           },
         });
+        return;
       } else {
         this.$router.go(-1);
+        return;
       }
     },
     getMyProfile() {
@@ -179,10 +210,9 @@ export default {
       });
     },
     async logout() {
-      console.log("cooookie",document.cookie)
+      console.log("cooookie", document.cookie);
       const headers = {
         "Content-Type": "application/json",
-       
       };
       await axios.get(
         `${URI_SERVER}/api/logout`,
@@ -191,33 +221,31 @@ export default {
           headers: headers,
         }
       );
-      this.$store.commit("DELETE_USER");
+      this.$store.commit("DELETE_PROFILE");
       this.$router.push({ name: "start" });
       this.entered = false;
+      this.autohorized = false;
       window.location.reload(true);
       // console.log(this.user)
     },
 
     async getAuthUser() {
-      
-     await this.$store.dispatch("GET_AUTH_PROFILE");
-     const headers = {
+      await this.$store.dispatch("GET_AUTH_PROFILE");
+      const headers = {
         "Content-Type": "application/json",
       };
       let { data } = await axios.get(
         `${URI_SERVER}/api/get_animals${this.user.profile.id}`,
-         { withCredentials: true },
+        { withCredentials: true },
         {
           headers: headers,
         }
       );
-      data.forEach(animal=>{
-        this.sendAnimalFormToVuex(animal)
-      })
-     
+      data.forEach((animal) => {
+        this.sendAnimalFormToVuex(animal);
+      });
     },
     async senpPhoto(photoArray, animalId) {
-     
       let formData = new FormData();
       photoArray.forEach((photo, ind) => {
         formData.append(`file[${ind}]`, photo);
@@ -237,8 +265,8 @@ export default {
       }
     },
     async getUser(userId) {
-      this.$store.dispatch("GET_PROFILE",userId);
-      this.$store.dispatch("GET_ANIMALS",userId);
+      this.$store.dispatch("GET_PROFILE", userId);
+      this.$store.dispatch("GET_ANIMALS", userId);
     },
     async sendUser() {
       this.$store.dispatch("POST_PROFILE", this.user.profile);
@@ -284,13 +312,13 @@ export default {
 
     async getCity() {
       const { data } = await axios.get(
-        `${URI_SERVER}/api/get_city/${this.user.location.longitude}/${this.user.location.latitude}`
+        `${URI_SERVER}/api/get_city/${this.user.profile.location.longitude}/${this.user.profile.location.latitude}`
       );
 
       return data;
     },
     getAnimalType(value) {
-      console.log(value)
+      console.log(value);
       // this.user.animal.animalType = value.animalType;
       // if (!(this.isAutentificate || this.autohorized))
       //   console.log("not autentificate");
@@ -323,7 +351,7 @@ export default {
         `${URI_SERVER}/api/get_custom_users/${this.searchParams.animalType}/${this.searchParams.startAge}/${this.searchParams.stopAge}/${this.searchParams.male}/${this.searchParams.breed}/${this.searchParams.awards}/${this.searchParams.place}/${this.searchParams.dateMating}/${this.searchParams.id}`
       );
       console.log("searchparams id", this.searchParams.id);
-      console.log(data);
+      console.log("searchUsers", data);
       this.searchUsers = data; //?
       this.idSelected = null;
       this.$router.push({
@@ -363,8 +391,16 @@ export default {
         const { data } = await axios.get(
           `${URI_SERVER}/api/get_user${value.id}`
         );
+        let animals = await axios.get(
+          `${URI_SERVER}/api/get_animals${value.id}`
+        );
+        console.log(this.searchParams, animals.data);
+        animals = animals.data.filter((animal) => 
+          animal.typeAnimal == this.searchParams.animalType
+        );
+         console.log(this.searchParams, animals);
+        this.idSelected = { profile: data, animals: { ...animals } };
 
-        this.idSelected = data;
         this.$router.push({
           name: "searchResult",
           params: {
@@ -383,31 +419,32 @@ export default {
       const size = Array.from(Object.values(this.user.animals)).length;
       console.log("animals", size);
       this.$store.registerModule(["animals", size], AnimalModule);
-      return size
+      return size;
     },
     sendAnimalFormToVuex(el) {
-      console.log("🚀 ~ file: App.vue ~ line 346 ~ sendAnimalFormToVuex ~ el", el)
-      const ind=this.addModuleAnimalToVuex();
-      el.ind=ind
+      console.log(
+        "🚀 ~ file: App.vue ~ line 346 ~ sendAnimalFormToVuex ~ el",
+        el
+      );
+      const ind = this.addModuleAnimalToVuex();
+      el.ind = ind;
       this.$store.commit("SAVE_ANIMAL", el);
-      console.log('this.user',this.user)
+      console.log("this.user", this.user);
     },
     async getRegForms(value) {
       console.log("value", value);
       this.$store.commit("SAVE_PROFILE", value.profile);
-    //
+      //
       console.log("this.user", this.user);
       this.$store.commit("ADD_ANIMALS_TO_PROFILE");
       await this.sendUser();
 
       setTimeout(() => {
         Array.from(Object.keys(this.user.animals)).forEach(async (ind) => {
-       
           await this.senpPhoto(
             this.user.animals[ind].photoAnimal,
             this.user.animals[ind]["id"]
           );
-        
         });
 
         setTimeout(async () => {
@@ -417,27 +454,24 @@ export default {
 
       // setTimeout( () => {
 
-        setTimeout(() => {
-         
-         
-          this.autohorized = true;
-          // console.log()
-          if (!this.pusher) {
-            this.startPusher();
-          }
-          this.$router.push({
-            name: "profile",
-            params: {
-              pusher: this.pusher,
-              user: this.user,
-              selectedCity: this.selectedCity,
-            },
-          });
-          document.cookie = `access_token=${this.user?.profile?.token}`;
-        
-        }, 2200);
+      setTimeout(() => {
+        this.autohorized = true;
+        // console.log()
+        if (!this.pusher) {
+          this.startPusher();
+        }
+        this.$router.push({
+          name: "profile",
+          params: {
+            pusher: this.pusher,
+            user: this.user,
+            selectedCity: this.selectedCity,
+          },
+        });
+        document.cookie = `access_token=${this.user?.profile?.token}`;
+      }, 2200);
       // }, 1000);
-       
+
       console.log("get reg form this.user", this.user);
     },
 
@@ -447,13 +481,11 @@ export default {
     },
 
     async SignIn() {
-      
       // var user = await axios.post("http://localhost:5000/api/login", loginForm);
-      // 
-      document.cookie =  `access_token=${this.user.profile.token}`;
+      //
+      document.cookie = `access_token=${this.user.profile.token}`;
       const headers = {
         "Content-Type": "application/json",
-
       };
       let { data } = await axios.get(
         `${URI_SERVER}/api/get_animals${this.user.profile.id}`,
@@ -461,16 +493,22 @@ export default {
           headers: headers,
         }
       );
-      console.log('data data',data.headers)
-      data.forEach(animal=>{
-        this.sendAnimalFormToVuex(animal)
-      })
-     
+      console.log("data data", data.headers);
+      data.forEach((animal) => {
+        this.sendAnimalFormToVuex(animal);
+      });
+
       // window.location.reload(true);
       if (!this.pusher) {
         this.startPusher();
       }
       this.autohorized = true;
+      this.entered = true;
+      this.startProps = {
+        authentification: this.isAutentificate || this.autohorized,
+        nameStart: this.user.profile.name,
+        mobileUserAgent: this.mobileUserAgent,
+      };
       this.$router.push({
         name: "profile",
         params: {
@@ -502,13 +540,13 @@ export default {
   },
 
   async mounted() {
-    console.log("cookie_SERVER",document.cookie)
-    
-    this.getScreenOrientation()
-    window.addEventListener("orientationchange",this.getScreenOrientation)
-    window.addEventListener("dblclick",this.toggleFullscreen)
+    console.log("cookie_SERVER", document.cookie);
+
+    this.getScreenOrientation();
+    window.addEventListener("orientationchange", this.getScreenOrientation);
+    window.addEventListener("dblclick", this.toggleFullscreen);
     this.permissionNotify = await requestPermissionNotification();
-   
+
     console.log("start:", this.user);
 
     if (this.isAutentificate || this.autohorized) {
@@ -517,11 +555,11 @@ export default {
 
         console.log("cookie:", document.cookie);
         await this.getAuthUser();
-        this.startProps={
-           authentification: this.isAutentificate ?? this.autohorized,
-        nameStart: this.user.profile.name,
-        mobileUserAgent: this.mobileUserAgent
-      }
+        this.startProps = {
+          authentification: this.isAutentificate || this.autohorized,
+          nameStart: this.user.profile.name,
+          mobileUserAgent: this.mobileUserAgent,
+        };
         // console.log("user get from server");
         this.subscriptionPush = await getPushSubscription();
         setTimeout(async () => {
@@ -537,7 +575,6 @@ export default {
       }
     }
 
-   
     let htmlEl = document.querySelector("html");
     htmlEl.style.overflow = "hidden";
     const body = document.querySelector("body");
@@ -545,10 +582,11 @@ export default {
     this.lastEnterTime = new Date();
     await this.locateMe();
 
-    if (!this.isAutentificate) {
+    if (!this.isAutentificate || !this.autohorized) {
       try {
         const city = await this.getCity();
-        this.$store.commit("SAVE_PROFILE", { city: city||"Краснодар" });
+        console.log("city", city);
+        this.$store.commit("SAVE_PROFILE", { city: city || "Краснодар" });
       } catch (e) {
         console.log(e);
       }
@@ -564,9 +602,9 @@ export default {
     // this.$router.push({ name: "start", params:{ authentification: this.isAutentificate|| this.autohorized}})
   },
   beforeDestroy() {
-     window.removeEventListener('orientationchange',this.getScreenOrientation)
-     window.removeEventListener("dblclick",this.toggleFullscreen)
-  }
+    window.removeEventListener("orientationchange", this.getScreenOrientation);
+    window.removeEventListener("dblclick", this.toggleFullscreen);
+  },
 };
 </script>
 <style lang="scss" scoped>

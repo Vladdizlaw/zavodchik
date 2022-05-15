@@ -18,7 +18,7 @@
     </div>
 
     <div class="animalproperty-forinput">
-      <div class="input male" v-if="authentification && animals[0]">
+      <div class="input male" v-if="authentification && Object.keys(animals).length>0">
         <p>Подобрать автоматически пару для животного</p>
         <select v-model="chosenAnimal">
           <option

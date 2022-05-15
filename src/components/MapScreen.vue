@@ -21,7 +21,7 @@
       <div class="logo" v-for="user in agregatedUsers" :key="user.profile.id">
         <div :id="'b' + user.profile.id" class="forimage">
           <img
-            :src="require(`../assets/${srcpic}.svg`)"
+            :src="require(`../assets/${srcpic()}.svg`)"
             class="catlogo"
             :data="user.profile.id"
             :alt="user.animal[0].name"
@@ -32,15 +32,20 @@
             :id="'a' + user.profile.id"
             :class="{ active: clack }"
           >
-               <img
-        class="arrowR"
-        src="../assets/ArrowR.svg"
-        alt="next"
-        @click="showNextAnimal(user.animal.length)"
-        v-show="user.animal.length>1 "
-      />
+            <img
+              class="arrowR"
+              src="../assets/ArrowR.svg"
+              alt="next"
+              @click="showNextAnimal(user.animal.length)"
+              v-show="user.animal.length > 1"
+            />
             <p>
-              Порода: <span>{{user.animal.length>1?user.animal[currentAnimalIndex].breed:user.animal[0].breed }}</span>
+              Порода:
+              <span>{{
+                user.animal.length > 1
+                  ? user.animal[currentAnimalIndex].breed
+                  : user.animal[0].breed
+              }}</span>
             </p>
             <div class="logomsg__image">
               <img
@@ -50,13 +55,32 @@
               />
             </div>
             <p>
-              Пол: <span>{{user.animal.length>1?animalMale(user.animal[currentAnimalIndex].male):animalMale(user.animal[0].male) }}</span>
+              Пол:
+              <span>{{
+                user.animal.length > 1
+                  ? animalMale(user.animal[currentAnimalIndex].male)
+                  : animalMale(user.animal[0].male)
+              }}</span>
             </p>
             <p>
-              Возраст: <span>{{user.animal.length>1?user.animal[currentAnimalIndex].age:user.animal[0].age}}</span>
+              Возраст:
+              <span>{{
+                user.animal.length > 1
+                  ? user.animal[currentAnimalIndex].age
+                  : user.animal[0].age
+              }}</span>
             </p>
-            <p v-if="user.animal[0].dateMating">
-              Вязка: <span><br />{{user.animal.length>1?user.animal[currentAnimalIndex].dateMating:user.animal[0].dateMating }}</span>
+            <p v-if="user.animal.length > 1
+                    ? user.animal[currentAnimalIndex].dateMating
+                    : user.animal[0].dateMating" class ="logomsg__mating"  >
+              Вязка:
+              <span
+                ><br />{{
+                  user.animal.length > 1
+                    ?new Intl.DateTimeFormat().format(new Date(user.animal[currentAnimalIndex].dateMating))
+                    :new Intl.DateTimeFormat().format(new Date(user.animal[0].dateMating))
+                }}</span
+              >
             </p>
             <button
               class="logomsg_button"
@@ -94,12 +118,11 @@ export default {
     return {
       map: null, //Объект карты
       clack: false, //флаг для отображения деталей на карте
-      currentAnimalIndex: 0,
+      currentAnimalIndex: 0, // текущее животное одного хозяина
     };
   },
 
   computed: {
-  
     message() {
       //Показывает сообщение о найденых юзерах
       if (!this.users.owners.length) {
@@ -110,7 +133,7 @@ export default {
     },
     agregatedUsers() {
       let result = [];
-      if (this.users.owners.length == 0) {
+      if (this.users?.owners?.length == 0) {
         return null;
       }
       this.users?.owners?.forEach((owner) => {
@@ -121,12 +144,53 @@ export default {
         });
 
         const aggUser = { profile: owner, animal };
-      
+
         result.push(aggUser);
       });
       return result;
     },
 
+    
+  },
+  async created() {},
+  async mounted() {
+    console.log("users",this.users, "aggUser",this.agregatedUsers);
+    let projection = fromLonLat(
+      //Позиция для центра карты по текущей геопозиции
+      [this.location.longitude, this.location.latitude],
+      "EPSG:3857"
+    );
+    this.map = new Map({ target: "map" }); //Создаем карту
+    const view = new View({
+      center: projection,
+      zoom: 16,
+      constrainResolution: true,
+    });
+
+    this.map.setView(view);
+    const osmSource = new OSM();
+    const osmLayer = new TileLayer({ source: osmSource });
+    this.map.addLayer(osmLayer);
+    this.agregatedUsers?.forEach((user) => {
+      //выводим на карту всех юзеров
+      const catlogo = new Overlay({
+        element: document.getElementById("b" + user.profile.id),
+      });
+      catlogo.setPosition(
+        fromLonLat([
+          user.profile.location.longitude,
+          user.profile.location.latitude,
+        ])
+      );
+      this.map.addOverlay(catlogo);
+    });
+    window.addEventListener("resize", this.updateMap, true);
+  },
+  beforeDestroy() {
+    window.removeEventListener("resize", this.updateMap);
+  },
+
+  methods: {
     srcpic() {
       //Random иконок на карте
       if (this.searchParams.animalType == "dog") {
@@ -170,58 +234,31 @@ export default {
         return arrPic[Math.floor(Math.random() * arrPic.length)];
       }
     },
-  },
-  async created() {},
-  async mounted() {
-    console.log(this.agregatedUsers);
-    let projection = fromLonLat(
-      //Позиция для центра карты по текущей геопозиции
-      [this.location.longitude, this.location.latitude],
-      "EPSG:3857"
-    );
-    this.map = new Map({ target: "map" }); //Создаем карту
-    const view = new View({
-      center: projection,
-      zoom: 16,
-      constrainResolution: true,
-    });
-
-    this.map.setView(view);
-    const osmSource = new OSM();
-    const osmLayer = new TileLayer({ source: osmSource });
-    this.map.addLayer(osmLayer);
-    this.agregatedUsers?.forEach((user) => {
-      //выводим на карту всех юзеров
-      const catlogo = new Overlay({
-        element: document.getElementById("b" + user.profile.id),
-      });
-      catlogo.setPosition(
-        fromLonLat([
-          user.profile.location.longitude,
-          user.profile.location.latitude,
-        ])
-      );
-      this.map.addOverlay(catlogo);
-    });
-    window.addEventListener("resize", this.updateMap, true);
-  },
-  beforeDestroy() {
-    window.removeEventListener("resize", this.updateMap);
-  },
-
-  methods: {
-     animalMale(male){
-     if(male =='male'){return 'муж'}
-     else{return 'жен'}
-   },
-    showNextAnimal(animalArrayLength) {
-      if(this.currentAnimalIndex<animalArrayLength-1){
-        ++this.currentAnimalIndex
-        console.log('length',animalArrayLength,'Index',this.currentAnimalIndex)
+    animalMale(male) {
+      if (male == "male") {
+        return "муж";
+      } else {
+        return "жен";
       }
-      else if (this.currentAnimalIndex >= animalArrayLength-1){
-         --this.currentAnimalIndex
-                 console.log('length',animalArrayLength,'Index',this.currentAnimalIndex)
+    },
+    showNextAnimal(animalArrayLength) {
+      if (this.currentAnimalIndex < animalArrayLength-1 ) {
+        ++this.currentAnimalIndex;
+        console.log(
+          "length",
+          animalArrayLength,
+          "Index",
+          this.currentAnimalIndex
+          
+        );return
+      } else if (this.currentAnimalIndex >= animalArrayLength-1 ) {
+        this.currentAnimalIndex=0;
+        console.log(
+          "length",
+          animalArrayLength,
+          "Index",
+          this.currentAnimalIndex
+        );return
       }
     },
     updateMap() {
@@ -238,6 +275,7 @@ export default {
       } else {
         div.style.opacity = 0;
         div.classList.remove("active");
+        this.currentAnimalIndex=0
       }
     },
     back() {
@@ -247,8 +285,10 @@ export default {
       //Возращает url фото юзера на сервере
       if (!user.animal[0].photoUrl[0]) {
         return "no foto";
-      } else {
+      } else if (user.animal.length == 1) {
         return `${URI_SERVER}/` + user.animal[0].photoUrl[0];
+      } else if (user.animal.length>1){
+         return `${URI_SERVER}/` + user.animal[this.currentAnimalIndex].photoUrl[0];
       }
     },
 
@@ -327,11 +367,10 @@ export default {
   height: max(6vh, 2.8rem);
   transition: all 1s;
   &:hover {
-    width: max(6vw, 2rem);
-    height: 6vh;
+    transform: scale(1.2)
   }
   &:active {
-    transform: rotate(180deg);
+   transform: scaleZ(2.3);
   }
 }
 
@@ -344,7 +383,7 @@ export default {
   background: url("../assets/cover1.png");
   background-position: center;
   background-size: cover;
-  width: max(10rem,12vw);
+  width: max(10rem, 12vw);
   height: fit-content;
   // object-fit:cover;
   z-index: 1;
@@ -357,17 +396,23 @@ export default {
   position: relative;
   opacity: 0;
   transition: all 0.5s;
+ 
   @media screen and (orientation: portrait) {
     font-size: max(1.3vh, 1rem);
     line-height: 0.7rem;
   }
   &:hover {
-    font-size: max(1.3vw, 1.3rem);
+    // font-size: max(1.3vw, 1.3rem);
 
-    transform: scaleZ(11rem);
+    transform: scaleX(1.1);
     z-index: 1000;
     filter: drop-shadow(0px 6px 6px rgba(0, 0, 0, 0.55))
       drop-shadow(0px 8px 8px rgba(0, 0, 0, 0.25));
+  }
+  &__mating{
+    display:flex;
+    flex-wrap: wrap;
+    max-width:35%;
   }
   &__image {
     width: 30%;
@@ -383,9 +428,9 @@ export default {
       drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))
       drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
     &:hover {
-     img{
-       transform: scale(1.2)
-     }
+      img {
+        transform: scale(1.2);
+      }
     }
     img {
       object-fit: cover;

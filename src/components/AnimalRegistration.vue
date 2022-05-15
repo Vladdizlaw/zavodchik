@@ -207,14 +207,14 @@ export default {
         const breed_string = require("!raw-loader!../dog_breed.txt");
 
         breed_list = breed_string.default
-          .split("\r\n")
+          .split("\n")
           .filter((el) => el != "");
       }
       if (this.animalForm.typeAnimal == "cat") {
         const breed_string = require("!raw-loader!../cat_breed.txt");
 
         breed_list = breed_string.default
-          .split("\r\n")
+          .split("\r")
           .filter((el) => el != "");
       }
       return breed_list;

@@ -74,6 +74,7 @@ export default {
     selectedCity: Array,
     pusher: Object,
     mobileUserAgent: Boolean,
+    authentification: Boolean,
   },
   data() {
     return {};
@@ -82,7 +83,7 @@ export default {
 
   methods: {
     back() {
-      this.$emit('back','profile')
+      this.$emit("back", "profile");
     },
 
     logout() {
@@ -108,11 +109,14 @@ export default {
       this.$router.push({
         name: "search",
         params: {
-          animalType: this.user.animals&&this.user.animals[0]?this.user?.animals[0].typeAnimal:'dog',
+          animalType:
+            this.user.animals && this.user.animals[0]
+              ? this.user?.animals[0].typeAnimal
+              : "dog",
           city: this.user.profile.city,
           selectedCity: this.selectedCity,
-          isAutentificate: true,
-          animals:this.user.animals
+          authentification: this.authentification,
+          animals: this.user.animals,
         },
       });
     },
@@ -120,6 +124,8 @@ export default {
   },
   computed: {},
   async mounted() {
+    console.log('authentification',this.authentification)
+      console.log('animalslength',Object.keys(this.user.animals).length)
     await requestPermissionNotification();
     if (this.pusher == null) {
       this.$emit("nopusher", null);
@@ -157,11 +163,11 @@ export default {
     border-radius: 20px 0px;
   }
   &:hover {
-    animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) ;
+    animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97);
     border: 1px solid #000000;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.75);
-    p{ 
-      transform: scale(1.1)
+    p {
+      transform: scale(1.1);
     }
   }
   p {
