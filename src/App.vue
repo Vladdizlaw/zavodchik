@@ -397,8 +397,9 @@ export default {
         console.log(this.searchParams, animals.data);
         animals = animals.data.filter((animal) => 
           animal.typeAnimal == this.searchParams.animalType
-        );
-         console.log(this.searchParams, animals);
+        )
+        // this.searchParams.breed!='null'?animals.filter((animal)=> animal.breed == this.searchParams.breed):null;
+        //  console.log(this.searchParams, animals);
         this.idSelected = { profile: data, animals: { ...animals } };
 
         this.$router.push({

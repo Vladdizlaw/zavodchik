@@ -301,6 +301,7 @@ export default {
 <style lang="scss" scoped>
 @import "../assets/main.scss";
 .formap {
+  user-select: none;      
   padding-top: 2rem;
   width: 100vw;
   height: 100vh;
@@ -327,6 +328,7 @@ export default {
 }
 
 #map {
+  user-select: none;  
   width: 80vw;
   height: 80vh;
   border: 1px solid;

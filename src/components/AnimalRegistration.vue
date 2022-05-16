@@ -214,7 +214,7 @@ export default {
         const breed_string = require("!raw-loader!../cat_breed.txt");
 
         breed_list = breed_string.default
-          .split("\r")
+          .split("\n")
           .filter((el) => el != "");
       }
       return breed_list;

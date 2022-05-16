@@ -1,5 +1,5 @@
 <template>
-  <profile-screen :user="showedUser">
+  <profile-screen :user="showedUser" ref="profile">
     <template #modalAnother>
       <Modal ref="modalChat">
         <template #content>
@@ -42,13 +42,9 @@
         :typeAnimal="showedUser.animals['0'].typeAnimal"
         class="profiles-switcher"
       >
-      
-         
-            <template #helper>
-            Нажмите что бы начать чат с {{showedUser.profile.name}}
-            </template>
-
-          
+        <template #helper>
+          Нажмите что бы начать чат с {{ showedUser.profile.name }}
+        </template>
       </profiles-switcher>
     </template>
   </profile-screen>
@@ -92,12 +88,11 @@ export default {
       newMessage: false,
       chatCurrent: null,
       idCurrentChat: null,
-      opponentUser:{profile:{ name: null, id: null }},
+      opponentUser: { profile: { name: null, id: null } },
     };
   },
 
   methods: {
-   
     async openChat(idChat) {
       // this.chatCurrent=null
       // console.log("idChat", idChat);
@@ -112,7 +107,6 @@ export default {
         "Content-Type": "application/json",
       };
 
-     
       const idChatPart = idChat.split("#");
       const { data } = await Axios.get(
         `http://localhost:5000/api/chat/create_chat/${idChatPart[0]}/${idChatPart[1]}`,
@@ -122,7 +116,7 @@ export default {
       );
       this.idCurrentChat = data.chatId;
       this.chatCurrent = data;
-      
+
       // }
       console.log("chatCurrent", this.chatCurrent);
       this.$refs.chat.clearScreen();
@@ -130,28 +124,26 @@ export default {
     },
     async sendToShowedUser(value) {
       /////////
-      
-        const headers = {
-          "Content-Type": "application/json",
-        };
-        let { data } = await Axios.post(
-          `http://localhost:5000/api/message`,
-          {
-            from: this.userSelf.profile.id,
-            to: value.to,
-            name: this.userSelf.profile.name,
-            msg: value.msg,
-          },
-          {
-            headers: headers,
-          }
-        );
 
-        console.log(data);
-        //////////////
-      
+      const headers = {
+        "Content-Type": "application/json",
+      };
+      let { data } = await Axios.post(
+        `http://localhost:5000/api/message`,
+        {
+          from: this.userSelf.profile.id,
+          to: value.to,
+          name: this.userSelf.profile.name,
+          msg: value.msg,
+        },
+        {
+          headers: headers,
+        }
+      );
 
-     
+      console.log(data);
+      //////////////
+
       const messageData = {
         chatId: this.idCurrentChat,
         author: this.userSelf.profile.id,
@@ -170,7 +162,7 @@ export default {
       payload = [...new Set(payload)];
       console.log("adding to user", payload);
 
-      this.$store.commit("SAVE_USER", { chats: payload });
+      this.$store.commit("SAVE_PROFILE", { chats: payload });
       this.$emit("updateUser", payload);
     },
     back() {
@@ -180,20 +172,26 @@ export default {
       this.$emit("myProfile", null);
     },
     nextProfile() {
-       console.log("next",this.showedUser);
+      console.log("next", this.showedUser);
       this.getUserIndex();
+      this.$refs.profile.resetPhoto();
+      this.$refs.profile.currentAnimal = 0;
       this.showedUser = this.agregatedUsers[
-        this.indexInUsers >= this.agregatedUsers.length - 1 ? 0 : this.indexInUsers + 1
+        this.indexInUsers >= this.agregatedUsers.length - 1
+          ? 0
+          : this.indexInUsers + 1
       ];
-     
     },
     previousProfile() {
-       console.log("previous",this.showedUser);
+      console.log("previous", this.showedUser);
       this.getUserIndex();
+      this.$refs.profile.resetPhoto();
+      this.$refs.profile.currentAnimal = 0;
       this.showedUser = this.agregatedUsers[
-        this.indexInUsers <= 0 ? this.agregatedUsers.length - 1 : this.indexInUsers - 1
+        this.indexInUsers <= 0
+          ? this.agregatedUsers.length - 1
+          : this.indexInUsers - 1
       ];
-     
     },
     getUserIndex() {
       this.agregatedUsers.forEach((el, ind) => {
@@ -216,17 +214,19 @@ export default {
   },
   watch: {},
   computed: {
-     agregatedUsers() {
+    agregatedUsers() {
       let result = [];
       if (this.users?.owners?.length == 0) {
         return null;
       }
       this.users?.owners?.forEach((owner) => {
-        let animals = {...this.users.animals.filter((el) => {
-          if (el.owner == owner.id) {
-            return true;
-          }
-        })};
+        let animals = {
+          ...this.users.animals.filter((el) => {
+            if (el.owner == owner.id) {
+              return true;
+            }
+          }),
+        };
 
         const aggUser = { profile: owner, animals };
 
@@ -260,12 +260,12 @@ export default {
     });
   },
   mounted() {
-    console.log(this.agregatedUsers)
-  }
+    console.log(this.agregatedUsers);
+  },
 };
 </script>
 <style lang="scss" scoped>
-.profiles-switcher{
-  height:5vh;
+.profiles-switcher {
+  height: 5vh;
 }
 </style>

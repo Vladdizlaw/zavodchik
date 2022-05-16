@@ -14,6 +14,9 @@
         <template #center>
           <p>Поиск пары</p>
         </template>
+        <template #right>
+          <profile-button @myProfile="getMyProfile"/>
+        </template>
       </Header>
     </div>
 
@@ -92,15 +95,26 @@
       </div>
 
       <button class="btn" @click="submit">Поиск</button>
+    </div >
+    <div class="animalproperty-fortext">
+       <Header>
+        <template #left>
+          <support-button class="support" @back="getSupportWindow" />
+        </template>
+       
+      </Header>
     </div>
+   
   </div>
 </template>
 <script>
 import BackButton from "./BackButton.vue";
 import Header from "./Header.vue";
+import ProfileButton from "./ProfileButton.vue";
+import SupportButton from "./SupportButton.vue";
 export default {
   name: "AnimalProperty",
-  components: { Header, BackButton },
+  components: { Header, BackButton ,ProfileButton,SupportButton},
   //Компонент выбора свойств животного для поиска пары, принимает тип животного (cat,dog) и геопозицию,
   //отдает событие "animalProperty" с обектом собранных данных animalProperty
   props: {
@@ -140,12 +154,12 @@ export default {
         //В зависимости от типа животного подгружаем список пород
         const breed_string = require("!raw-loader!../dog_breed.txt");
 
-        return breed_string.default.split("\r\n").filter((el) => el != "");
+        return breed_string.default.split("\n").filter((el) => el != "");
       }
       if (this.animalProperty.typeAnimal == "cat") {
         const breed_string = require("!raw-loader!../cat_breed.txt");
 
-        return breed_string.default.split("\r\n").filter((el) => el != "");
+        return breed_string.default.split("\n").filter((el) => el != "");
       } else {
         return null;
       }
@@ -163,6 +177,13 @@ export default {
     },
   },
   methods: {
+    getSupportWindow(){
+
+    },
+    getMyProfile(){
+      this.$emit('myProfile','SearchScreen')
+    },
+
     submit() {
       //Отправляем в App
       if (
@@ -196,12 +217,14 @@ export default {
   background-size: 90vh, 90vh, cover;
   background-repeat: no-repeat, no-repeat, no-repeat;
   overflow: hidden;
+  user-select: none;      
   @media screen and (orientation: portrait) {
     background-image: url("../assets/dog1w_transp.png"),
       url("../assets/dog1w.svg"), url("../assets/cover_dog.png");
     background-position: center bottom, 110% 110%, center;
     background-size: 95%, 20vh, cover;
   }
+  
 }
 .cat {
   background-image: url("../assets/cat1w.svg"), url("../assets/cat1w.svg"),
@@ -211,12 +234,17 @@ export default {
   background-repeat: no-repeat, no-repeat, no-repeat;
   opacity: 0.9;
   overflow: hidden;
+   user-select: none;      
+  .support{
+    text-shadow:2px 2px #F5F0A2 ;
+  }
   @media screen and (orientation: portrait) {
     background-image: url("../assets/cat1w_transp.png"),
       url("../assets/cat1w.svg"), url("../assets/cover_cat.png");
     background-position: center bottom, 100% 102%, center;
     background-size: 100%, 20vh, cover;
   }
+  
 }
 .animalproperty {
   box-sizing: border-box;
@@ -270,7 +298,7 @@ export default {
     display: flex;
     flex-direction: column;
     width: 100%;
-    //
+    overflow: hidden;
     align-items: center;
     justify-content: center;
     gap: min(0.8rem, 1vh);
@@ -386,10 +414,13 @@ export default {
     }
     
   }
+  .footer{
+    width:100%;
+  }
 }
 
 .age {
-  max-height: 4rem;
+  max-height: 3rem;
   width: 39%;
   display: flex;
   flex-direction: column;

@@ -115,6 +115,7 @@ export default {
 
 
 .screen {
+   user-select: none;      
   position: relative;
   display: flex;
   flex-direction: column;

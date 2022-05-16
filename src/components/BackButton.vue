@@ -11,6 +11,7 @@ export default {
 </script>
 <style scoped lang="scss">
 .backbutton {
+   user-select: none;      
   font-family: "Amatic SC";
    font-size: max(2.7vw, 1.4rem);
   font-style: normal;

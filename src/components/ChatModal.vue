@@ -2,8 +2,8 @@
   <div class="modal-chat">
     <div class="modal-chat_title">
       <slot name="title">
-    <p >Чат с {{ name }}</p>
-    </slot>
+        <p>Чат с {{ name }}</p>
+      </slot>
     </div>
     <div ref="chatScreen" class="modal-chat_screen"></div>
     <div class="modal-chat__manage">
@@ -29,7 +29,7 @@ export default {
     idOpponent: String,
     chat: Object,
     idSelf: String,
-    incommingMessage:Object,
+    incommingMessage: Object,
   },
   data() {
     return {
@@ -40,9 +40,9 @@ export default {
     chat(val) {
       console.log("chat modified", val.messages);
       if (val.messages?.length > 0) {
-        if (val.messages?.length>100){
-          val.messages=val.messages.slice(-100)
-          console.log("chat more than 100", val.messages)
+        if (val.messages?.length > 100) {
+          val.messages = val.messages.slice(-100);
+          console.log("chat more than 100", val.messages);
         }
         val.messages.forEach((msg) => {
           if (msg.author == this.idSelf) {
@@ -54,19 +54,17 @@ export default {
         });
       }
     },
-    incommingMessage(val){
-      console.log('incomming messs chat modal',val)
+    incommingMessage(val) {
+      console.log("incomming messs chat modal", val);
       // if (val.from==this.idOpponent){
-        if (this.chat?.messages[this.chat.messages.length-1]!=val.message){
-          this.createOpponentMessage(val.message);
-        }
-       
+      if (this.chat?.messages[this.chat.messages.length - 1] != val.message) {
+        this.createOpponentMessage(val.message);
+      }
+
       // }
-    }
-   
+    },
   },
   methods: {
-   
     clearScreen() {
       const oldMessages = this.$refs.chatScreen.querySelectorAll("div");
       // console.log("nodeList", oldMessages);
@@ -86,9 +84,9 @@ export default {
       display:flex;
       justify-content:center;
       align-items:center;
-     padding: 0.2rem 1.5rem 0.2rem 1.5rem;
+     padding: 0px 0.5rem 0px 0.5rem;
       border-radius:20px 20px 0px 20px;
-      font-size: 3rem;
+     
       font:inherit;
       border: 1px solid #000000;
       
@@ -123,13 +121,12 @@ export default {
       display:flex;
       justify-content:center;
       align-items:center;
-     padding: 0.2rem 1.5rem 0.2rem 1.5rem;
+      padding: 0px 1rem 0px 1rem;
       border-radius:20px 20px 20px 0px;
-      font-size: 3rem;
       font:inherit;
       border: 1px solid #000000;
-     
-     height:auto;
+      height:fit-content;
+    
       max-width:40%;
       overflow:hidden;
       overflow-wrap: break-word;
@@ -152,26 +149,21 @@ export default {
         return;
       }
       this.createSelfMessage(this.message);
-      
+
       // await this.postMessageToChat(this.message)
       this.$emit("sendMessage", { to: this.idOpponent, msg: this.message });
       this.message = "";
     },
   },
   mounted() {
-    
-   
-   
     this.$refs.chatScreen.scrollTo(0, this.$refs.chatScreen.offsetHeight * 100);
   },
   beforeUnMount() {
-  
     this.clearScreen();
   },
 };
 </script>
 <style lang="scss" scoped>
- 
 %flex-type {
   display: flex;
   flex-direction: column;
@@ -180,30 +172,29 @@ export default {
 }
 .modal-chat {
   width: 60vw;
-  height: 100%;
+  height: 90vh;
   border: 1px solid black;
   @extend %flex-type;
   align-items: center;
-  // background: url("../assets/cover1.png");
-  // background-position: center;
-  // background-size: cover;
-  // overflow: hidden;
-  // filter: drop-shadow(0px 10px 10px rgba(0, 0, 0, 0.25))
-  //   drop-shadow(0px 10px 10px rgba(0, 0, 0, 0.25))
-  //   drop-shadow(0px 10px 10px rgba(0, 0, 0, 0.25));
   background: #f8f49d;
-/* 1 */
-
-box-shadow: 10px 20px 30px rgba(0, 0, 0, 0.25);
-border-radius: 20px;
+  box-shadow: 10px 20px 30px rgba(0, 0, 0, 0.25);
+  border-radius: 20px;
+  @media screen and (orientation: portrait) {
+    height: 70vh;
+    width: 90vw;
+  }
   &_title {
-
-    display:inline-flex;
-    gap:1rem;
+    display: inline-flex;
+    gap: 1rem;
     padding: 0.2rem 0 0.2rem 0;
-    img{
+    p {
+      display: inline;
+      margin-block-start: 0.5rem;
+      margin-block-end: 0.5rem;
+    }
+    img {
       box-shadow: 10px 20px 30px rgba(0, 0, 0, 0.25);
-border-radius: 5px;
+      border-radius: 5px;
     }
   }
   &_screen {
@@ -211,24 +202,28 @@ border-radius: 5px;
     flex-direction: column;
     position: relative;
     width: 90%;
-    height: 75%;
+    height: 95%;
     border-radius: 10px;
     background-color: white;
-    transition:0.3s;
-    
+    transition: 0.3s;
+    font-size: max(1.5vw, 1rem);
 
     overflow-y: scroll;
-    
-     &::-webkit-scrollbar {
-      width:30px; // manage scrollbar width here
+
+    &::-webkit-scrollbar {
+      width: 30px; // manage scrollbar width here
     }
-    &::-webkit-scrollbar  {
-      background:transparent; // manage scrollbar background color here
+    &::-webkit-scrollbar {
+      background: transparent; // manage scrollbar background color here
     }
+    @media screen and (orientation: portrait) {
+      height: 70%;
+      width: 80%;
+    }
+
     &:hover {
       filter: drop-shadow(0px 6px 6px rgba(0, 0, 0, 0.55))
-      drop-shadow(0px 8px 8px rgba(0, 0, 0, 0.25));
-    
+        drop-shadow(0px 8px 8px rgba(0, 0, 0, 0.25));
     }
     padding: 0.5rem 0rem 0.5rem 2rem;
 
@@ -236,55 +231,66 @@ border-radius: 5px;
     filter: drop-shadow(1px 4px 4px rgba(0, 0, 0, 0.25))
       drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))
       drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
-     
   }
-  
+
   &__manage {
     @extend %flex-type;
     flex-direction: row;
     justify-content: space-around;
     align-items: center;
     width: 100%;
-    min-height: 30%;
+    min-height: 20%;
+    @media screen and (orientation: portrait) {
+      gap:1rem;
+      padding-top:1rem;
+      flex-direction: column;
+      height:fit-content;
+      justify-content: space-between;
+      
+    }
     &_input {
-      width: 70%;
+        border: 0.1px solid #000000;
+      width: 60%;
       padding: 0.5rem 0.5rem 0.5rem 0.5rem;
-      height: min(4rem, 5vh);
+      height: min(3rem, 4vh);
       border-radius: 10px;
       font: inherit;
-      font-size: 3rem;
-      transition:0.3s;
+      font-size: max(3vw, 1.7rem);
+      transition: 0.3s;
       filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))
         drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))
         drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
-        &:hover {
-      filter: drop-shadow(0px 6px 6px rgba(0, 0, 0, 0.55))
-      drop-shadow(0px 8px 8px rgba(0, 0, 0, 0.25));
-    
-    }
+      @media screen and (orientation: portrait) {
+        width: 50%;
+        height: 3vh;
+      }
+      &:hover {
+        filter: drop-shadow(0px 6px 6px rgba(0, 0, 0, 0.55))
+          drop-shadow(0px 8px 8px rgba(0, 0, 0, 0.25));
+      }
     }
     &_button {
-      max-width: 10rem;
-      background-image: url("../assets/cover_dog.png");
-      min-height: 3rem;
+      height: fit-content;
+      width: fit-content;
+      background: linear-gradient(108.6deg, #95c671 13.72%, #698852 89.83%);
       border: 1px solid #000000;
       box-sizing: border-box;
-      filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))
-        drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))
-        drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
-      border-radius: 25px 0px;
-      transform: matrix(1, 0, 0, 1, 0, 0);
+      box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.25);
+      border-radius: 20px 0px;
       font-family: Amatic SC;
       font-style: normal;
       font-weight: bold;
-      font-size: 2rem;
+      font-size: max(3vw, 1.7rem);
       transition: 0.3s;
       cursor: pointer;
+      @media screen and (orientation: portrait) {
+        margin-bottom: 2rem;
+      }
 
       &:hover {
         filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.5))
           drop-shadow(10px 10px 4px rgba(9, 112, 7, 0.75));
-        font-size: 2.5rem;
+        transform: scale(1.1);
       }
       &:active {
         filter: drop-shadow(0px 4px 4px rgba(39, 33, 33, 0.5))
@@ -293,6 +299,4 @@ border-radius: 5px;
     }
   }
 }
-
-
 </style>

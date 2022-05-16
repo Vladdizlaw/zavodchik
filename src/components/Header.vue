@@ -36,6 +36,7 @@ export default {
 <style scoped>
 .header {
   width: 100%;
+   user-select: none;      
   /* max-height: 3rem; */
   display: flex;
   justify-content: space-between;
