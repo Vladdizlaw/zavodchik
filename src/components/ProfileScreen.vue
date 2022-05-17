@@ -103,7 +103,7 @@
           >
             Возможный период случки:{{
               new Intl.DateTimeFormat("ru-RU").format(
-                new Date(user.animals[currentAnimal].dateMating),
+                new Date(user.animals[currentAnimal].dateMating)
               )
             }}
           </p>
@@ -317,9 +317,9 @@ export default {
   mounted() {},
 
   methods: {
-    resetPhoto(){
-      this.showPhotoMobileStart = 1
-      this.showPhotoMobileEnd = 4
+    resetPhoto() {
+      this.showPhotoMobileStart = 1;
+      this.showPhotoMobileEnd = 4;
     },
     showNextPhoto() {
       this.showPhotoMobileStart = this.showPhotoMobileStart + 3;
@@ -329,12 +329,11 @@ export default {
       this.showPhotoMobileStart = this.showPhotoMobileStart - 3;
       this.showPhotoMobileEnd = this.showPhotoMobileEnd - 3;
     },
-    showNextAnimal() { 
-       this.resetPhoto()
+    showNextAnimal() {
+      this.resetPhoto();
       this.currentAnimal < Object.keys(this.user.animals).length - 1
         ? ++this.currentAnimal
         : (this.currentAnimal = 0);
-      
     },
     async сheckPhotos(e) {
       // console.log('check',e)

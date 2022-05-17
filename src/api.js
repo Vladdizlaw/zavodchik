@@ -42,5 +42,5 @@ export async function getPushSubscription(){
     return subscription
 }
 // export const URI_SERVER='https://fierce-inlet-32650.herokuapp.com'
-export const URI_SERVER='http://localhost:5000'
-// export const URI_SERVER='https://glistening-kashata-d8f9a6.netlify.app'
+// export const URI_SERVER='http://localhost:5000'
+export const URI_SERVER='https://glistening-kashata-d8f9a6.netlify.app'

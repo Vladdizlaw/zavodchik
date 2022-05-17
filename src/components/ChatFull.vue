@@ -143,9 +143,9 @@ export default {
         headers: headers,
       });
       // await sendPush( messageData)
-      console.log("userSelf and props",this.userSelf,this.$props);
+      console.log("userSelf and props", this.userSelf, this.$props);
       let payload = this.userSelf.chats;
-      payload.push(this.idCurrentChat);
+      payload && payload.push(this.idCurrentChat);
       payload = [...new Set(payload)];
 
       if (payload != this.userSelf.chats) {
@@ -157,9 +157,19 @@ export default {
     },
     async startChat() {
       const val = this.messageBuffer.shift();
-      console.log("start Chat", this.opponentUser);
-      this.opponentUser.profile.name = val.name;
-      this.opponentUser.profile.id = val.from;
+      this.messageBuffer=this.messageBuffer.filter(m=>m.from!=val.from);
+       console.log("undownloaded opponent", this.opponentUser);
+      try {
+        const { data } = await Axios.get(
+          `${URI_SERVER}/api/get_full_user${val.from}`
+        );
+        this.opponentUser = data;
+      } catch (e) {
+        console.log("error of loading", e);
+      }
+      console.log("downloaded opponent", this.opponentUser);
+      // this.opponentUser.profile.name = val.name;
+      // this.opponentUser.profile.id = val.from;
       this.incommingMessageToChat = val;
       await this.openChat(`${this.userSelf.profile.id}#${val.from}`);
 
@@ -167,27 +177,50 @@ export default {
       let payload = this.userSelf.profile.chats;
       payload.push(`${this.userSelf.profile.id}#${val.from}`);
       payload = [...new Set(payload)];
-      console.log("payload", payload, this.userSelf.chats);
+      // console.log("payload", payload, this.userSelf.chats);
     },
   },
   async beforeMount() {
     this.pusher.bind("message", async (msg) => {
-      if (msg.from != this.opponentUser.profile.id) {
-        try {
-          const { data } = await Axios.get(
-            `${URI_SERVER}/api/get_full_user${msg.from}`
-          );
-          this.opponentUser = data;
-        } catch (e) {
-          console.log("error of loading", e);
-        }
-      }
-      console.log("data incomming", msg, this.opponentUser);
+      console.log("message 1 income", msg, this.opponentUser);
       if (
-        this.$refs?.modalChat?.isOpen === false ||
-        (this.$refs?.modalChat?.isOpen === true &&
-          this.opponentUser?.profile.id != msg.from)
+        this.$refs?.modalChat?.isOpen === false &&
+        this.opponentUser?.profile.id != msg.from
       ) {
+        console.log(
+          "data incomming in close not opponent",
+          msg,
+          this.opponentUser
+        );
+        this.newMessage = true;
+
+        this.messageBuffer.push(msg);
+        this.incommingMessage = msg;
+      }
+       if (
+        this.$refs?.modalChat?.isOpen === false &&
+        this.opponentUser?.profile.id == msg.from
+      ) {
+        console.log(
+          "data incomming in close opponent",
+          msg,
+          this.opponentUser
+        );
+        this.newMessage = true;
+
+        this.messageBuffer.push(msg);
+        this.incommingMessage = msg;
+      }
+
+      if (
+        this.$refs?.modalChat?.isOpen === true &&
+        this.opponentUser?.profile.id != msg.from
+      ) {
+        console.log(
+          "data incomming in open not opponent",
+          msg,
+          this.opponentUser
+        );
         this.newMessage = true;
 
         this.messageBuffer.push(msg);
@@ -197,6 +230,11 @@ export default {
         this.$refs?.modalChat?.isOpen === true &&
         this.opponentUser.profile.id == msg.from
       ) {
+        console.log(
+          "data incomming in open and opponent",
+          msg,
+          this.opponentUser
+        );
         this.incommingMessageToChat = msg;
       }
     });
