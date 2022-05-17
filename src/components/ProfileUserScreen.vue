@@ -1,7 +1,9 @@
 <template>
   <profile-screen :user="user">
     <template #modalAnother>
-      <chat-full :pusher="pusher" :userSelf="user" @updateUser="updateUser" />
+     
+        <chat-full :pusher="pusher" :userSelf="user" @updateUser="updateUser" />
+ 
     </template>
     <template #header>
       <Header>
@@ -103,7 +105,9 @@ export default {
         },
       });
     },
-    toChatScreen() {},
+    toChatScreen() {
+      
+    },
     toSearchScreen() {
       console.log("click");
       this.$router.push({
@@ -124,8 +128,8 @@ export default {
   },
   computed: {},
   async mounted() {
-    console.log('authentification',this.authentification)
-      console.log('animalslength',Object.keys(this.user.animals).length)
+    console.log("authentification", this.authentification);
+    console.log("animalslength", Object.keys(this.user.animals));
     await requestPermissionNotification();
     if (this.pusher == null) {
       this.$emit("nopusher", null);
@@ -134,6 +138,7 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+
 .search-button {
   position: absolute;
   left: clamp(0.5rem, 1vw, 2vw);

@@ -450,6 +450,7 @@ export default {
   }
 }
 .wrapper {
+  user-select: none;
   font-family: "Amatic SC";
   font-size: max(2rem, 3vw);
   font-style: normal;

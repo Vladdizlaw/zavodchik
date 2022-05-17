@@ -84,13 +84,11 @@ export default {
       display:flex;
       justify-content:center;
       align-items:center;
-     padding: 0px 0.5rem 0px 0.5rem;
+      padding: 0.5rem 1rem 0.5rem 1rem;
       border-radius:20px 20px 0px 20px;
-     
       font:inherit;
       border: 1px solid #000000;
-      
-     height:auto;
+      height:auto;
       max-width:45%;
       overflow:hidden;
       overflow-wrap: break-word;
@@ -121,12 +119,11 @@ export default {
       display:flex;
       justify-content:center;
       align-items:center;
-      padding: 0px 1rem 0px 1rem;
+      padding: 0.5rem 1rem 0.5rem 1rem;
       border-radius:20px 20px 20px 0px;
       font:inherit;
       border: 1px solid #000000;
       height:fit-content;
-    
       max-width:40%;
       overflow:hidden;
       overflow-wrap: break-word;
@@ -184,17 +181,31 @@ export default {
     width: 90vw;
   }
   &_title {
-    display: inline-flex;
+    display: flex;
+    flex-wrap: wrap;
     gap: 1rem;
     padding: 0.2rem 0 0.2rem 0;
+    max-width:90%;
+    justify-content:center;
+    align-items: center;
     p {
       display: inline;
       margin-block-start: 0.5rem;
       margin-block-end: 0.5rem;
+      font-size: max(3vw, 1.5rem);
+      
+      @media screen and (orientation: portrait) {
+          line-height: 0.5rem;
+           margin-block-start: 0;
+           margin-block-end: 0.5rem;
+      }
     }
     img {
+      height:2rem;
+      width:2rem;
       box-shadow: 10px 20px 30px rgba(0, 0, 0, 0.25);
       border-radius: 5px;
+      object-fit: fill;
     }
   }
   &_screen {
@@ -207,11 +218,11 @@ export default {
     background-color: white;
     transition: 0.3s;
     font-size: max(1.5vw, 1rem);
-
+    padding: 0.5rem 0rem 0.5rem 1rem;
     overflow-y: scroll;
 
     &::-webkit-scrollbar {
-      width: 30px; // manage scrollbar width here
+      width: 1rem; // manage scrollbar width here
     }
     &::-webkit-scrollbar {
       background: transparent; // manage scrollbar background color here
@@ -219,13 +230,15 @@ export default {
     @media screen and (orientation: portrait) {
       height: 70%;
       width: 80%;
+      padding-left:1rem;
+      padding-right:0rem;
     }
 
     &:hover {
       filter: drop-shadow(0px 6px 6px rgba(0, 0, 0, 0.55))
         drop-shadow(0px 8px 8px rgba(0, 0, 0, 0.25));
     }
-    padding: 0.5rem 0rem 0.5rem 2rem;
+   
 
     gap: 0.5rem;
     filter: drop-shadow(1px 4px 4px rgba(0, 0, 0, 0.25))
@@ -241,7 +254,6 @@ export default {
     width: 100%;
     min-height: 20%;
     @media screen and (orientation: portrait) {
-      gap:1rem;
       padding-top:1rem;
       flex-direction: column;
       height:fit-content;

@@ -53,14 +53,12 @@
 import ProfileScreen from "./ProfileScreen.vue";
 import Header from "./Header.vue";
 import ProfileButton from "./ProfileButton.vue";
-// import SettingsButton from "./SettingsButton.vue";
 import BackButton from "./BackButton.vue";
 import ProfilesSwitcher from "./ProfilesSwitcher.vue";
 import Modal from "./Modal.vue";
 import ChatModal from "./ChatModal.vue";
 import Axios from "axios";
-// import  sendPush from "../api.js"
-// import TrialBlock from "./TrialBlock.vue";
+import {URI_SERVER} from "../api.js"
 export default {
   //Компонент отображения найденных юзеров
   name: "ProfileUserScreen",
@@ -109,7 +107,7 @@ export default {
 
       const idChatPart = idChat.split("#");
       const { data } = await Axios.get(
-        `http://localhost:5000/api/chat/create_chat/${idChatPart[0]}/${idChatPart[1]}`,
+        `${URI_SERVER}/api/chat/create_chat/${idChatPart[0]}/${idChatPart[1]}`,
         {
           headers: headers,
         }
@@ -129,7 +127,7 @@ export default {
         "Content-Type": "application/json",
       };
       let { data } = await Axios.post(
-        `http://localhost:5000/api/message`,
+        `${URI_SERVER}/api/message`,
         {
           from: this.userSelf.profile.id,
           to: value.to,
@@ -150,7 +148,7 @@ export default {
         msg: value.msg,
       };
       await Axios.post(
-        `http://localhost:5000/api/chat/post_message`,
+        `${URI_SERVER}/api/chat/post_message`,
         messageData,
         {
           headers: headers,
@@ -267,5 +265,39 @@ export default {
 <style lang="scss" scoped>
 .profiles-switcher {
   height: 5vh;
+}
+.notice_block{
+  user-select: none;
+  display:inline-flex;
+  font-size: max(1.7vw, 1.3rem);
+  cursor: pointer;
+  transition: 0.3s;
+  animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite;
+   img {
+    margin-top: 0.3rem;
+    width: max(1.7vw, 1.3rem);
+  }
+}
+@keyframes shake {
+  10%,
+  90% {
+    transform: translate3d(-1px, 0, 0);
+  }
+
+  20%,
+  80% {
+    transform: translate3d(2px, 0, 0);
+  }
+
+  30%,
+  50%,
+  70% {
+    transform: translate3d(-4px, 0, 0);
+  }
+
+  40%,
+  60% {
+    transform: translate3d(4px, 0, 0);
+  }
 }
 </style>

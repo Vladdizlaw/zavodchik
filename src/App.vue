@@ -99,6 +99,7 @@ export default {
       }
     },
     getScreenOrientation() {
+      console.log( navigator)
       const orient =
         screen.msOrientation ||
         (screen.orientation || screen.mozOrientation).type;
@@ -276,8 +277,8 @@ export default {
       }
     },
     async updateUser() {
+      this.$store.dispatch("UPDATE_PROFILE", this.user.profile);
       console.log("userupdated", this.user);
-      this.$store.dispatch("UPDATE_PROFILE", this.user);
     },
     async getLocation() {
       return new Promise((resolve, reject) => {
@@ -395,9 +396,9 @@ export default {
           `${URI_SERVER}/api/get_animals${value.id}`
         );
         console.log(this.searchParams, animals.data);
-        animals = animals.data.filter((animal) => 
-          animal.typeAnimal == this.searchParams.animalType
-        )
+        animals = animals.data.filter(
+          (animal) => animal.typeAnimal == this.searchParams.animalType
+        );
         // this.searchParams.breed!='null'?animals.filter((animal)=> animal.breed == this.searchParams.breed):null;
         //  console.log(this.searchParams, animals);
         this.idSelected = { profile: data, animals: { ...animals } };
@@ -544,6 +545,7 @@ export default {
     console.log("cookie_SERVER", document.cookie);
 
     this.getScreenOrientation();
+    // this.mobileUserAgent=true
     window.addEventListener("orientationchange", this.getScreenOrientation);
     window.addEventListener("dblclick", this.toggleFullscreen);
     this.permissionNotify = await requestPermissionNotification();
