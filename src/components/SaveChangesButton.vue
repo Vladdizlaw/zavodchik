@@ -47,17 +47,11 @@ export default {
     }
   }
 
-&:hover img{
-  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.5))
-    drop-shadow(10px 10px 4px rgba(9, 112, 7, 0.75));
-}
+
 &:hover {
-    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.5))
+   filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.5))
     drop-shadow(10px 10px 4px rgba(9, 112, 7, 0.75));
 }
-& :active {
-  filter: drop-shadow(0px 4px 4px rgba(39, 33, 33, 0.5))
-    drop-shadow(10px 10px 4px rgba(4, 24, 4, 0.75));
-}
+
 }
 </style>

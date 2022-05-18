@@ -15,25 +15,23 @@
             type="textarea"
             v-model="msgToSupport"
           ></textarea>
-          <button class="modal-warning_button" @click="sendToSupport">отправить в поддержку</button>
+          <button class="modal-warning_button" @click="sendToSupport">
+            отправить в поддержку
+          </button>
         </div>
       </template>
     </Modal>
     <section class="settings-common" v-if="state == 'start'">
-      <Header >
+      <Header>
         <template #left>
           <back-button @back="back" />
         </template>
 
         <template #center>
-          <kinesis-container :duration="300">
-            <div class="header__text">
-              <kinesis-element :strength="500" type="rotate">
-                <img src="../assets/setting.svg" alt="" />
-              </kinesis-element>
-              <p>Настройка</p>
-            </div>
-          </kinesis-container>
+          <div class="header__text">
+            <img src="../assets/setting.svg" alt="" />
+            <p>Настройка</p>
+          </div>
         </template>
       </Header>
       <div class="main">
@@ -42,7 +40,7 @@
           <p @click="state = 'animal'">Данные животного</p>
           <p @click="state = 'chats'">Мои чаты</p>
           <p @click="state = 'noticed'">Настроить уведомления</p>
-          <p>Оплата</p>
+          <p @click="state = 'purchase'">Оплата</p>
         </div>
       </div>
 
@@ -64,11 +62,9 @@
         </template>
 
         <template #center>
-          <kinesis-container :duration="300">
-            <div class="header__text">
-              <p>Контактные данные</p>
-            </div>
-          </kinesis-container>
+          <div class="header__text">
+            <p>Контактные данные</p>
+          </div>
         </template>
         <template #right>
           <save-changes-button @saveProfile="save" />
@@ -326,7 +322,11 @@
               :class="{ checked: noticeMatingDate.value }"
             ></div>
             <div class="personal_data_text">
-              <div><p>Уведомлять о новых сообщениях от пользователей когда офлайн</p></div>
+              <div>
+                <p>
+                  Уведомлять о новых сообщениях от пользователей когда офлайн
+                </p>
+              </div>
             </div>
           </div>
           <div
@@ -376,7 +376,7 @@
         </Header>
       </div>
     </section>
-     <section class="settings-chats" v-if="state == 'chats'">
+    <section class="settings-chats" v-if="state == 'chats'">
       <Header>
         <template #left>
           <back-button @back="back" />
@@ -394,7 +394,11 @@
         </template>
       </Header>
       <div class="main">
-      <chats-screen :selfUser="user" :pusher="pusher" @updateUser="updateUser"/>
+        <chats-screen
+          :selfUser="user"
+          :pusher="pusher"
+          @updateUser="updateUser"
+        />
       </div>
       <div class="footer">
         <Header>
@@ -406,8 +410,7 @@
           </template>
         </Header>
       </div>
-
-     </section>
+    </section>
   </div>
 </template>
 <script>
@@ -417,7 +420,7 @@ import SaveChangesButton from "./SaveChangesButton.vue";
 import SupportButton from "./SupportButton.vue";
 import LogoutButton from "./LogoutButton.vue";
 import Modal from "./Modal.vue";
-import ChatsScreen from './ChatsScreen.vue';
+import ChatsScreen from "./ChatsScreen.vue";
 export default {
   name: "SettingsScreen",
   components: {
@@ -429,7 +432,12 @@ export default {
     Modal,
     ChatsScreen,
   },
-  props: { user: Object, selectedCity: Array ,pusher:Object},
+  props: {
+    user: Object,
+    selectedCity: Array,
+    pusher: Object,
+    startState: String,
+  },
   data() {
     return {
       state: "start",
@@ -442,14 +450,13 @@ export default {
     };
   },
   methods: {
-    sendToSupport(){
-      console.log(this.msgToSupport)
+    sendToSupport() {
+      console.log(this.msgToSupport);
       this.$refs.supportModal.confirm();
-
     },
-    updateUser(){
-     this.$emit("updateUser",null)
-   },
+    updateUser() {
+      this.$emit("updateUser", null);
+    },
     getSupportWindow() {
       this.msgToSupport = "";
       this.$refs.supportModal.openModal();
@@ -472,6 +479,10 @@ export default {
 
     back() {
       console.log(this.state);
+      if (this.startState == "chats") {
+        this.$emit("back", null);
+        return;
+      }
       if (this.state == "start") {
         this.$emit("back", null);
       } else {
@@ -523,14 +534,15 @@ export default {
 
   computed: {},
   mounted() {
-    this.noticeBreed = this.user?.noticeBreed;
-    this.noticeMatingDate = this.user?.noticeMatingDate;
+    this.noticeBreed = this.user?.profile.noticeBreed;
+    this.noticeMatingDate = this.user?.profile.noticeMessages;
     this.seenHoodFlag = this.user.profile.seenFlags?.seenHoodFlag;
     this.seenTelFlag = this.user.profile.seenFlags?.seenTelFlag;
   },
 };
 </script>
 <style lang="scss" scoped>
+@import "../assets/main.scss";
 %flex-type {
   display: flex;
   flex-direction: column;
@@ -555,27 +567,24 @@ export default {
 }
 .wrapper {
   font-family: "Amatic SC";
-  font-size: 2.5rem;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 45px;
-  letter-spacing: 0rem;
   text-align: left;
-  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
-    0px 4px 4px rgba(0, 0, 0, 0.25);
-  transform: matrix(1, 0, 0, 1, 0, 0);
-
+  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.75);
   width: 100vw;
-  height: 100vh;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  align-items: start;
-  justify-content: start;
+
+  .header {
+    position: relative;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    max-height: 7vh;
+  }
 }
 
 .header__text {
   position: relative;
-  font-size: max(4vw,2.7rem);;
+
   justify-self: center;
   display: flex;
   align-items: center;
@@ -583,29 +592,54 @@ export default {
   height: auto;
   /* font-size: 1.8em; */
   flex-wrap: nowrap;
-img {
-  height: max(4vw,2.5rem);
-  margin-right: 0.2em;
+  p {
+    font-size: max(3vw, 2rem);
+    margin-block-start: 0rem;
+    margin-block-end: 0rem;
+  }
+  //
+
+  @keyframes rotate {
+    0% {
+      transform: rotate(0turn);
+    }
+
+    100% {
+      transform: rotate(1turn);
+    }
+  }
+  img {
+    height: max(4vw, 2.5rem);
+    margin-right: 0.2rem;
+    animation: rotate 2.5s 0s linear infinite forwards normal;
+  }
 }
-
+.settings-common {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100vh;
 }
-
-
-
 .main {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100vw;
-  // height: 90vh;
-  overflow:auto;
+  height: 70vh;
+  overflow: auto;
   // background-color: transparent;
   &::-webkit-scrollbar {
-      width:30px; // manage scrollbar width here
-    }
-    &::-webkit-scrollbar  {
-      background:transparent; // manage scrollbar background color here
-    }
+    width: 10px; // manage scrollbar width here
+  }
+  &::-webkit-scrollbar {
+    background: transparent; // manage scrollbar background color here
+  }
+  &::-moz-scrollbar {
+    width: 10px; // manage scrollbar width here
+  }
+  &::-moz-scrollbar {
+    background: transparent; // manage scrollbar background color here
+  }
   &_noticed {
     @extend %flex-type;
     align-items: center;
@@ -616,63 +650,177 @@ img {
   }
 }
 .main-menu {
-  padding-top: 4rem;
-  height:60vh;
+  // padding-top: 4rem;
+  width: 100%;
+  //  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content:space-around;
-  line-height: 81px;
-  font-size:  max(2.8vw,2.3rem);
+  justify-content: space-around;
+  gap: 1rem;
+  // line-height: 1rem;
+
   transition: all 0.4s;
   cursor: pointer;
   overflow: auto;
-   box-sizing: border-box;
-  @media screen and(max-height:580px){
+  // box-sizing: border-box;
+  @media screen and(max-height:600px) {
     justify-content: center;
-    font-size:7vh;
+    gap: 0px;
     // align-items: start;
-     height:40vh;
+    // height: 40vh;
+  }
+  p {
+    margin-block-end: 0.5rem;
+    margin-block-start: 0.5rem;
+    font-size: max(2.5vw, 1.8rem);
+    transition: 0.3s;
+  }
+  p:hover {
+    text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.5),
+      10px 10px 4px rgba(9, 112, 7, 0.75);
+    transform: scale(1.1);
+  }
+  p:active {
+    text-shadow: 5px 2px 2px rgba(0, 0, 0, 0.5),
+      2px 2px 2px rgba(9, 112, 7, 0.75);
+    transform: scale(0.98);
   }
 }
-.main-menu > p {
-  margin-top: -3rem;
- 
-}
-.main-menu > p:hover {
-  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.5),
-    10px 10px 4px rgba(9, 112, 7, 0.75);
-  font-size: 1.1em;
-}
+
 .footer {
   /* margin-top: 1rem; */
-  /* margin-bottom: 0.5rem; */
+  margin-bottom: 1rem;
+  //  margin-bottom: 1rem;
   display: flex;
   width: 100vw;
-  height: auto;
+  // height: 10vh;
+  justify-self: flex-end;
   justify-content: space-around;
   align-items: center;
   flex-wrap: nowrap;
-  position: absolute;
-  bottom: 0rem;
+  position: relative;
 }
-
-
-.contacts {
+.settings-contacts {
   display: flex;
-  height: 90%;
-  justify-content: flex-start;
-  align-items: center;
-  width: 100vw;
-}
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100vh;
 
-.wrapper-left {
-  @extend %flex-type;
-  /* padding-top: 1.8rem; */
-  margin-left: 5rem;
+  .contacts {
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    .wrapper-left {
+      @extend %flex-type;
+      /* padding-top: 1.8rem; */
+      margin-left: 5vw;
 
-  min-width: 30%;
-  height: 100%;
+      width: 30%;
+      height: 100%;
+
+      p {
+        margin-block-end: 0rem;
+        margin-block-start: 0rem;
+        font-size: max(1.9vw, 1.4rem);
+      }
+    }
+    .wrapper-right {
+      @extend %flex-type;
+       margin-left: 5vw;
+      width: 70%;
+      height: 100%;
+      input,
+      select {
+        width: max(12rem, 25vw);
+        height: max(1.4rem, 3.5vh);
+        background: rgba(255, 255, 255, 0.3);
+        border: 1px solid #000000;
+        box-sizing: border-box;
+        box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.25);
+        border-radius: 10px;
+        padding: 0.1rem;
+        text-align: center;
+        text-justify: center;
+        font-family: $font-family;
+        text-shadow: $textshadow;
+        font-size: max(1rem, 1.4vw);
+        transition: 0.3s;
+        opacity: 0.8;
+        &:focus {
+          transform: scale(110%);
+          box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.75);
+        }
+        &:hover {
+          transform: scale(110%);
+          box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.75);
+        }
+      }
+      .input__seen {
+        display: flex;
+        position: relative;
+        justify-content: center;
+        align-items: center;
+        &:hover {
+          img {
+            transform: translateX(1.3rem);
+          }
+        }
+      }
+      img {
+        transition: 0.3s;
+        padding-left: 0.2rem;
+        width: max(2.5vw, 2rem);
+      }
+      .input__seen__help {
+        justify-self: end;
+        margin-left: 1rem;
+        background: rgba(255, 255, 255, 0.5);
+        border: 1px solid #000000;
+        box-sizing: border-box;
+        border-radius: 10px;
+        font-size: 1.3rem;
+        width:fit-content;
+        padding: 0 1rem 0 1rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        max-height: 3rem;
+        transition: 0.3s;
+        position: absolute;
+        right:-18vw;
+        opacity: 0;
+        transition: 0.3s;
+        @media screen and (orientation: portrait){
+          
+          top:-6vh;
+          left: 0;
+        }
+ 
+        p {
+          margin-block-end: 0rem;
+          margin-block-start: 0rem;
+          font-size: max(1.2vw, 1rem);
+        }
+        /* visibility: hidden; */
+      }
+      &__animal {
+        @extend %flex-type;
+        // gap:6.5rem;
+        justify-content: space-around;
+        height: 100%;
+        width: 50%;
+      }
+      &_noticed {
+        @extend %flex-type;
+        align-items: center;
+        max-height: 50%;
+        width: 100%;
+      }
+    }
+  }
 
   &__animal {
     margin-left: 5rem;
@@ -689,29 +837,6 @@ img {
   }
 }
 
-.wrapper-right {
-  @extend %flex-type;
-
-  max-width: 70%;
-  height: 100%;
-
-  &__animal {
-    @extend %flex-type;
-    // gap:6.5rem;
-    justify-content: space-around;
-    height: 100%;
-    width: 50%;
-  }
-  &_noticed {
-    @extend %flex-type;
-    align-items: center;
-    max-height: 50%;
-    width: 100%;
-  }
-}
-.contacts > .wrapper-left > p {
-  margin-top: -0rem;
-}
 .animal__input {
   margin-top: -2.5rem;
   display: flex;
@@ -736,87 +861,6 @@ img {
 }
 .animal__input > input[type="date"] {
   width: 13.5rem;
-}
-.input__seen > img {
-  margin-top: -1.3rem;
-  /* display: flex; */
-  padding-left: 0.2rem;
-  width: 2.5rem;
-  /* filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.75)); */
-}
-.input__seen {
-  display: flex;
-  position: relative;
-}
-.input__seen__help {
-  margin-top: -1.1rem;
-  margin-left: 0.3rem;
-  right: 0rem;
-  background: rgba(255, 255, 255, 0.5);
-  border: 1px solid #000000;
-  box-sizing: border-box;
-  border-radius: 10px;
-  font-size: 1.3rem;
-  /* width:15rem; */
-  padding: 0 1rem 0 1rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  max-height: 3rem;
-  transition: 0.3s;
-  position: relative;
-  opacity: 0;
-  transition: 0.3s;
-  /* visibility: hidden; */
-}
-
-.input__seen > input,
-.wrapper-right > input,
-.wrapper-right > select {
-  margin-top: -1rem;
-  font: inherit;
-  text-align: center;
-  background: rgba(255, 255, 255, 0.5);
-  border: 1px solid #000000;
-  box-sizing: border-box;
-  border-radius: 10px;
-  height: 1em;
-  width: 13em;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
-    0px 4px 4px rgba(0, 0, 0, 0.25);
-  transition: all 0.3s;
-  font-size: inherit;
-}
-input:hover,
-select:hover {
-  font-size: 1.01em;
-  /* height: 2em; */
-}
-option {
-  display: flex;
-  justify-content: center;
-  text-align: center;
-}
-.personal_data {
-  // margin-top:2rem;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: start;
-  gap: 1rem;
-  flex-wrap: nowrap;
-  width: 45%;
-  &_inner {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: start;
-    gap: 1rem;
-    margin-left: 5rem;
-    width: 29%;
-    flex-wrap: nowrap;
-    opacity: 0.6;
-  }
 }
 
 .personal_data_checkbox {
@@ -864,8 +908,8 @@ option {
   background-size: cover;
   overflow: hidden;
   filter: drop-shadow(0px 10px 10px rgba(0, 0, 0, 0.25))
-      drop-shadow(0px 10px 10px rgba(0, 0, 0, 0.25))
-      drop-shadow(0px 10px 10px rgba(0, 0, 0, 0.25));
+    drop-shadow(0px 10px 10px rgba(0, 0, 0, 0.25))
+    drop-shadow(0px 10px 10px rgba(0, 0, 0, 0.25));
 
   &_input {
     width: 70%;
@@ -878,8 +922,8 @@ option {
       drop-shadow(0px 10px 10px rgba(0, 0, 0, 0.25));
   }
   &_button {
-    width: 10rem; 
-    background-image:  url("../assets/cover_dog.png");
+    width: 10rem;
+    background-image: url("../assets/cover_dog.png");
     border: 1px solid #000000;
     box-sizing: border-box;
     filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))
@@ -891,22 +935,22 @@ option {
     font-style: normal;
     font-weight: bold;
     font-size: 1.5rem;
-   
+
     &:hover {
       filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.5))
         drop-shadow(10px 10px 4px rgba(9, 112, 7, 0.75));
     }
-    &:active{
-       filter: drop-shadow(0px 4px 4px rgba(39, 33, 33, 0.5))
+    &:active {
+      filter: drop-shadow(0px 4px 4px rgba(39, 33, 33, 0.5))
         drop-shadow(10px 10px 4px rgba(4, 24, 4, 0.75));
-
     }
   }
 }
-.settings_common{
-  display:flex;
+
+.settings_common {
+  display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height:100%;
+  height: 100%;
 }
 </style>

@@ -47,7 +47,7 @@ export default {
   }
 
 &:hover {
-  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.5))
+ filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.5))
     drop-shadow(10px 10px 4px rgba(9, 112, 7, 0.75));
 }
 

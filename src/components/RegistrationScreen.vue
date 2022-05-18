@@ -32,7 +32,7 @@
   </div>
 </template>
 <script>
-import {URI_SERVER} from "../api.js"
+import { URI_SERVER } from "../api.js";
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 import BackButton from "./BackButton.vue";
@@ -111,8 +111,8 @@ export default {
     };
   },
   async beforeDestroy() {
-   
-    if (!this.successExit) { console.log("deletting");
+    if (!this.successExit) {
+      console.log("deletting");
       this.$store.commit("DELETE_ALL_ANIMALS");
     }
   },
@@ -121,18 +121,17 @@ export default {
       "Content-Type": "application/json",
       // 'Access-Control-Allow-Origin':'*',
     };
-    try{ 
+    try {
       var { data } = await axios.get(
-      `${URI_SERVER}/api/get_mails`,
+        `${URI_SERVER}/api/get_mails`,
 
-      {
-        headers: headers,
-      }
-    );
-    }catch(e){
-      console.log("mail",e)
+        {
+          headers: headers,
+        }
+      );
+    } catch (e) {
+      console.log("mail", e);
     }
-    
 
     this.usedMails = data.map((el) => {
       return el["mail"];
@@ -140,11 +139,11 @@ export default {
 
     if (this.startComponentName) {
       if (this.startComponentName == "ProfileRegistration") {
-        console.log("city to ProfReg",this.city)
+        console.log("city to ProfReg", this.city);
         this.currentPropsValue = {
           usedMails: this.usedMails,
           selectedCity: this.selectedCity,
-          city: this.city
+          city: this.city,
         };
         this.currentComponent = this.startComponentName;
       }
@@ -164,7 +163,7 @@ export default {
         this.currentPropsValue = {
           usedMails: this.usedMails,
           selectedCity: this.selectedCity,
-          city:this.city
+          city: this.city,
         };
       }
       if (val == "AnimalRegistration") {
@@ -177,9 +176,8 @@ export default {
   computed: {},
   methods: {
     signIn(loginForm) {
-      this.successExit=true;
-      this.$emit('signIn',loginForm)
-
+      this.successExit = true;
+      this.$emit("signIn", loginForm);
     },
     sendAnimalFormToVuex() {
       this.$emit("sendAnimalFormToVuex", this.animalForm);
@@ -234,9 +232,7 @@ export default {
     },
     animalToData(animalForm) {
       Object.keys(animalForm).forEach((key) => {
-        
-          this.animalForm[key] = animalForm[key];
-        
+        this.animalForm[key] = animalForm[key];
       });
       this.animalForm.id = uuidv4();
       this.animalForm.owner = this.regForm.id;
@@ -254,7 +250,8 @@ export default {
     },
     back() {
       if (this.currentComponent == "AnimalRegistration") {
-        this.$refs.AnimalRegistration.currentPartForm > 1&& !this.$refs.AnimalRegistration.notHaveAnimal
+        this.$refs.AnimalRegistration.currentPartForm > 1 &&
+        !this.$refs.AnimalRegistration.notHaveAnimal
           ? this.$refs.AnimalRegistration.currentPartForm--
           : (this.currentComponent = "ProfileRegistration");
       } else {
@@ -280,11 +277,34 @@ export default {
   position: relative;
   width: 100vw;
   height: 100vh;
+  p {
+  font-family: "Amatic SC";
+  font-size: max(2rem, 3vw);
+  font-style: normal;
+  font-weight: 900;
+  // line-height: 45px;
+  letter-spacing: 0em;
+  text-align: left;
+
+  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
+    0px 4px 4px rgba(0, 0, 0, 0.25);
+  transform: matrix(1, 0, 0, 1, 0, 0);
 }
-.registration_title {
-  text-shadow: 0px 5px 5px rgba(0, 0, 0, 0.25);
+
 }
+
 .registration {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  /* border: 2px solid; */
+  width: 100%;
+  height: 100%;
+
+  text-align: center;
+  overflow: hidden;
+  position: relative;
   background: url("../assets/catreg.svg"), url("../assets/dogreg.svg");
   background-repeat: no-repeat, no-repeat;
   background-position: left bottom, right bottom;
@@ -308,33 +328,7 @@ export default {
       bottom left -1rem;
   }
 }
-.main p {
-  font-family: "Amatic SC";
-  font-size: max(2rem, 3vw);
-  font-style: normal;
-  font-weight: 900;
-  // line-height: 45px;
-  letter-spacing: 0em;
-  text-align: left;
 
-  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
-    0px 4px 4px rgba(0, 0, 0, 0.25);
-  transform: matrix(1, 0, 0, 1, 0, 0);
-}
-
-.registration {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  align-items: center;
-  /* border: 2px solid; */
-  width: 100%;
-  height: 100%;
-
-  text-align: center;
-  overflow: hidden;
-  position: relative;
-}
 .registration-title {
   width: 100vw;
   display: flex;
@@ -342,6 +336,7 @@ export default {
   justify-content: space-between;
   align-items: center;
   transition: all 0.3s;
+   text-shadow: 0px 5px 5px rgba(0, 0, 0, 0.25);
   @media screen and (max-height: 600px) {
     max-height: 4rem;
   }
@@ -364,157 +359,5 @@ export default {
   font-size: 1.7em;
 }
 
-.regwindow {
-  background: url("../assets/cover1.png");
-  background-position: center;
-  background-size: cover;
-  overflow: hidden;
-  min-width: 40vw;
-  min-height: 50vh;
-  border: 2px solid;
-  border-radius: 8em 0em 8em 0em;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  align-items: center;
-  box-shadow: 5px 7px rgb(100, 100, 22);
-  opacity: 0.9;
-  transition: all 0.3s;
-  font-size: 1.2em;
-  /* padding: 2em 2em; */
-}
 
-.forbutton {
-  display: flex;
-  flex-direction: row;
-  width: 70%;
-  justify-content: space-between;
-  align-items: center;
-}
-.forinput {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  align-items: flex-start;
-  height: 50%;
-  font-size: 2em;
-  font: bold oblique large fantasy;
-  text-shadow: 5px 5px 10px rgb(49, 42, 42);
-}
-
-.registration-title > p {
-  font-size: 3em;
-  height: 1fr;
-  /* box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); */
-
-  /* flex: auto 0 50%; */
-}
-input,
-select {
-  width: 12em;
-  height: 1em;
-  background: #ffffff;
-  opacity: 0.7;
-  border: 1px solid #000000;
-  box-sizing: border-box;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  border-radius: 10px;
-  text-align: center !important;
-  font-family: Amatic SC;
-  font-style: normal;
-  font-weight: 900;
-  font-size: 1em;
-  line-height: 28px;
-  align-content: center;
-  /* identical to box height */
-  z-index: 100;
-  color: rgba(0, 0, 0, 1);
-  transition: all 0.5s;
-}
-input:hover,
-select:hover {
-  font-size: 1.1em;
-  height: 1em;
-}
-option {
-  background: #ffffff;
-  border: 1px solid #000000;
-  box-sizing: border-box;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.75);
-  border-radius: 20px;
-  font-size: 0.7em;
-}
-.forinput input {
-  width: 13em;
-  height: 2rem;
-  transition: all 0.6s;
-}
-.forinput input:hover {
-  width: 14em;
-  height: 2.1rem;
-}
-button {
-  display: flex;
-  justify-content: center;
-  width: 11rem;
-  height: 3rem;
-  border: 1px solid #000000;
-  box-sizing: border-box;
-  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
-  border-radius: 25px 0px;
-  font-family: Amatic SC;
-  font-style: normal;
-  font-weight: bold;
-  font-size: 3rem;
-  line-height: 61px;
-  align-items: center;
-  text-align: center;
-  background: transparent;
-  margin-top: 1.5rem;
-  cursor: pointer;
-  color: #000000;
-}
-.registration-user .next-btn {
-  margin-top: 1rem;
-}
-
-.regwindow:hover {
-  opacity: 1;
-  box-shadow: 7px 9px rgb(100, 100, 22);
-}
-@keyframes shake {
-  10%,
-  90% {
-    transform: translate3d(-1px, 0, 0);
-  }
-
-  20%,
-  80% {
-    transform: translate3d(2px, 0, 0);
-  }
-
-  30%,
-  50%,
-  70% {
-    transform: translate3d(-4px, 0, 0);
-  }
-
-  40%,
-  60% {
-    transform: translate3d(4px, 0, 0);
-  }
-}
-button:hover {
-  /* box-shadow: 7px 12px; */
-  animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite;
-  border: 1px solid #000000;
-  /* box-sizing: border-box; */
-  filter: drop-shadow(0px 4px 4px #00e04c) drop-shadow(0px 4px 4px #09461a)
-    drop-shadow(0px 4px 4px #074110);
-
-  border-radius: 25px 0px;
-}
-button:active {
-  box-shadow: 4px 8px rgb(100, 100, 22);
-}
 </style>
