@@ -278,7 +278,13 @@ export default {
     },
     async updateUser() {
       this.$store.dispatch("UPDATE_PROFILE", this.user.profile);
+      this.user.animals[0]?this.$store.dispatch("UPDATE_ALL_ANIMALS", this.user.animals):null;
+
       console.log("userupdated", this.user);
+    },
+    async updateAnimal(animalIndex) {
+      this.$store.dispatch("UPDATE_ANIMAL", this.user.animals[animalIndex]);
+      console.log("animalupdated", this.user);
     },
     async getLocation() {
       return new Promise((resolve, reject) => {

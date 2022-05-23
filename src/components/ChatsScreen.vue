@@ -4,8 +4,8 @@
       <template #content>
         <chat-modal
           ref="chat"
-          :name="opponentUser.profile.name"
-          :idOpponent="opponentUser.profile.id"
+          :name="opponentUser.name"
+          :idOpponent="opponentUser.id"
           :chat="chatData"
           :idSelf="selfUser.profile.id"
           :incommingMessage="incommingMessageToChat"
@@ -17,36 +17,50 @@
     <div
       class="chats_block_chat"
       v-for="chat in realAllChats"
-      :key="chat._id"
-      @click="openChat(chat.chatId)"
-      v-show="chat.messages.length" @mouseleave="deleteConfirmation=false"
+      :key="chat && chat._id "
+      @click="openChat(chat&&chat.chatId)"
+      v-show="chat&&chat.messages&&chat.messages.length"
+      @mouseleave="deleteConfirmation = false"
     >
-      <img
+      <!-- <img
         class="chats_block_chat__photo"
         v-if="showUser(chat.chatId) && showUser(chat.chatId).photo"
         width="50"
         height="50"
         :src="showUser(chat.chatId) && showUser(chat.chatId).photo"
         name="0"
-      />
+      /> -->
       <div class="chats_block_chat__title">
-        {{ showUser(chat.chatId) && showUser(chat.chatId).name }} хозяин
-        {{ showUser(chat.chatId) && showUser(chat.chatId).animal }}
+       Чат с {{ showUser(chat && chat.chatId) && showUser(chat.chatId).name }} 
+        {{ showUser(chat&&chat.chatId) && showUser(chat.chatId).animal }}
       </div>
       <div
         class="chats_block_chat__new"
         v-show="newMessage(chat.chatId) || newestChat(chat)"
       >
-       <p> {{ newMessage(chat.chatId) || newestChat(chat)
-        }}</p><img src="../assets/message.svg" alt="" /> <p> Новое сообщение</p>
+        <p>{{ newMessage(chat.chatId) || newestChat(chat) }}</p>
+        <img  src="../assets/message.svg" alt="" />
+        <p>Новое сообщение</p>
       </div>
-     
-      <div class="chats_block__delete"  @click.stop="deleteConfirmation=!deleteConfirmation"> 
+
+      <div
+        class="chats_block__delete"
+        @click.stop="deleteConfirmation = !deleteConfirmation"
+      >
         <div class="chats_block__notice">
-        <div v-if="!deleteConfirmation"> Удалить чат с {{ showUser(chat.chatId) && showUser(chat.chatId).name }}</div>
-          <div class="notice__alarm" v-if="deleteConfirmation"> Вы уверены? <div class="notice__buttons"><button @click.stop="deleteChat(chat.chatId)">Да</button><button>Нет</button></div></div>
-      </div>
-        <img src="../assets/trash.svg" alt="" />
+          <div v-if="!deleteConfirmation">
+            Удалить чат с
+            {{ showUser(chat.chatId) && showUser(chat.chatId).name }}
+          </div>
+          <div class="notice__alarm" v-if="deleteConfirmation">
+            Вы уверены?
+            <div class="notice__buttons">
+              <button @click.stop="deleteChat(chat.chatId)">Да</button
+              ><button>Нет</button>
+            </div>
+          </div>
+        </div>
+        <img  src="../assets/trash.svg" alt="" />
       </div>
     </div>
   </div>
@@ -54,7 +68,7 @@
 <script>
 import Modal from "./Modal.vue";
 import ChatModal from "./ChatModal.vue";
-
+import { URI_SERVER } from "../api.js";
 // import ChatFull from "../ChatFull.vue";
 export default {
   components: { Modal, ChatModal },
@@ -63,12 +77,12 @@ export default {
   props: { selfUser: { type: Object }, pusher: { type: Object } },
   data() {
     return {
-      allChats: [],
-      realAllChats: [],
-      oldChatsIds: [],
-      chatData: null,
+      allChats: [],//chats in user(self)
+      realAllChats: [],//all chats which user(self) included
+      oldChatsIds: [],//chats id from allChats
+      chatData: null,//
       opponentUser: { profile: { name: null, id: null } },
-      deleteConfirmation:false,
+      deleteConfirmation: false,
       opponentUsers: [],
       incommingMessages: [],
       countIncommingMessages: null,
@@ -76,31 +90,34 @@ export default {
     };
   },
   methods: {
-    async deleteChat(chatId){
-      await fetch("http://localhost:5000/api/chat/delete_chat", {
+    async deleteChat(chatId) {
+      await fetch(`${URI_SERVER}/api/chat/delete_chat`, {
         method: "POST",
         body: JSON.stringify({ chatId: chatId }),
         headers: {
           "content-type": "application/json",
         },
       });
-      let payload = this.selfUser.chats.filter(c=>c.chatId!=chatId);
-    
+      let payload = [...this.selfUser.profile.chats.filter(
+        (c) => c.chatId != chatId
+      )];
+      // let payload = this.selfUser.profile.chats
       payload = [...new Set(payload)];
 
-      if (payload != this.selfUser.chats) {
-      
-        this.$store.commit("SAVE_USER", { chats: payload });
+      if (JSON.stringify(payload) !== JSON.stringify(this.selfUser.profile.chats)) {
+        this.$store.commit("SAVE_PROFILE", { chats: payload });
         this.$emit("updateUser", null);
         console.log("user new", this.selfUser);
       }
-      this.realAllChats=this.realAllChats.filter(c=>c.chatId!=chatId);
-       this.allChats=this.allChats.filter(c=>c.chatId!=chatId);
-        this.oldChatsIds=this.oldChatsIds.filter(c=>c.chatId!=chatId);
-          console.log("opponentUsers1",chatId,this.opponentUsers);
-         this.opponentUsers=this.opponentUsers.filter(c=>!chatId.split('#').includes(c.profile.id));
-           console.log("opponentUsers2",chatId.split('#'),this.opponentUsers);
-           this.deleteConfirmation=false
+      this.realAllChats = this.realAllChats.filter((c) => c.chatId != chatId);
+      this.allChats = this.allChats.filter((c) => c.chatId != chatId);
+      this.oldChatsIds = this.oldChatsIds.filter((c) => c.chatId != chatId);
+      console.log("opponentUsers1", chatId, this.opponentUsers);
+      this.opponentUsers = this.opponentUsers.filter(
+        (c) => !chatId.split("#").includes(c.id)
+      );
+      console.log("opponentUsers2", chatId.split("#"), this.opponentUsers);
+      this.deleteConfirmation = false;
     },
     showUser(chatId) {
       if (this.opponentUsers.length == 0) {
@@ -110,13 +127,13 @@ export default {
         .split("#")
         .filter((i) => i !== this.selfUser?.profile?.id)[0];
       // console.log('id',id)
-      let result = this.opponentUsers.filter((el) => el.profile?.id == id);
+      let result = this.opponentUsers.filter((el) => el.id == id);
       result = result[0];
       // console.log("res", result);
       return {
-        photo: `http://localhost:5000/${result?.photoUrl[0]}`,
-        name: result?.profile?.name,
-        animal: result?.animal?.name,
+        // photo: `${URI_SERVER}/${result?.animals[0].photoUrl[0]}`,
+        name: result?.name,
+        // animal: result?.animal?.name,
       };
     },
     newMessage(chatId) {
@@ -145,7 +162,7 @@ export default {
     },
     async openChat(chatId) {
       this.$refs.chat.clearScreen();
-      const response = await fetch("http://localhost:5000/api/chat/get_chat", {
+      const response = await fetch(`${URI_SERVER}/api/chat/get_chat`, {
         method: "POST",
         body: JSON.stringify({ chatId: chatId }),
         headers: {
@@ -157,9 +174,9 @@ export default {
       const id = chatId
         .split("#")
         .filter((i) => i !== this.selfUser?.profile?.id)[0];
-      let result = this.opponentUsers.filter((el) => el.profile.id == id);
+      let result = this.opponentUsers.filter((el) => el.id == id);
       this.opponentUser = result[0];
-      // console.log("chatOpponent", this.opponentUser);
+      console.log("chatOpponent", this.opponentUser);
       //   this.$refs.chat.clearScreen();
       this.incommingMessages = this.incommingMessages.filter(
         (el) => el.from != id
@@ -168,10 +185,12 @@ export default {
 
       this.$refs.modalChat.openModal();
       ////get this into  function
-      let payload = this.selfUser.chats;
+      let payload = [...this.selfUser.profile.chats];
       payload.push(this.chatData.chatId);
+      console.log('OldchatsIds',this.oldChatsIds,'userSelfChats',this.selfUser.profile.chats,'payload',payload)
       payload = [...new Set(payload)];
       if (!this.oldChatsIds.includes(chatId)) {
+        console.log("not included");
         this.oldChatsIds.push(chatId);
       }
       if (payload != this.selfUser.chats) {
@@ -186,7 +205,7 @@ export default {
       const headers = {
         "Content-Type": "application/json",
       };
-      await fetch(`http://localhost:5000/api/message`, {
+      await fetch(`${URI_SERVER}/api/message`, {
         method: "POST",
         body: JSON.stringify({
           from: this.selfUser.profile.id,
@@ -206,16 +225,16 @@ export default {
         msg: value.msg,
       };
       await fetch(
-        `http://localhost:5000/api/chat/post_message`,
+        `${URI_SERVER}/api/chat/post_message`,
 
         { method: "POST", body: JSON.stringify(messageData), headers: headers }
       );
       // await sendPush( messageData)
-      let payload = this.selfUser.chats;
+      let payload = [...this.selfUser.profile.chats];
       payload.push(this.chatData.chatId);
       payload = [...new Set(payload)];
 
-      if (payload != this.selfUser.chats) {
+      if (JSON.stringify(payload) != JSON.stringify(this.selfUser.profile.chats)) {
         console.log("adding to user in new chat", payload);
         this.$store.commit("SAVE_USER", { chats: payload });
         this.$emit("updateUser", null);
@@ -223,7 +242,7 @@ export default {
       }
     },
     async makeNewChat(msg) {
-      let chat = await fetch("http://localhost:5000/api/chat/get_chat", {
+      let chat = await fetch(`${URI_SERVER}/api/chat/get_chat`, {
         method: "POST",
         body: JSON.stringify({
           chatId: `${this.selfUser.profile.id}#${msg.from}`,
@@ -232,7 +251,7 @@ export default {
           "content-type": "application/json",
         },
       });
-      let user = await fetch(`http://localhost:5000/api/get_user${msg.from}`, {
+      let user = await fetch(`${URI_SERVER}/api/get_user${msg.from}`, {
         method: "GET",
 
         headers: {
@@ -242,17 +261,17 @@ export default {
       chat = await chat.json();
       user = await user.json();
       // this.allChats.push(chat);
-       this.realAllChats.push(chat);
+      this.realAllChats.push(chat);
       this.opponentUsers.push(user);
-      console.log("opponent users",this.opponentUsers)
+      console.log("opponent users", this.opponentUsers);
     },
   },
   async mounted() {
     let usersIds = [];
-    let response = await fetch("http://localhost:5000/api/chat/get_chats", {
+    let response = await fetch(`${URI_SERVER}/api/chat/get_chats`, {
       method: "POST",
       body: JSON.stringify({
-        chats: this.selfUser.chats,
+        chats: this.selfUser.profile.chats,
         id: this.selfUser.profile.id,
       }),
       headers: {
@@ -260,10 +279,11 @@ export default {
       },
     });
     response = await response.json();
-    this.allChats = response.chats;//чаты у юзера
-    this.realAllChats = response.allChats;//все чаты с юзером
+    console.log("get_chats result", response);
+    this.allChats = response.chats; //чаты у юзера
+    this.realAllChats = response.allChats; //все чаты с юзером
     this.oldChatsIds = this.allChats.map((c) => c.chatId);
-    console.log("oldchats", this.oldChatsIds);
+
     const arrIdsChats = this.realAllChats.map((c) => c.chatId);
     arrIdsChats.forEach((el) => {
       let res = el
@@ -272,7 +292,7 @@ export default {
       usersIds.push(res);
     });
 
-    const data = await fetch("http://localhost:5000/api/get_users", {
+    const data = await fetch(`${URI_SERVER}/api/get_users`, {
       method: "POST",
       body: JSON.stringify({ users: usersIds }),
       headers: {
@@ -285,8 +305,9 @@ export default {
     // this.allChats=this.realAllChats
     console.log("length chats:", this.allChats, this.realAllChats);
     this.opponentUsers = await data.json();
+    console.log("opponentUsers", this.opponentUsers);
     this.pusher.bind("message", async (msg) => {
-      const usersIds = this.opponentUsers.map((el) => el.profile.id);
+      const usersIds = this.opponentUsers.map((el) => el.id);
       this.incommingMessages.push(msg);
       if (
         this.$refs?.modalChat?.isOpen === true &&
@@ -354,12 +375,13 @@ export default {
     }
   }
   &_chat__title {
+     font-size: max(2.8vw, 1.5rem);
     display: flex;
     flex-direction: column;
   }
   &_chat__new {
     display: flex;
-    
+
     justify-content: center;
     align-items: center;
     flex-direction: row;
@@ -370,12 +392,14 @@ export default {
     opacity: 0.9;
     margin-left: auto;
     margin-right: 25%;
-    p{
-       font-size:  max(1.8vw,2rem);
-       box-sizing: border-box;
-       padding: 0;
+    p {
+      font-size: max(1.9vw, 1rem);
+      box-sizing: border-box;
+      padding: 0;
     }
     img {
+      width:max(2vw, 1rem);
+      height:max(2vw, 1rem);
       margin-top: 0.5rem;
     }
     img:hover {
@@ -393,51 +417,60 @@ export default {
   border-radius: 5px 5px 5px 5px;
   display: flex;
   position: absolute;
-  left: -17rem;
- 
+  left: 50%;
+  transform:translateX(-50%);
+  // 
+  top:-1rem;
+  height:auto;
+  width:auto;
   z-index: 0;
   background-color: #f6f2ac;
-  font-size: 2rem;
+  font-size: max(1vw, 1rem);
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
     0px 4px 4px rgba(0, 0, 0, 0.25);
   opacity: 0;
   transition: 0.7s;
-  padding: 0.2rem 0.5rem 0.2rem 0.5rem;
+  padding: 0.2rem 0.5rem 0.2rem 0.5rem; 
+  @media screen and (orientation: portrait){
+    transform:translateX(-75%);
+  }
+ 
  
 }
-.notice__alarm{
+.notice__alarm {
   display: flex;
   // flex-direction: column;
   justify-content: center;
   align-items: center;
-   gap:0.5rem;
- 
+  gap: 0.5rem;
+
   // position: absolute;
   // width:3rem;
-  
 }
-.notice__buttons{
+.notice__buttons {
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  button{
+  button {
     border-radius: 5px;
-    width:3.5rem;
-    height: 2rem;
+    width: max(3.5vw,1.5rem);
+    height: auto;
     display: flex;
     justify-content: center;
     align-items: center;
-  
-    font:inherit;  
-    font-size: 1.5rem;
-    &:hover{ animation: shake 0.72s cubic-bezier(0.06, 0.02, 0.08, 0.07) infinite;}
+
+    font: inherit;
+    font-size: max(1.8vw, 1rem);
+    &:hover {
+      animation: shake 0.72s cubic-bezier(0.06, 0.02, 0.08, 0.07) infinite;
+    }
   }
 }
 .chats_block__delete {
   background-color: rgba(9, 112, 7, 0.55);
-  width: 2.5rem;
-  height: 3rem;
+  width: max(2.2vw,2rem);
+  height: max(50%,3rem);
   border-radius: 5px 5px 5px 5px;
   display: flex;
   position: absolute;
@@ -445,26 +478,39 @@ export default {
   opacity: 0.6;
   transition: all 0.3s;
   border: 0.3px solid black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
     0px 4px 4px rgba(0, 0, 0, 0.25);
 
+  @media screen and (orientation: portrait){
+    height: 1.7rem;
+    width:1.4rem;
+  }
+   @media screen and (orientation: portrait),(max-height:600px){
+    height: 1.7rem;
+    width:1.4rem;
+  }
+  
   &:hover {
     text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.5),
       10px 10px 4px rgba(9, 112, 7, 0.75);
     opacity: 0.9;
     filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.5))
       drop-shadow(10px 10px 4px rgba(9, 112, 7, 0.75));
-      
-   
-   
-   
   }
-  &:hover .chats_block__notice{
+  &:hover .chats_block__notice {
     opacity: 1;
     z-index: 10;
   }
+  img{
+    width:auto;
+     height:90%;
+  }
 }
+ 
 @keyframes shake {
   10%,
   90% {

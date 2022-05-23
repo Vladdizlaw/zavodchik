@@ -2,8 +2,10 @@
   <div
     class="wrapper"
     :class="{
-      dog: user.animals[0].typeAnimal == 'dog',
-      cat: user.animals[0].typeAnimal == 'cat',
+      dog:
+        !user.animals[0] ||
+        (user.animals[0] && user.animals[currentAnimal].typeAnimal == 'dog'),
+      cat: user.animals[0] && user.animals[currentAnimal].typeAnimal == 'cat',
     }"
   >
     <Modal ref="supportModal">
@@ -37,7 +39,9 @@
       <div class="main">
         <div class="main-menu">
           <p @click="state = 'contacts'">Контактные данные</p>
-          <p @click="state = 'animal'">Данные животного</p>
+          <p v-if="user.animals[0]" @click="state = 'animal'">
+            Данные животного
+          </p>
           <p @click="state = 'chats'">Мои чаты</p>
           <p @click="state = 'noticed'">Настроить уведомления</p>
           <p @click="state = 'purchase'">Оплата</p>
@@ -191,51 +195,71 @@
           <save-changes-button @saveProfile="save" />
         </template>
       </Header>
-      <div class="main">
+      <div class="main-animal">
         <div class="wrapper-left__animal">
           <div class="animal__input">
             <p>Вид</p>
-            <select v-model="user.animal.typeAnimal">
+            <select v-model="user.animals[currentAnimal].typeAnimal">
               <option value="cat">Кошка </option>
               <option value="dog">Собака</option>
             </select>
           </div>
           <div class="animal__input">
             <p>Пол</p>
-            <select v-model="user.animal.male">
+            <select v-model="user.animals[currentAnimal].male">
               <option value="male">мужской </option>
               <option value="female">Женский</option>
             </select>
           </div>
           <div class="animal__input">
             <p>Возраст</p>
-            <input type="number" v-model="user.animal.age" />
+            <input type="number" v-model="user.animals[currentAnimal].age" />
           </div>
           <div class="animal__input">
             <p>Кличка</p>
-            <input type="text" v-model="user.animal.name" />
+            <input type="text" v-model="user.animals[currentAnimal].name" />
           </div>
           <div class="animal__input">
             <p>Прививки</p>
-            <input type="text" v-model="user.animal.vaccination" />
+            <input
+              type="text"
+              v-model="user.animals[currentAnimal].vaccination"
+            />
           </div>
           <div class="animal__input">
-            <p>Возможный период случки</p>
-            <input type="date" v-model="user.animal.dateMating" />
+            <p>Новый период случки</p>
+            <input
+              type="date"
+              v-model="user.animals[currentAnimal].dateMating"
+            />
           </div>
         </div>
         <div class="wrapper-right__animal">
           <div class="animal__input">
             <p>Окрас</p>
-            <input type="text" v-model="user.animal.color" />
+            <input type="text" v-model="user.animals[currentAnimal].color" />
           </div>
           <div class="animal__input">
             <p>Награды</p>
-            <input type="text" v-model="user.animal.awards" />
+            <input type="text" v-model="user.animals[currentAnimal].awards" />
           </div>
           <div class="animal__input">
             <p>Условия вязки</p>
-            <input type="text" v-model="user.animal.matingConditions" />
+            <input
+              type="text"
+              v-model="user.animals[currentAnimal].matingConditions"
+            />
+          </div>
+          <div class="animal__input" v-if="user.profile.animals.length > 1">
+            <p>Выбрать другое животное</p>
+            <select v-model="currentAnimal">
+              <option
+                v-for="(animalIndex, ind) in Object.keys(user.animals)"
+                :key="ind"
+                :value="animalIndex"
+                >{{ user.animals[animalIndex].name }}</option
+              >
+            </select>
           </div>
         </div>
       </div>
@@ -447,6 +471,7 @@ export default {
       noticeBreed: { value: false, mail: false, push: false },
       noticeMatingDate: { value: false, mail: false, push: false },
       msgToSupport: "",
+      currentAnimal: 0,
     };
   },
   methods: {
@@ -471,6 +496,7 @@ export default {
       this.$refs.messageTel.style.opacity = "0.8";
     },
     hoodMessageHide() {
+      console.log("hide", this.$refs.messageHood.style);
       this.$refs.messageHood.style.opacity = "0";
     },
     telMessageHide() {
@@ -530,6 +556,7 @@ export default {
         this.noticeMatingDate.push = false;
       }
     },
+    
   },
 
   computed: {},
@@ -538,6 +565,9 @@ export default {
     this.noticeMatingDate = this.user?.profile.noticeMessages;
     this.seenHoodFlag = this.user.profile.seenFlags?.seenHoodFlag;
     this.seenTelFlag = this.user.profile.seenFlags?.seenTelFlag;
+    if(this.startState){
+      this.state=this.startState
+    }
   },
 };
 </script>
@@ -556,7 +586,7 @@ export default {
 .dog {
   background: url("../assets/cover_dog_acc.svg"), url("../assets/cover_dog.png");
   background-position: center, center;
-  background-size: 70vh, cover;
+  background-size: 100vh, cover;
   background-repeat: no-repeat, no-repeat;
 }
 .cat {
@@ -701,7 +731,9 @@ export default {
   flex-wrap: nowrap;
   position: relative;
 }
-.settings-contacts {
+
+.settings-contacts,
+.settings-animal,.settings-chats {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -729,7 +761,7 @@ export default {
     }
     .wrapper-right {
       @extend %flex-type;
-       margin-left: 5vw;
+      margin-left: 5vw;
       width: 70%;
       height: 100%;
       input,
@@ -748,7 +780,7 @@ export default {
         text-shadow: $textshadow;
         font-size: max(1rem, 1.4vw);
         transition: 0.3s;
-        opacity: 0.8;
+        // opacity: 0.8;
         &:focus {
           transform: scale(110%);
           box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.75);
@@ -766,6 +798,9 @@ export default {
         &:hover {
           img {
             transform: translateX(1.3rem);
+            @media screen and (orientation: portrait) {
+              transform: translateX(0.1rem);
+            }
           }
         }
       }
@@ -782,23 +817,27 @@ export default {
         box-sizing: border-box;
         border-radius: 10px;
         font-size: 1.3rem;
-        width:fit-content;
-        padding: 0 1rem 0 1rem;
+        width: fit-content;
+        padding: 0 0.5rem 0 0.5rem;
         display: flex;
         justify-content: center;
         align-items: center;
         max-height: 3rem;
         transition: 0.3s;
-        position: absolute;
-        right:-18vw;
+        position: relative;
+        // right:-18vw;
         opacity: 0;
         transition: 0.3s;
-        @media screen and (orientation: portrait){
-          
-          top:-6vh;
-          left: 0;
+
+        @media screen and (orientation: portrait) {
+          border-radius: 10px 10px -20rem 10px;
+
+          position: absolute;
+          top: 0%;
+          left: 50%;
+          transform:translate(-60%,-150%)
         }
- 
+
         p {
           margin-block-end: 0rem;
           margin-block-start: 0rem;
@@ -822,12 +861,6 @@ export default {
     }
   }
 
-  &__animal {
-    margin-left: 5rem;
-    height: 100%;
-    @extend %flex-type;
-    width: 50%;
-  }
   &_noticed {
     @extend %flex-type;
     align-items: center;
@@ -836,29 +869,88 @@ export default {
     width: 100%;
   }
 }
+.main-animal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100%;
+  overflow: auto;
+  // background-color: transparent;
+  &::-webkit-scrollbar {
+    width: 10px; // manage scrollbar width here
+  }
+  &::-webkit-scrollbar {
+    background: transparent; // manage scrollbar background color here
+  }
+  &::-moz-scrollbar {
+    width: 10px; // manage scrollbar width here
+  }
+  &::-moz-scrollbar {
+    background: transparent; // manage scrollbar background color here
+  }
+  @media screen and (orientation: portrait) {
+    flex-direction: column;
+    height: 100%;
+    padding-top:2rem;
+  }
+  @media screen and (max-height: 600px) {
+    padding-top:2rem;
 
+  }
+}
+.wrapper-left__animal,
+.wrapper-right__animal {
+  margin-left: 5rem;
+  height: 100%;
+  @extend %flex-type;
+  width: 50%;
+  // overflow:auto;
+  @media screen and (orientation: portrait) {
+    height: 50%;
+    width: 100%;
+   
+  }
+   @media screen and (max-height: 600px) {
+   margin-left:1.5rem;
+   gap:0.5rem;
+    
+  }
+  p {
+    margin-block-end: 0rem;
+    margin-block-start: 0rem;
+    font-size: max(1.9vw, 1.4rem);
+  }
+}
 .animal__input {
   margin-top: -2.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 4rem;
+  gap: max(4vw, 2rem);
   width: 40vw;
+  @media screen and (orientation: portrait) {
+    width: 80%;
+  }
+  select,
+  input {
+    width: max(12rem, 25vw);
+    height: max(1.4rem, 3.5vh);
+    background: rgba(255, 255, 255, 0.3);
+    border: 1px solid #000000;
+    box-sizing: border-box;
+    box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+    padding: 0.1rem;
+    text-align: center;
+    text-justify: center;
+    font-family: $font-family;
+    text-shadow: $textshadow;
+    font-size: max(1rem, 1.4vw);
+    transition: 0.3s;
+  }
 }
-.animal__input > select,
-.animal__input > input {
-  font: inherit;
-  text-align: center;
-  background: rgba(255, 255, 255, 0.5);
-  border: 1px solid #000000;
-  box-sizing: border-box;
-  border-radius: 10px;
-  height: 2.8rem;
-  width: 25rem;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
-    0px 4px 4px rgba(0, 0, 0, 0.25);
-  transition: all 0.3s;
-}
+
 .animal__input > input[type="date"] {
   width: 13.5rem;
 }

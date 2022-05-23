@@ -31,8 +31,9 @@ export default {
             })
           : (state[key] = null);
 
-        console.log("delete animal", key);
-      });
+       
+      }); 
+      console.log(" animal deleted");
     },
   },
   actions: {

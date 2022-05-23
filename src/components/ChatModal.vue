@@ -39,17 +39,17 @@ export default {
   watch: {
     chat(val) {
       console.log("chat modified", val.messages);
-      if (val.messages?.length > 0) {
+      if (val.messages?.length > 0) { //Show less than 100 mesages
         if (val.messages?.length > 100) {
           val.messages = val.messages.slice(-100);
           console.log("chat more than 100", val.messages);
         }
         val.messages.forEach((msg) => {
           if (msg.author == this.idSelf) {
-            this.createSelfMessage(msg.value);
+            this.createSelfMessage(msg.value); //render self messages
           }
           if (msg.author == this.idOpponent) {
-            this.createOpponentMessage(msg.value);
+            this.createOpponentMessage(msg.value); //render opponent messages
           }
         });
       }
@@ -215,7 +215,7 @@ export default {
     width: 90%;
     height: 95%;
     border-radius: 10px;
-    background-color: white;
+    background-color: rgb(251, 255, 249);
     transition: 0.3s;
     font-size: max(1.5vw, 1rem);
     padding: 0.5rem 0rem 0.5rem 1rem;
@@ -261,6 +261,7 @@ export default {
       
     }
     &_input {
+      background-color: rgb(251, 255, 249);
         border: 0.1px solid #000000;
       width: 60%;
       padding: 0.5rem 0.5rem 0.5rem 0.5rem;

@@ -95,18 +95,19 @@ export default {
       this.$emit("updateUser", null);
     },
 
-    settings() {
+    settings(val) {
       this.$router.push({
         name: "settings",
         params: {
           user: this.user,
           selectedCity: this.selectedCity,
           pusher: this.pusher,
+          startState: val && val,
         },
       });
     },
     toChatScreen() {
-      
+      this.settings('chats')
     },
     toSearchScreen() {
       console.log("click");

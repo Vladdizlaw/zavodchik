@@ -35,9 +35,10 @@ export default {
         if (!(key == "_id" || key == "__v")) {
           state[key] = payload[key];
 
-          console.log("save profile -", key);
+        
         }
       });
+        console.log("profile saved");
     },
     DELETE_PROFILE: (state) => {
       Object.keys(state).forEach((key) => {
@@ -47,8 +48,9 @@ export default {
             })
           : (state[key] = null);
 
-        console.log("delete user", key);
+       
       });
+       console.log("user deleted");
     },
   },
   actions: {

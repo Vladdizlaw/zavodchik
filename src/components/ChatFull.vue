@@ -77,7 +77,7 @@ export default {
       chatCurrent: null,
       idCurrentChat: null,
       opponentUser: {
-        profile: { name: null, id: null, animals: [] },
+        profile: { name: null, id: null, animals: [] }, //stub
         animals: {},
       },
       incommingMessage: null,
@@ -143,12 +143,17 @@ export default {
         headers: headers,
       });
       // await sendPush( messageData)
-      console.log("userSelf and props", this.userSelf, this.$props);
-      let payload = this.userSelf.chats;
+
+      let payload = JSON.parse(JSON.stringify(this.userSelf.profile.chats));
       payload && payload.push(this.idCurrentChat);
       payload = [...new Set(payload)];
-
-      if (payload != this.userSelf.chats) {
+      console.log(
+        "userSelfChats ----",
+        this.userSelf.profile.chats,
+        "payload ----",
+        payload
+      );
+      if (JSON.stringify(payload) !== JSON.stringify(this.userSelf.profile.chats)) {
         console.log("adding to user", payload);
         this.$store.commit("SAVE_PROFILE", { chats: payload });
         this.$emit("updateUser", null);
@@ -157,8 +162,8 @@ export default {
     },
     async startChat() {
       const val = this.messageBuffer.shift();
-      this.messageBuffer=this.messageBuffer.filter(m=>m.from!=val.from);
-       console.log("undownloaded opponent", this.opponentUser);
+      this.messageBuffer = this.messageBuffer.filter((m) => m.from != val.from);
+      console.log("undownloaded opponent", this.opponentUser);
       try {
         const { data } = await Axios.get(
           `${URI_SERVER}/api/get_full_user${val.from}`
@@ -174,9 +179,9 @@ export default {
       await this.openChat(`${this.userSelf.profile.id}#${val.from}`);
 
       this.newMessage = false;
-      let payload = this.userSelf.profile.chats;
-      payload.push(`${this.userSelf.profile.id}#${val.from}`);
-      payload = [...new Set(payload)];
+      // let payload = this.userSelf.profile.chats;
+      // payload.push(`${this.userSelf.profile.id}#${val.from}`);
+      // payload = [...new Set(payload)];
       // console.log("payload", payload, this.userSelf.chats);
     },
   },
@@ -188,7 +193,7 @@ export default {
         this.opponentUser?.profile.id != msg.from
       ) {
         console.log(
-          "data incomming in close not opponent",
+          "data incomming in close not current opponent",
           msg,
           this.opponentUser
         );
@@ -197,12 +202,12 @@ export default {
         this.messageBuffer.push(msg);
         this.incommingMessage = msg;
       }
-       if (
+      if (
         this.$refs?.modalChat?.isOpen === false &&
         this.opponentUser?.profile.id == msg.from
       ) {
         console.log(
-          "data incomming in close opponent",
+          "data incomming in close current opponent",
           msg,
           this.opponentUser
         );
@@ -217,7 +222,7 @@ export default {
         this.opponentUser?.profile.id != msg.from
       ) {
         console.log(
-          "data incomming in open not opponent",
+          "data incomming in open not current opponent",
           msg,
           this.opponentUser
         );
@@ -231,7 +236,7 @@ export default {
         this.opponentUser.profile.id == msg.from
       ) {
         console.log(
-          "data incomming in open and opponent",
+          "data incomming in open and  current opponent",
           msg,
           this.opponentUser
         );
