@@ -13,9 +13,9 @@
         !Object.keys(user.animals).length,
     }"
   >
-    <Modal ref="modal">
+    <Modal ref="modal" v-touch:swipe.stop="showNextModal">
       <template #content>
-        <div class="modal_image">
+        <div class="modal_image" >
           <img :src="url" class="image" alt="view photo" />
         </div>
       </template>
@@ -344,6 +344,17 @@ export default {
       this.url = this.urls[e.target.name];
 
       await this.$refs.modal.openModal();
+    },
+    showNextModal(){
+      let index=this.urls.indexOf(this.url)
+     if (index>=0&&index<this.urls.length-1){
+       this.url=this.urls[++index]
+       return
+     }
+     if (index>=this.urls.length-1){
+       this.url= this.urls[0]
+        return
+     }
     },
 
     cancelModal() {
@@ -813,6 +824,7 @@ export default {
   align-items: center;
   border-radius: 10px;
   transition: all 0.4s;
+  z-index:100;
   box-shadow: 5px 6px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25);
   @media screen and (max-height: 800px) and (orientation: landscape) {
     max-width: fit-content;

@@ -1,9 +1,18 @@
 <template>
-  <div class="trial-block">
-    <p>До конца пробного периода</p>
-    <strong>осталось: {{ lastTrialTime }} дней</strong>
+<div class="wrapper">
+ <div class="trial-block" v-if="lastTrialTime>0">
+    <p>До конца подписки осталось:</p>
+    <strong> {{ lastTrialTime }} {{pluralize(lastTrialTime)}}</strong>
     <button @click="pay">Оплатить</button>
   </div>
+  <div class="trial-block" v-if="lastTrialTime<=0">
+    <p>Подписка закончилась</p>
+    <strong></strong>
+    <button @click="pay">Оплатить</button>
+  </div>
+
+</div>
+ 
 </template>
 <script>
 export default {
@@ -16,8 +25,22 @@ export default {
     pay() {
       this.$emit("pay", null);
     },
+     pluralize(day) {
+
+      const dictDay={
+        0:'дней',
+        1:'день',
+        2:'дня',
+        3:'дня',
+        4:'дня',
+        5:'дней'
+      }
+      return day>5?'дней':dictDay[day]
+    },
   },
   computed: {
+   
+
     lastTrialTime() {
       console.log('trial-block',Date(this.startTrial?.dateEnd),Date.now())
       const timestampNow = Date.now();

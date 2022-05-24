@@ -556,7 +556,6 @@ export default {
         this.noticeMatingDate.push = false;
       }
     },
-    
   },
 
   computed: {},
@@ -565,8 +564,8 @@ export default {
     this.noticeMatingDate = this.user?.profile.noticeMessages;
     this.seenHoodFlag = this.user.profile.seenFlags?.seenHoodFlag;
     this.seenTelFlag = this.user.profile.seenFlags?.seenTelFlag;
-    if(this.startState){
-      this.state=this.startState
+    if (this.startState) {
+      this.state = this.startState;
     }
   },
 };
@@ -673,10 +672,18 @@ export default {
   &_noticed {
     @extend %flex-type;
     align-items: center;
-    justify-content: space-between;
-    max-height: 80vh;
+    justify-content: center;
+    height: 100%;
     width: 100vw;
     position: relative;
+    overflow: auto;
+    user-select: none;
+    @media screen and (max-height: 500px){
+      height:auto;
+      line-height:0rem;
+
+    }
+
   }
 }
 .main-menu {
@@ -733,7 +740,9 @@ export default {
 }
 
 .settings-contacts,
-.settings-animal,.settings-chats {
+.settings-animal,
+.settings-chats,
+.settings-noticed {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -835,7 +844,7 @@ export default {
           position: absolute;
           top: 0%;
           left: 50%;
-          transform:translate(-60%,-150%)
+          transform: translate(-60%, -150%);
         }
 
         p {
@@ -852,21 +861,81 @@ export default {
         height: 100%;
         width: 50%;
       }
-      &_noticed {
-        @extend %flex-type;
-        align-items: center;
-        max-height: 50%;
-        width: 100%;
-      }
+    }
+  }
+}
+
+.wrapper-right_noticed,
+.wrapper-left_noticed {
+  @extend %flex-type;
+  display:flex;
+  align-items: center;
+  justify-content: center;
+  max-height: 50%;
+  width: 50%;
+  flex:0 1 content;
+  @media screen and (max-height: 500px){
+    height:auto;
+    width:90%;
+    justify-content: center;
+     align-items: center;
+  }
+  @media screen and (orientation: portrait){
+    width:80%;
+  }
+  .personal_data {
+    display: flex;
+    gap:1rem;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    font-size: max(2vw, 1.5rem);
+  }
+  .personal_data_inner {
+    display: flex;
+    width: 50%;
+    justify-content: start  ;
+    align-items: center;
+    font-size: max(1.5vw, 1rem);
+    gap:1rem;
+    transform:translateX(10%);
+    opacity: 0.5;
+  }
+  .personal_data_checkbox {
+    // margin-top: 2rem;
+    width: max(1.5vw, 1rem);
+    height: max(1.5vw, 1rem);
+    background: #ffffff;
+    opacity: 0.5;
+    border: 1px solid #000000;
+   margin: 0 0  0 0;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
+      0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+    transition: all 0.2s;
+    cursor: pointer;
+    // transform: translateY(50%);
+    &:hover {
+      transform: scale(110%);
     }
   }
 
-  &_noticed {
-    @extend %flex-type;
-    align-items: center;
-    justify-content: space-between;
-    max-height: 50%;
-    width: 100%;
+  .personal_data_text {
+    // width: 9em;
+    display: flex;
+    position: relative;
+    justify-content: center;
+    // max-height: 5.5rem;
+  }
+
+  .checked {
+    background: url("../assets/checked.svg");
+    background-position: center;
+    background-size: 90%;
+    background-repeat: no-repeat;
+  }
+  .enabled {
+    opacity: 1;
   }
 }
 .main-animal {
@@ -892,11 +961,10 @@ export default {
   @media screen and (orientation: portrait) {
     flex-direction: column;
     height: 100%;
-    padding-top:2rem;
+    padding-top: 2rem;
   }
   @media screen and (max-height: 600px) {
-    padding-top:2rem;
-
+    padding-top: 2rem;
   }
 }
 .wrapper-left__animal,
@@ -909,12 +977,10 @@ export default {
   @media screen and (orientation: portrait) {
     height: 50%;
     width: 100%;
-   
   }
-   @media screen and (max-height: 600px) {
-   margin-left:1.5rem;
-   gap:0.5rem;
-    
+  @media screen and (max-height: 600px) {
+    margin-left: 1.5rem;
+    gap: 0.5rem;
   }
   p {
     margin-block-end: 0rem;
@@ -955,40 +1021,6 @@ export default {
   width: 13.5rem;
 }
 
-.personal_data_checkbox {
-  margin-top: 2rem;
-  width: 1em;
-  height: 1em;
-  background: #ffffff;
-  opacity: 0.5;
-  border: 1px solid #000000;
-  // box-sizing: border-box;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
-    0px 4px 4px rgba(0, 0, 0, 0.25);
-  border-radius: 10px;
-  transition: all 0.2s;
-  cursor: pointer;
-}
-.personal_data_checkbox:hover {
-  width: 1.1em;
-  height: 1.1em;
-}
-.personal_data_text {
-  // width: 9em;
-  display: flex;
-  // position: relative;
-  height: 5.5rem;
-}
-
-.checked {
-  background: url("../assets/checked.svg");
-  background-position: center;
-  background-size: 90%;
-  background-repeat: no-repeat;
-}
-.enabled {
-  opacity: 1;
-}
 .modal-warning {
   width: 50vw;
   height: 100%;
@@ -1037,12 +1069,5 @@ export default {
         drop-shadow(10px 10px 4px rgba(4, 24, 4, 0.75));
     }
   }
-}
-
-.settings_common {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  height: 100%;
 }
 </style>

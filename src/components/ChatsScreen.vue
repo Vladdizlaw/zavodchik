@@ -17,29 +17,20 @@
     <div
       class="chats_block_chat"
       v-for="chat in realAllChats"
-      :key="chat && chat._id "
-      @click="openChat(chat&&chat.chatId)"
-      v-show="chat&&chat.messages&&chat.messages.length"
+      :key="chat && chat._id"
+      @click="openChat(chat && chat.chatId)"
+      v-show="chat && chat.messages && chat.messages.length"
       @mouseleave="deleteConfirmation = false"
     >
-      <!-- <img
-        class="chats_block_chat__photo"
-        v-if="showUser(chat.chatId) && showUser(chat.chatId).photo"
-        width="50"
-        height="50"
-        :src="showUser(chat.chatId) && showUser(chat.chatId).photo"
-        name="0"
-      /> -->
       <div class="chats_block_chat__title">
-       Чат с {{ showUser(chat && chat.chatId) && showUser(chat.chatId).name }} 
-        {{ showUser(chat&&chat.chatId) && showUser(chat.chatId).animal }}
+        Чат с {{ showUser(chat && chat.chatId) && showUser(chat.chatId).name }}
       </div>
       <div
         class="chats_block_chat__new"
         v-show="newMessage(chat.chatId) || newestChat(chat)"
       >
         <p>{{ newMessage(chat.chatId) || newestChat(chat) }}</p>
-        <img  src="../assets/message.svg" alt="" />
+        <img src="../assets/message.svg" alt="" />
         <p>Новое сообщение</p>
       </div>
 
@@ -60,7 +51,7 @@
             </div>
           </div>
         </div>
-        <img  src="../assets/trash.svg" alt="" />
+        <img src="../assets/trash.svg" alt="" />
       </div>
     </div>
   </div>
@@ -77,10 +68,10 @@ export default {
   props: { selfUser: { type: Object }, pusher: { type: Object } },
   data() {
     return {
-      allChats: [],//chats in user(self)
-      realAllChats: [],//all chats which user(self) included
-      oldChatsIds: [],//chats id from allChats
-      chatData: null,//
+      allChats: [], //chats in user(self)
+      realAllChats: [], //all chats which user(self) included
+      oldChatsIds: [], //chats id from allChats
+      chatData: null, //
       opponentUser: { profile: { name: null, id: null } },
       deleteConfirmation: false,
       opponentUsers: [],
@@ -98,13 +89,15 @@ export default {
           "content-type": "application/json",
         },
       });
-      let payload = [...this.selfUser.profile.chats.filter(
-        (c) => c.chatId != chatId
-      )];
+      let payload = [
+        ...this.selfUser.profile.chats.filter((c) => c.chatId != chatId),
+      ];
       // let payload = this.selfUser.profile.chats
       payload = [...new Set(payload)];
 
-      if (JSON.stringify(payload) !== JSON.stringify(this.selfUser.profile.chats)) {
+      if (
+        JSON.stringify(payload) !== JSON.stringify(this.selfUser.profile.chats)
+      ) {
         this.$store.commit("SAVE_PROFILE", { chats: payload });
         this.$emit("updateUser", null);
         console.log("user new", this.selfUser);
@@ -187,15 +180,23 @@ export default {
       ////get this into  function
       let payload = [...this.selfUser.profile.chats];
       payload.push(this.chatData.chatId);
-      console.log('OldchatsIds',this.oldChatsIds,'userSelfChats',this.selfUser.profile.chats,'payload',payload)
+     
       payload = [...new Set(payload)];
+       console.log(
+        "OldchatsIds",
+        this.oldChatsIds,
+        "userSelfChats",
+        this.selfUser.profile.chats,
+        "payload",
+        payload
+      );
       if (!this.oldChatsIds.includes(chatId)) {
         console.log("not included");
         this.oldChatsIds.push(chatId);
       }
-      if (payload != this.selfUser.chats) {
+      if (JSON.stringify(payload) !== JSON.stringify(this.selfUser.chats)) {
         console.log("adding to user in new chat", payload);
-        this.$store.commit("SAVE_USER", { chats: payload });
+        this.$store.commit("SAVE_PROFILE", { chats: payload });
         this.$emit("updateUser", null);
         console.log("user new", this.selfUser);
       }
@@ -234,7 +235,9 @@ export default {
       payload.push(this.chatData.chatId);
       payload = [...new Set(payload)];
 
-      if (JSON.stringify(payload) != JSON.stringify(this.selfUser.profile.chats)) {
+      if (
+        JSON.stringify(payload) != JSON.stringify(this.selfUser.profile.chats)
+      ) {
         console.log("adding to user in new chat", payload);
         this.$store.commit("SAVE_USER", { chats: payload });
         this.$emit("updateUser", null);
@@ -375,7 +378,7 @@ export default {
     }
   }
   &_chat__title {
-     font-size: max(2.8vw, 1.5rem);
+    font-size: max(2.8vw, 1.5rem);
     display: flex;
     flex-direction: column;
   }
@@ -398,8 +401,8 @@ export default {
       padding: 0;
     }
     img {
-      width:max(2vw, 1rem);
-      height:max(2vw, 1rem);
+      width: max(2vw, 1rem);
+      height: max(2vw, 1rem);
       margin-top: 0.5rem;
     }
     img:hover {
@@ -418,11 +421,11 @@ export default {
   display: flex;
   position: absolute;
   left: 50%;
-  transform:translateX(-50%);
-  // 
-  top:-1rem;
-  height:auto;
-  width:auto;
+  transform: translateX(-50%);
+  //
+  top: -1rem;
+  height: auto;
+  width: auto;
   z-index: 0;
   background-color: #f6f2ac;
   font-size: max(1vw, 1rem);
@@ -430,12 +433,10 @@ export default {
     0px 4px 4px rgba(0, 0, 0, 0.25);
   opacity: 0;
   transition: 0.7s;
-  padding: 0.2rem 0.5rem 0.2rem 0.5rem; 
-  @media screen and (orientation: portrait){
-    transform:translateX(-75%);
+  padding: 0.2rem 0.5rem 0.2rem 0.5rem;
+  @media screen and (orientation: portrait) {
+    transform: translateX(-75%);
   }
- 
- 
 }
 .notice__alarm {
   display: flex;
@@ -454,7 +455,7 @@ export default {
   align-items: center;
   button {
     border-radius: 5px;
-    width: max(3.5vw,1.5rem);
+    width: max(3.5vw, 1.5rem);
     height: auto;
     display: flex;
     justify-content: center;
@@ -469,8 +470,8 @@ export default {
 }
 .chats_block__delete {
   background-color: rgba(9, 112, 7, 0.55);
-  width: max(2.2vw,2rem);
-  height: max(50%,3rem);
+  width: max(2.2vw, 2rem);
+  height: max(50%, 3rem);
   border-radius: 5px 5px 5px 5px;
   display: flex;
   position: absolute;
@@ -481,19 +482,20 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  box-sizing: border-box;
 
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),
     0px 4px 4px rgba(0, 0, 0, 0.25);
 
-  @media screen and (orientation: portrait){
+  @media screen and (orientation: portrait) {
     height: 1.7rem;
-    width:1.4rem;
+    width: 1.4rem;
   }
-   @media screen and (orientation: portrait),(max-height:600px){
+  @media screen and (orientation: portrait), (max-height: 600px) {
     height: 1.7rem;
-    width:1.4rem;
+    width: 1.4rem;
   }
-  
+
   &:hover {
     text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.5),
       10px 10px 4px rgba(9, 112, 7, 0.75);
@@ -505,12 +507,13 @@ export default {
     opacity: 1;
     z-index: 10;
   }
-  img{
-    width:auto;
-     height:90%;
+  img {
+    max-width: 90%;
+    height: 90%;
+    padding-right:0.1rem;
   }
 }
- 
+
 @keyframes shake {
   10%,
   90% {

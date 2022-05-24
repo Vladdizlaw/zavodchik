@@ -73,6 +73,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 .modal {
+  user-select: none;
   position: absolute;
   background: rgba(235, 222, 42, 0.863),
     linear-gradient(to bottom, rgba(245, 246, 252, 0.52));
@@ -95,7 +96,7 @@ export default {
   display: flex;
   overflow: hidden;
   border-radius: 10px;
-  
+  will-change: auto;
   /* box-shadow: 8px 8px rgba(64, 65, 63, 0.55); */
   // transition: all 0.4s;
   // box-shadow: 5px 6px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25),

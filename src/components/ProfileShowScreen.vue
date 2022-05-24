@@ -1,5 +1,5 @@
 <template>
-  <profile-screen :user="showedUser" ref="profile">
+  <profile-screen :user="showedUser" ref="profile" v-touch:swipe.left.stop="previousProfile"  v-touch:swipe.right="nextProfile">
     <template #modalAnother>
       <Modal ref="modalChat">
         <template #content>

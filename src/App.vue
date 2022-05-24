@@ -81,6 +81,14 @@ export default {
     },
   },
   methods: {
+    collectCurrentMeta() {
+      return {
+        userId: this.user.profile.id,
+        lastEnteredTimes:  Date.now(),
+        // lastEnteredCoords: this.user.profile.location,
+        lastEnterUserAgent: navigator?.userAgent,
+      };
+    },
     async toggleFullscreen() {
       if (
         document.fullscreenElement ||
@@ -99,7 +107,7 @@ export default {
       }
     },
     getScreenOrientation() {
-      console.log( navigator)
+      console.log(navigator);
       const orient =
         screen.msOrientation ||
         (screen.orientation || screen.mozOrientation).type;
@@ -278,7 +286,9 @@ export default {
     },
     async updateUser() {
       this.$store.dispatch("UPDATE_PROFILE", this.user.profile);
-      this.user.animals[0]?this.$store.dispatch("UPDATE_ALL_ANIMALS", this.user.animals):null;
+      this.user.animals[0]
+        ? this.$store.dispatch("UPDATE_ALL_ANIMALS", this.user.animals)
+        : null;
 
       console.log("userupdated", this.user);
     },
@@ -308,6 +318,12 @@ export default {
 
         this.$store.commit("SAVE_PROFILE", {
           location: {
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+          },
+        });
+        this.$store.commit("SAVE_META", {
+          lastEnteredCoords: {
             latitude: location.coords.latitude,
             longitude: location.coords.longitude,
           },
@@ -484,7 +500,7 @@ export default {
     },
 
     async updateProfile(e) {
-      this.$store.commit("SAVE_USER_PROFILE", e.profile);
+      this.$store.commit("SAVE_PROFILE", e.profile);
       await this.updateUser();
     },
 
@@ -571,6 +587,7 @@ export default {
         };
         // console.log("user get from server");
         this.subscriptionPush = await getPushSubscription();
+       
         setTimeout(async () => {
           this.startPusher();
 
@@ -590,7 +607,8 @@ export default {
     body.style.margin = 0;
     this.lastEnterTime = new Date();
     await this.locateMe();
-
+    console.log("meta",this.collectCurrentMeta())
+     this.$store.commit("SAVE_META",this.collectCurrentMeta())
     if (!this.isAutentificate || !this.autohorized) {
       try {
         const city = await this.getCity();

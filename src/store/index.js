@@ -4,6 +4,7 @@ import Axios from "axios";
 // import AnimalModule from "./modules/animal.js";
 import {URI_SERVER} from "../api.js"
 import ProfileModule from "./modules/profile.js";
+import MetaModule from "./modules/meta.js"
 Vue.use(Vuex);
 export default new Vuex.Store({
   
@@ -11,6 +12,7 @@ export default new Vuex.Store({
     
     animals: {} ,
     profile: ProfileModule,
+    meta: MetaModule,
    
   },
   getters: {

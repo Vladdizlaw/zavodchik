@@ -6,8 +6,20 @@ import router from "./router/routes.js"
 import pusher from "vue-pusher"
 import Vuex from "vuex";
 import store from './store/index.js'
+import Vue2TouchEvents from 'vue2-touch-events'
+
+
 Vue.config.productionTip = false;
 Vue.use(VueKinesis);
+Vue.use(Vue2TouchEvents,{
+  disableClick: false,
+  touchClass: '',
+  tapTolerance: 10,
+  touchHoldTolerance: 400,
+  swipeTolerance: 30,
+  longTapTimeInterval: 400,
+  namespace: 'touch'
+})
 Vue.use(VueRouter)
 Vue.use((pusher),{api_key:
   '0a57b58d03d02819ad2b', options:{
